@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <title>Opret Bruger - Carport</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/public/css/styles.css" th:href="@{/css/styles.css}">
+</head>
+<body>
+<header class="header">
+</header>
+
+<div class="container">
+  <div class="login-box">
+    <h2>Opret Bruger</h2>
+    <p>Please create your account:</p>
+
+    <form class="login-form" method="post">
+      <input type="text" name="username" placeholder="Enter your Username" class="input-field" />
+      <input type="password" name="password1" placeholder="Enter your Password" class="input-field" />
+      <input type="password" name="password2" placeholder="Enter your Password again" class="input-field" />
+      <button type="submit" formaction="/createuser" class="login-btn">Create user</button>
+    </form>
+
+    <div><p th:text="${message}" class="error-message"></p></div>
+  </div>
+</div>
+</body>
+</html>

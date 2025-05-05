@@ -75,6 +75,4 @@ public class UserMapper
     }
 }
 
-public class UserMapper {
-}
 
