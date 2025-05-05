@@ -1,14 +1,17 @@
 package app.persistence;
 
 import app.entities.Order;
+import app.entities.User;
+import app.exceptions.DatabaseException;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class OrderMapper {
 
-    public static List<Order> getAllOrdersPerUser(int userId, ConnectionPool connectionPool){
+    public static List<Order> getAllOrdersPerUser(int userId, ConnectionPool connectionPool) throws DatabaseException {
         List<Order> orderList = new ArrayList<>();
         String sql = "select * from order where user_id=? order by name";
         try (
@@ -34,7 +37,7 @@ public class OrderMapper {
         return orderList;
     }
 
-    public static Order addOrder(User user, int orderId, ConnectionPool connectionPool) throws DatabaseException{
+    public static Order addOrder(User user, int orderId, ConnectionPool connectionPool) throws DatabaseException {
         Order newOrder = null;
 
         String sql = "insert into order (name, done, user_id) values (?,?,?)";
@@ -53,7 +56,7 @@ public class OrderMapper {
                 ResultSet rs = ps.getGeneratedKeys();
                 rs.next();
                 int newId = rs.getInt(1);
-                newOrder = new Order(newId, orderId, false, user.getUserId());
+                newOrder = new Order(orderId, "LocalDate",  ;
             } else
             {
                 throw new DatabaseException("Fejl under indsætning af ordren: " + orderId);
