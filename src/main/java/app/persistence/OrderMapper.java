@@ -13,7 +13,7 @@ public class OrderMapper {
 
     public static List<Order> getAllOrdersPerUser(int userId, ConnectionPool connectionPool) throws DatabaseException {
         List<Order> orderList = new ArrayList<>();
-        String sql = "select * from order where user_id=? order by name";
+        String sql = "select * from orders where user_id=? order by name";
         try (
                 Connection connection = connectionPool.getConnection();
                 PreparedStatement ps = connection.prepareStatement(sql)
@@ -40,38 +40,41 @@ public class OrderMapper {
     public static Order addOrder(User user, int orderId, ConnectionPool connectionPool) throws DatabaseException {
         Order newOrder = null;
 
-        String sql = "insert into order (name, done, user_id) values (?,?,?)";
+        String sql = "insert into orders (orderId, orderDate, totalPrice, orderStatus, user_id) values (?,?,?,?,?)";
 
         try (
                 Connection connection = connectionPool.getConnection();
                 PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
-        )
-        {
-            ps.setInt(1, orderId);
-            ps.setBoolean(2, false);
-            ps.setInt(3, user.getUserId());
+        ) {
+            Date orderDate = Date.valueOf(LocalDate.now());
+            double totalPrice = 0.0;
+            String orderStatus = "Ikke behandlet";
+
+            ps.setDate(1, orderDate);
+            ps.setDouble(2, totalPrice);
+            ps.setString(3, orderStatus);
+            ps.setInt(4, user.getUserId());
+
             int rowsAffected = ps.executeUpdate();
-            if (rowsAffected == 1)
-            {
+            if (rowsAffected == 1) {
                 ResultSet rs = ps.getGeneratedKeys();
-                rs.next();
-                int newId = rs.getInt(1);
-                newOrder = new Order(orderId, "LocalDate",  ;
-            } else
-            {
-                throw new DatabaseException("Fejl under indsætning af ordren: " + orderId);
+                if (rs.next()) {
+                    int generatedOrderId = rs.getInt(1);
+                    newOrder = new Order(generatedOrderId, orderDate, totalPrice, orderStatus); //todo tjek om generatedOrderID er korrekt.
+                }
+            } else {
+                throw new DatabaseException("Fejl under indsættelse af ordre.");
             }
-        }
-        catch (SQLException e)
-        {
+        } catch (SQLException e) {
             throw new DatabaseException("Fejl i DB connection", e.getMessage());
         }
+
         return newOrder;
     }
 
     public static void delete(int orderId, ConnectionPool connectionPool) throws DatabaseException
     {
-        String sql = "delete from order where order_id = ?";
+        String sql = "delete from orders where order_id = ?";
 
         try (
                 Connection connection = connectionPool.getConnection();
