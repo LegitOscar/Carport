@@ -21,7 +21,7 @@ public class UserController {
 
     }
 
-    private static void createUser(Context ctx, ConnectionPool connectionPool) {
+    public static void createUser(Context ctx, ConnectionPool connectionPool) {
 
         String username = ctx.formParam("username");
         String password1 = ctx.formParam("password1");
@@ -29,11 +29,11 @@ public class UserController {
 
         if (password1.equals(password2)) {
             try {
-                UserMapper.createuser(username, password1,"user", connectionPool);
+                createUser(username, password1, password2, connectionPool);
                 ctx.attribute("message", "Du er hermed blevet oprettet med brugernavnet" + username + ". Du kan nu logge på.");
                 ctx.render("index.html");
-            } catch (DatabaseException e) {
-                ctx.attribute("message", "Dette brugernavn findes allerede. Prøv et andet brugernavn, eller log ind");
+            }catch (IllegalArgumentException e) {
+                ctx.attribute("message", "Dine to passwords stemmer ikke overens.");
                 ctx.render("createuser.html");
             }
 
@@ -42,6 +42,20 @@ public class UserController {
             ctx.render("createuser.html");
         }
     }
+
+    public static void createUser(String username, String password1, String password2, ConnectionPool connectionPool) {
+        if (!password1.equals(password2)) {
+            throw new IllegalArgumentException("Passwords do not match");
+        }
+
+        try {
+            UserMapper.createuser(username, password1, "user", connectionPool);
+            // You can add logging here if needed
+        } catch (DatabaseException e) {
+            throw new RuntimeException("Failed to create user: " + e.getMessage());
+        }
+    }
+
 
     private static void logout(Context ctx) {
         ctx.req().getSession().invalidate();
@@ -65,6 +79,7 @@ public class UserController {
             throw new RuntimeException(e);
         }
     }
+
 }
 
 
