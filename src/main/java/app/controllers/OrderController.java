@@ -1,33 +1,109 @@
 package app.controllers;
 
+import app.entities.Order;
+import app.entities.User;
+import app.exceptions.DatabaseException;
 import app.persistence.ConnectionPool;
+import app.persistence.OrderMapper;
 import io.javalin.Javalin;
+import io.javalin.http.Context;
+
+import java.sql.Date;
+import java.util.List;
 
 public class OrderController {
-    public static void addRoutes(Javalin app, ConnectionPool connectionPool)
-    {
+
+    public static void addRoutes(Javalin app, ConnectionPool connectionPool) {
         app.post("addorder", ctx -> addOrder(ctx, connectionPool));
-        app.post("done", ctx -> done(ctx, true, connectionPool));
-        app.post("undo", ctx -> done(ctx, false, connectionPool));
         app.post("deleteorder", ctx -> deleteOrder(ctx, connectionPool));
         app.post("editorder", ctx -> editOrder(ctx, connectionPool));
         app.post("updateorder", ctx -> updateOrder(ctx, connectionPool));
-
+        app.get("getorders", ctx -> getOrdersForUser(ctx, connectionPool));
+        app.get("allorders", ctx -> getAllOrders(ctx, connectionPool));
     }
 
-    private static void editOrder(Context ctx, ConnectionPool connectionPool){
+    private static void addOrder(Context ctx, ConnectionPool connectionPool) {
         User user = ctx.sessionAttribute("currentUser");
+        if (user == null) {
+            ctx.status(401).result("Du er ikke logget ind.");
+            return;
+        }
+
+        try {
+            Order order = OrderMapper.createOrder(user, connectionPool);
+            ctx.status(201).result("Ordre oprettet med ID: " + order.getOrderId());
+        } catch (DatabaseException e) {
+            ctx.status(500).result("Fejl ved oprettelse af ordre: " + e.getMessage());
+        }
     }
 
-    private static void deleteOrder(Context ctx, ConnectionPool connectionPool){
+    private static void deleteOrder(Context ctx, ConnectionPool connectionPool) {
+        try {
+            int orderId = Integer.parseInt(ctx.formParam("orderId"));
+            OrderMapper.deleteOrder(orderId, connectionPool);
+            ctx.status(200).result("Ordre slettet med ID: " + orderId);
+        } catch (NumberFormatException e) {
+            ctx.status(400).result("Ugyldigt order ID");
+        } catch (DatabaseException e) {
+            ctx.status(500).result("Fejl ved sletning af ordre: " + e.getMessage());
+        }
+    }
+
+    private static void editOrder(Context ctx, ConnectionPool connectionPool) {
+        try {
+            int orderId = Integer.parseInt(ctx.formParam("orderId"));
+            Order order = OrderMapper.getOrderById(orderId, connectionPool);
+            if (order != null) {
+                ctx.attribute("order", order);
+                ctx.render("editorder.html"); // todo skal ændres til rigtigt html
+            } else {
+                ctx.status(404).result("Ordre ikke fundet");
+            }
+        } catch (Exception e) {
+            ctx.status(500).result("Fejl ved hentning af ordre: " + e.getMessage());
+        }
+    }
+
+    private static void updateOrder(Context ctx, ConnectionPool connectionPool) {
+        try {
+            int orderId = Integer.parseInt(ctx.formParam("orderId"));
+            Date orderDate = Date.valueOf(ctx.formParam("orderDate"));
+            double totalPrice = Double.parseDouble(ctx.formParam("totalPrice"));
+            String orderStatus = ctx.formParam("orderStatus");
+
+            Order order = new Order(orderId, orderDate, totalPrice, orderStatus);
+            OrderMapper.updateOrder(order, connectionPool);
+
+            ctx.status(200).result("Ordre opdateret");
+        } catch (Exception e) {
+            ctx.status(400).result("Fejl ved opdatering af ordre: " + e.getMessage());
+        }
+    }
+
+
+    private static void getOrdersForUser(Context ctx, ConnectionPool connectionPool) {
         User user = ctx.sessionAttribute("currentUser");
+        if (user == null) {
+            ctx.status(401).result("Du er ikke logget ind.");
+            return;
+        }
+
+        try {
+            List<Order> orders = OrderMapper.getAllOrdersPerUser(user.getUserId(), connectionPool);
+            ctx.attribute("orders", orders);
+            ctx.render("orders.html"); //todo ændre muligvis HTML
+        } catch (DatabaseException e) {
+            ctx.status(500).result("Fejl ved hentning af ordrer: " + e.getMessage());
+        }
     }
 
-    private static void addOrder(Context ctx, ConnectionPool connectionPool){
-        //Todo find ud af hvad order består af.
+    private static void getAllOrders(Context ctx, ConnectionPool connectionPool) {
+        try {
+            List<Order> orders = OrderMapper.getAllOrders(connectionPool);
+            ctx.attribute("orders", orders);
+            ctx.render("allorders.html"); // todo: opret/tilpas HTML-side
+        } catch (DatabaseException e) {
+            ctx.status(500).result("Fejl ved hentning af alle ordrer: " + e.getMessage());
+        }
     }
-
-    private static void updateOrder(Context ctx, ConnectionPool connectionPool)
-    User user = ctx.sessionAttribute("currentUser");
-
 }
