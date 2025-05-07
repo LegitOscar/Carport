@@ -14,14 +14,15 @@ import java.util.logging.Logger;
 public class ConnectionPool
 {
 
-    public static ConnectionPool instance = null;
-    public static HikariDataSource ds = null;
+    private static ConnectionPool instance = null;
+    private static HikariDataSource ds = null;
+
 
     /***
      * Empty and private constructor due to single pattern. Use getInstance methods to
      * instantiate and get a connection pool.
      */
-    private ConnectionPool()
+    public ConnectionPool()
     {
     }
 
