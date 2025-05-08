@@ -1,6 +1,6 @@
 package app.entities;
 
-import java.util.Date;
+import java.sql.Date;
 
 public class Order {
     int orderID;
@@ -15,11 +15,11 @@ public class Order {
         this.orderStatus = orderStatus;
     }
 
-    public int getOrderID() {
+    public int getOrderId() {
         return orderID;
     }
 
-    public void setOrderID(int orderID) {
+    public void setOrderId(int orderID) {
         this.orderID = orderID;
     }
 

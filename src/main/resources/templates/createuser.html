@@ -1,10 +1,14 @@
 <!DOCTYPE html>
+
 <html lang="da" xmlns:th="http://www.thymeleaf.org">
+
 <head>
   <meta charset="UTF-8">
   <title>Opret Bruger - Carport</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <link rel="stylesheet" th:href="@{/css/styles.css}">
+
 </head>
 <body>
 <header class="header">
@@ -44,9 +48,11 @@
       <button type="submit" class="createuser-btn">Opret bruger</button>
     </form>
 
+
     <div>
       <p th:text="${message}" class="error-message"></p>
     </div>
+
   </div>
 </div>
 </body>

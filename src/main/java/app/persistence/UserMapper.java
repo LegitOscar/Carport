@@ -43,36 +43,24 @@ public class UserMapper
 
 
 
-
-    public static void createuser(String userName, String password, String role, ConnectionPool connectionPool) throws DatabaseException
-    {
-        String sql = "INSERT INTO users (user_name, password, role) VALUES (?,?,?)";
+    public static void createUser(String userName, String password, String role, ConnectionPool connectionPool) throws DatabaseException {
+        // This version uses ON CONFLICT DO NOTHING to silently skip duplicate inserts
+        String sql = "INSERT INTO users (user_name, password, role) VALUES (?,?,?) ON CONFLICT (user_name) DO NOTHING";
 
         try (
                 Connection connection = connectionPool.getConnection();
                 PreparedStatement ps = connection.prepareStatement(sql)
-        )
-        {
+        ) {
             ps.setString(1, userName);
             ps.setString(2, password);
             ps.setString(3, role);
 
-            int rowsAffected = ps.executeUpdate();
-            if (rowsAffected != 1)
-            {
-                throw new DatabaseException("Fejl ved oprettelse af ny bruger");
-            }
-        }
-        catch (SQLException e)
-        {
-            String msg = "Der er sket en fejl. Prøv igen";
-            if (e.getMessage().startsWith("ERROR: duplicate key value "))
-            {
-                msg = "Brugernavnet findes allerede. Vælg et andet";
-            }
-            throw new DatabaseException(msg, e.getMessage());
+            ps.executeUpdate(); // No need to check rows affected, since duplicates are allowed
+        } catch (SQLException e) {
+            throw new DatabaseException("Der er sket en fejl. Prøv igen", e.getMessage());
         }
     }
+
 }
 
 
