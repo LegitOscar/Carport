@@ -10,6 +10,7 @@ import io.javalin.Javalin;
 import io.javalin.http.Context;
 
 import java.sql.Date;
+import java.sql.SQLException;
 import java.util.List;
 
 public class OrderController {
@@ -23,19 +24,15 @@ public class OrderController {
         app.get("allorders", ctx -> getAllOrders(ctx, connectionPool));
     }
 
-    private static void addOrder(Context ctx, ConnectionPool connectionPool) {
+    private static void addOrder(Context ctx, ConnectionPool connectionPool) throws DatabaseException, SQLException {
         User user = ctx.sessionAttribute("currentUser");
         if (user == null) {
             ctx.status(401).result("Du er ikke logget ind.");
             return;
         }
 
-        try {
-            Order order = OrderMapper.createOrder(user, connectionPool);
-            ctx.status(201).result("Ordre oprettet med ID: " + order.getOrderId());
-        } catch (DatabaseException e) {
-            ctx.status(500).result("Fejl ved oprettelse af ordre: " + e.getMessage());
-        }
+        Order order = OrderMapper.createOrder(user, connectionPool);
+        ctx.status(201).result("Ordre oprettet med ID: " + order.getOrderId());
     }
 
     private static void deleteOrder(Context ctx, ConnectionPool connectionPool) {
@@ -64,6 +61,19 @@ public class OrderController {
             ctx.status(500).result("Fejl ved hentning af ordre: " + e.getMessage());
         }
     }
+
+    public static Order createOrder(User user, ConnectionPool connectionPool) throws DatabaseException, SQLException {
+        Order newOrder = OrderMapper.createOrder(user, connectionPool);
+
+        if (newOrder != null) {
+            System.out.println("Order created successfully with ID: " + newOrder.getOrderId());
+        } else {
+            throw new RuntimeException("Order creation failed.");
+        }
+
+        return newOrder;
+    }
+
 
     private static void updateOrder(Context ctx, ConnectionPool connectionPool) {
         try {

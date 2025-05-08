@@ -12,10 +12,4 @@ public class DatabaseException extends Exception
         System.out.println("userMessage: " + userMessage);
         System.out.println("errorMessage: " + systemMessage);
     }
-
-    public DatabaseException(String userMessage, Throwable cause) {
-        super(userMessage, cause);
-        System.out.println("userMessage: " + userMessage);
-        System.out.println("cause: " + cause.getMessage());
-    }
 }
