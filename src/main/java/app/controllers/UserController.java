@@ -49,7 +49,7 @@ public class UserController {
         }
 
         try {
-            UserMapper.createuser(username, password1, "user", connectionPool);
+            UserMapper.createUser(username, password1, "user", connectionPool);
             // You can add logging here if needed
         } catch (DatabaseException e) {
             throw new RuntimeException("Failed to create user: " + e.getMessage());

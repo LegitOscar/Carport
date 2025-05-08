@@ -6,11 +6,47 @@ import app.entities.User;
 import app.exceptions.DatabaseException;
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class OrderMapper {
+
+
+    public static Order createOrder(User user, ConnectionPool connectionPool) throws DatabaseException, SQLException {
+        if (user == null) {
+            throw new IllegalArgumentException("User cannot be null");
+        }
+
+        String sql = "INSERT INTO orders (order_date, total_price, customer_id, order_status) VALUES (?, ?, ?, ?)";
+
+        try (
+                Connection connection = connectionPool.getConnection();
+                PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
+        ) {
+            Date currentDate = new Date(System.currentTimeMillis());
+
+            ps.setDate(1, currentDate); // order_date
+            ps.setDouble(2, 0); // default price
+            ps.setInt(3, user.getUserId()); // customer_id (ensure this user exists in the users table)
+            ps.setString(4, "Pending"); // order_status
+
+            int rowsAffected = ps.executeUpdate();
+
+            if (rowsAffected == 1) {
+                ResultSet keys = ps.getGeneratedKeys();
+                if (keys.next()) {
+                    int orderId = keys.getInt(1);
+                    return new Order(orderId, currentDate, 0, "Pending");
+                } else {
+                    throw new DatabaseException("No ID returned when creating order");
+                }
+            } else {
+                throw new DatabaseException("Order creation failed, no rows affected");
+            }
+        }
+    }
+
+
 
     public static List<Order> getAllOrdersPerUser(int userId, ConnectionPool connectionPool) throws DatabaseException {
         List<Order> orderList = new ArrayList<>();
@@ -61,40 +97,7 @@ public class OrderMapper {
         return orderList;
     }
 
-    public static Order createOrder(User user, ConnectionPool connectionPool) throws DatabaseException {
-        Order newOrder = null;
 
-        String sql = "INSERT INTO orders (orderdate, totalprice, orderstatus, user_id) VALUES (?, ?, ?, ?)";
-
-        try (
-                Connection connection = connectionPool.getConnection();
-                PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
-        ) {
-            Date orderDate = Date.valueOf(LocalDate.now());
-            double totalPrice = 0.0;
-            String orderStatus = "Ikke behandlet";
-
-            ps.setDate(1, orderDate);
-            ps.setDouble(2, totalPrice);
-            ps.setString(3, orderStatus);
-            ps.setInt(4, user.getUserId());
-
-            int rowsAffected = ps.executeUpdate();
-            if (rowsAffected == 1) {
-                ResultSet rs = ps.getGeneratedKeys();
-                if (rs.next()) {
-                    int generatedOrderId = rs.getInt(1);
-                    newOrder = new Order(generatedOrderId, orderDate, totalPrice, orderStatus);
-                }
-            } else {
-                throw new DatabaseException("Fejl under indsættelse af ordre.");
-            }
-        } catch (SQLException e) {
-            throw new DatabaseException("Fejl i DB connection", e.getMessage());
-        }
-
-        return newOrder;
-    }
 
     public static void deleteOrder(int orderId, ConnectionPool connectionPool) throws DatabaseException
     {

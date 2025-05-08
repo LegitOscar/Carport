@@ -24,7 +24,7 @@ public class UserMapper
 
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                int id = rs.getInt("id");
+                int id = rs.getInt("user_id");
                 String fetchedUsername = rs.getString("user_name");
                 String fetchedPassword = rs.getString("password");  // Get the actual password from DB
                 String role = rs.getString("role");
@@ -43,7 +43,7 @@ public class UserMapper
 
 
 
-    public static void createuser(String userName, String password, String role, ConnectionPool connectionPool) throws DatabaseException {
+    public static void createUser(String userName, String password, String role, ConnectionPool connectionPool) throws DatabaseException {
         // This version uses ON CONFLICT DO NOTHING to silently skip duplicate inserts
         String sql = "INSERT INTO users (user_name, password, role) VALUES (?,?,?) ON CONFLICT (user_name) DO NOTHING";
 
