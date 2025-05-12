@@ -24,7 +24,7 @@ public class UserTest {
         // Use test database credentials here
         String user = "postgres";
         String password = "postgres";
-        String url = "jdbc:postgresql://localhost:5432/%s?currentSchema=public"; // or whatever schema you use
+        String url = "jdbc:postgresql://localhost:5432/%s?currentSchema=public";
         String db = "carport";
 
         connectionPool = ConnectionPool.getInstance(user, password, url, db);
@@ -36,14 +36,15 @@ public class UserTest {
 
     @Test
     void testCreateUser() throws SQLException, DatabaseException {
+        // Arrange
         String username = "456";
         String password = "abc";
         String role = "customer";
 
-        // Act: try to create user
+        // Act
         UserMapper.createUser(username, password, role, connectionPool);
 
-        // Assert: fetch the user and check data
+        // Assert
         try (Connection conn = connectionPool.getConnection()) {
             String sql = "SELECT * FROM users WHERE user_name = ?";
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {

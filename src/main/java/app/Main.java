@@ -2,6 +2,7 @@ package app;
 
 import app.config.SessionConfig;
 import app.config.ThymeleafConfig;
+import app.controllers.OrderController;
 import app.controllers.UserController;
 import app.persistence.ConnectionPool;
 import io.javalin.Javalin;
@@ -29,9 +30,9 @@ public class Main {
             config.fileRenderer(new JavalinThymeleaf(ThymeleafConfig.templateEngine()));}).start(7070);
 
         // Routing
-        app.get("/", ctx ->  ctx.render("createuser.html")); //todo ændre hovedsite
+        app.get("/", ctx ->  ctx.render("index.html")); //todo ændre hovedsite
         UserController.addRoutes(app,connectionPool);
-//        OrderController.addRoutes(app, connectionPool);
-    }
+        OrderController.addRoutes(app, connectionPool);
 
+    }
 }

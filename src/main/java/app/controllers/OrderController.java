@@ -8,7 +8,6 @@ import app.persistence.ConnectionPool;
 import app.persistence.OrderMapper;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
-
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.List;
