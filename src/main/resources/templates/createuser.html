@@ -1,19 +1,16 @@
 <!DOCTYPE html>
-
 <html lang="da" xmlns:th="http://www.thymeleaf.org">
-
 <head>
   <meta charset="UTF-8">
-  <title>Opret Bruger - Carport</title>
+  <title>Opret Bruger - Carport </title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <link rel="stylesheet" th:href="@{/css/styles.css}">
+  <link rel="stylesheet" href="../public/css/styles.css">
 
 </head>
 <body>
 <header class="header">
   <div class="logo">
-    <img src="/public/images/fogLogo.png" th:src="@{/images/fogLogo.png}" alt="Fog Logo">
+    <img src="../public/images/fogLogo.png" th:src="@{../public/images/fogLogo.png}" alt="Fog Logo">
   </div>
 </header>
 
@@ -45,9 +42,17 @@
       <label for="password2">Bekræft Password:</label>
       <input type="password" id="password2" name="password2" placeholder="Gentag password" class="input-field" />
 
-      <button type="submit" class="createuser-btn">Opret bruger</button>
-    </form>
 
+
+      <button type="submit" class="createuser-btn">Opret bruger</button>
+
+    </form>
+    <div class ="checkbox">
+      <label>
+        <input type="checkbox" name="tilladelse" value="yes">
+        Fog må benytte de afgivne oplysninger til at sende nyhedsbrev og salgstilbud.
+      </label>
+    </div>
 
     <div>
       <p th:text="${message}" class="error-message"></p>
