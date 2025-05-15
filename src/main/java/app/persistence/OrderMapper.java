@@ -12,8 +12,7 @@ import java.util.List;
 
 public class OrderMapper {
 
-    //KHUONG IS MAKING THIS, CHECK WITH HIM HOW THIS PLAYS WITH YOURS
-    /*
+
     public static Order createOrder(User user, ConnectionPool connectionPool) throws DatabaseException, SQLException {
         if (user == null) {
             throw new IllegalArgumentException("User cannot be null");
@@ -38,7 +37,7 @@ public class OrderMapper {
                 ResultSet keys = ps.getGeneratedKeys();
                 if (keys.next()) {
                     int orderId = keys.getInt(1);
-                    return new Order(orderId, currentDate.toLocalDate(), 0, "Pending");
+                    return new Order(orderId, currentDate.toLocalDate(), 0, "Pending", user.getUserId(), 5, 5);
                 } else {
                     throw new DatabaseException("No ID returned when creating order");
                 }
@@ -47,7 +46,7 @@ public class OrderMapper {
             }
         }
     }
-*/
+
 
     public static List<Order> getAllOrdersPerUser(int customerId, ConnectionPool connectionPool) throws DatabaseException {
         List<Order> orderList = new ArrayList<>();
@@ -154,7 +153,7 @@ public class OrderMapper {
     }
 
     public static void updateOrder(Order order, ConnectionPool connectionPool) throws DatabaseException {
-        String sql = "UPDATE orders SET orderstatus = ?, totalprice = ? WHERE order_id = ?";
+        String sql = "UPDATE orders SET order_status = ?, total_price = ? WHERE order_id = ?";
 
         try (
                 Connection connection = connectionPool.getConnection();

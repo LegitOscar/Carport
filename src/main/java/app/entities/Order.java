@@ -17,8 +17,8 @@ public class Order {
        this.totalPrice = totalPrice;
        this.orderStatus = orderStatus;
        this.customerId = customerId;
-       this.workerId = workerId;
-       this.carportId = carportId;
+       this.workerId = 0;
+       this.carportId = 0;
     }
 
     public int getOrderId(){
