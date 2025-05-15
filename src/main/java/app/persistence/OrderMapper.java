@@ -5,13 +5,15 @@ import app.entities.Order;
 import app.entities.User;
 import app.exceptions.DatabaseException;
 
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class OrderMapper {
 
-
+    //KHUONG IS MAKING THIS, CHECK WITH HIM HOW THIS PLAYS WITH YOURS
+    /*
     public static Order createOrder(User user, ConnectionPool connectionPool) throws DatabaseException, SQLException {
         if (user == null) {
             throw new IllegalArgumentException("User cannot be null");
@@ -36,7 +38,7 @@ public class OrderMapper {
                 ResultSet keys = ps.getGeneratedKeys();
                 if (keys.next()) {
                     int orderId = keys.getInt(1);
-                    return new Order(orderId, currentDate, 0, "Pending");
+                    return new Order(orderId, currentDate.toLocalDate(), 0, "Pending");
                 } else {
                     throw new DatabaseException("No ID returned when creating order");
                 }
@@ -45,29 +47,31 @@ public class OrderMapper {
             }
         }
     }
+*/
 
-
-
-    public static List<Order> getAllOrdersPerUser(int userId, ConnectionPool connectionPool) throws DatabaseException {
+    public static List<Order> getAllOrdersPerUser(int customerId, ConnectionPool connectionPool) throws DatabaseException {
         List<Order> orderList = new ArrayList<>();
-        String sql = "SELECT * FROM orders WHERE user_id = ? ORDER BY orderdate DESC";
+        String sql = "SELECT * FROM orders WHERE customer_id = ? ORDER BY order_date DESC";
 
         try (
                 Connection connection = connectionPool.getConnection();
                 PreparedStatement ps = connection.prepareStatement(sql)
         ) {
-            ps.setInt(1, userId);
+            ps.setInt(1, customerId);
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
                 int id = rs.getInt("order_id");
-                Date date = rs.getDate("orderdate");
-                double price = rs.getDouble("totalprice");
-                String status = rs.getString("orderstatus");
-                orderList.add(new Order(id, date, price, status));
+                Date date = rs.getDate("order_date");
+                double price = rs.getDouble("total_price");
+                String status = rs.getString("order_status");
+                int workerId = rs.getInt("worker_id");
+                int carportId = rs.getInt("carport_id");
+
+                orderList.add(new Order(id, date.toLocalDate(), price, status, customerId, workerId, carportId));
             }
         } catch (SQLException e) {
-            throw new DatabaseException("Fejl ved hentning af ordrer for bruger " + userId, e.getMessage());
+            throw new DatabaseException("Error retrieving orders from customer " + customerId, e.getMessage());
         }
 
         return orderList;
@@ -75,7 +79,7 @@ public class OrderMapper {
 
     public static List<Order> getAllOrders(ConnectionPool connectionPool) throws DatabaseException {
         List<Order> orderList = new ArrayList<>();
-        String sql = "SELECT * FROM orders ORDER BY orderdate DESC";
+        String sql = "SELECT * FROM orders ORDER BY order_date DESC";
 
         try (
                 Connection connection = connectionPool.getConnection();
@@ -84,39 +88,37 @@ public class OrderMapper {
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
-                int id = rs.getInt("order_id"); //todo ændre navn
-                Date date = rs.getDate("orderdate");
-                double price = rs.getDouble("totalprice");
-                String status = rs.getString("orderstatus");
-                orderList.add(new Order(id, date, price, status));
+                int id = rs.getInt("order_id");
+                Date date = rs.getDate("order_date");
+                double price = rs.getDouble("total_price");
+                String status = rs.getString("order_status");
+                int customerId = rs.getInt("customer_id");
+                int workerId = rs.getInt("worker_id");
+                int carportId = rs.getInt("carport_id");
+
+                orderList.add(new Order(id, date.toLocalDate(), price, status, customerId, workerId, carportId));
             }
         } catch (SQLException e) {
-            throw new DatabaseException("Fejl ved hentning af alle ordrer", e.getMessage());
+            throw new DatabaseException("Error getting all orders", e.getMessage());
         }
 
         return orderList;
     }
 
 
-
-    public static void deleteOrder(int orderId, ConnectionPool connectionPool) throws DatabaseException
-    {
+    public static void deleteOrder(int orderId, ConnectionPool connectionPool) throws DatabaseException {
         String sql = "delete from orders where order_id = ?";
 
         try (
                 Connection connection = connectionPool.getConnection();
                 PreparedStatement ps = connection.prepareStatement(sql)
-        )
-        {
+        ) {
             ps.setInt(1, orderId);
             int rowsAffected = ps.executeUpdate();
-            if (rowsAffected != 1)
-            {
+            if (rowsAffected != 1) {
                 throw new DatabaseException("Fejl i opdatering af en task");
             }
-        }
-        catch (SQLException e)
-        {
+        } catch (SQLException e) {
             throw new DatabaseException("Fejl ved sletning af en task", e.getMessage());
         }
     }
@@ -135,14 +137,17 @@ public class OrderMapper {
 
             if (rs.next()) {
                 int id = rs.getInt("order_id");
-                Date orderDate = rs.getDate("orderdate");
-                double totalPrice = rs.getDouble("totalprice");
-                String orderStatus = rs.getString("orderstatus");
+                Date date = rs.getDate("order_date");
+                double totalPrice = rs.getDouble("total_price");
+                String orderStatus = rs.getString("order_status");
+                int customerId = rs.getInt("customer_id");
+                int workerId = rs.getInt("worker_id");
+                int carportId = rs.getInt("carport_id");
 
-                order = new Order(id, orderDate, totalPrice, orderStatus);
+                order = new Order(id, date.toLocalDate(), totalPrice, orderStatus, customerId, workerId, carportId);
             }
         } catch (SQLException e) {
-            throw new DatabaseException("Fejl ved hentning af ordre med id = " + orderId, e.getMessage());
+            throw new DatabaseException("Error getting order by id = " + orderId, e.getMessage());
         }
 
         return order;
@@ -166,6 +171,38 @@ public class OrderMapper {
         } catch (SQLException e) {
             throw new DatabaseException("Fejl i DB connection", e.getMessage());
         }
+    }
+
+    public static List<Order> getAllOrdersForWorker(int workerId, ConnectionPool connectionPool) throws DatabaseException {
+        List<Order> orderList = new ArrayList<>();
+        String sql = "SELECT * FROM orders WHERE worker_id = ? ORDER BY order_date DESC";
+
+        try (
+                Connection connection = connectionPool.getConnection();
+                PreparedStatement ps = connection.prepareStatement(sql)
+
+        ) {
+            ps.setInt(1, workerId);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                int id = rs.getInt("order_id");
+                Date date = rs.getDate("order_date");
+                double price = rs.getDouble("total_price");
+                String status = rs.getString("order_status");
+                int customerId = rs.getInt("customer_id");
+                int carportId = rs.getInt("carport_id");
+
+                orderList.add(new Order(id, date.toLocalDate(), price, status, customerId, workerId, carportId));
+            }
+
+        } catch (SQLException e) {
+            throw new DatabaseException("Error getting orders for seller", e.getMessage());
+        }
+
+        return orderList;
+
+
     }
 }
 
