@@ -16,14 +16,14 @@ import java.util.List;
 public class OrderController {
 
     public static void addRoutes(Javalin app, ConnectionPool connectionPool) {
-        app.post("addorder", ctx -> addOrder(ctx, connectionPool));
+        //app.post("addorder", ctx -> addOrder(ctx, connectionPool));
         app.post("deleteorder", ctx -> deleteOrder(ctx, connectionPool));
         app.post("editorder", ctx -> editOrder(ctx, connectionPool));
-        app.post("updateorder", ctx -> updateOrder(ctx, connectionPool));
+       // app.post("updateorder", ctx -> updateOrder(ctx, connectionPool));
         app.get("getorders", ctx -> getOrdersForUser(ctx, connectionPool));
         app.get("allorders", ctx -> getAllOrders(ctx, connectionPool));
     }
-
+/*
     private static void addOrder(Context ctx, ConnectionPool connectionPool) throws DatabaseException, SQLException {
         User user = ctx.sessionAttribute("currentUser");
         if (user == null) {
@@ -34,7 +34,7 @@ public class OrderController {
         Order order = OrderMapper.createOrder(user, connectionPool);
         ctx.status(201).result("Ordre oprettet med ID: " + order.getOrderId());
     }
-
+*/
     private static void deleteOrder(Context ctx, ConnectionPool connectionPool) {
         try {
             int orderId = Integer.parseInt(ctx.formParam("orderId"));
@@ -61,7 +61,7 @@ public class OrderController {
             ctx.status(500).result("Fejl ved hentning af ordre: " + e.getMessage());
         }
     }
-
+/*
     public static Order createOrder(User user, ConnectionPool connectionPool) throws DatabaseException, SQLException {
         Order newOrder = OrderMapper.createOrder(user, connectionPool);
 
@@ -73,7 +73,6 @@ public class OrderController {
 
         return newOrder;
     }
-
 
     private static void updateOrder(Context ctx, ConnectionPool connectionPool) {
         try {
@@ -90,7 +89,7 @@ public class OrderController {
             ctx.status(400).result("Fejl ved opdatering af ordre: " + e.getMessage());
         }
     }
-
+*/
 
     private static void getOrdersForUser(Context ctx, ConnectionPool connectionPool) {
         User user = ctx.sessionAttribute("currentUser");

@@ -12,14 +12,14 @@ body {
 
 /* Logo styling */
 .logo {
-    margin: 20px 0;
+    margin: 20px 10px;
     display: flex;
     justify-content: center;
 }
 
 .logo img {
-    width: 85px;
-    height: auto;
+    width: 120px;
+    height: 120px;
 }
 
 /* Container for centering form */
