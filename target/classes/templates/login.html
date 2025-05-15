@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - Carport</title>
+</head>
+<body>
+<div class="container">
+  <div class="login-box">
+    <h2>Velkommen til Fog</h2>
+    <p>Please login:</p>
+
+
+    <form method ="post">
+      <input type = "text" name = "username" placeholder="Enter your Username" class="input-field"/>
+      <input  type = "password" name = "password" placeholder="Enter your Password" class="input-field"/>
+      <button type = "submit" formaction="/login" class="login-btn">Log på</button>
+    </form>
+    <div><p th:text="${message}" class="error-message"></p></div>
+    <p><a href="createuser.html" th:href="@{/createuser}" class="create-user-link">Create user</a></p>
+  </div>
+</div>
+
+</body>
+</html>
