@@ -6,6 +6,7 @@ import app.entities.User;
 import app.exceptions.DatabaseException;
 import app.persistence.ConnectionPool;
 import app.persistence.OrderMapper;
+import app.services.Calculator;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 
@@ -116,6 +117,22 @@ public class OrderController {
         } catch (DatabaseException e) {
             ctx.status(500).result("Fejl ved hentning af alle ordrer: " + e.getMessage());
         }
+    }
+
+
+    private static void sendRequest(Context ctx, ConnectionPool connectionPool){
+        Order order = new Order(0,Date, width, length, totalprice, user); // Todo fra video. Skal ædres
+
+        try {
+            order = OrderMapper.insertOrder(order, connectionPool);
+
+            Calculator calculator = new Calculator(width, length, order, connectionPool);
+        } catch (DatabaseException e) {
+                throw new RuntimeException();
+            }
+
+        }
+
     }
 }
 
