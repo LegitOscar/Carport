@@ -4,13 +4,22 @@
   <meta charset="UTF-8">
   <title>Opret Bruger - Carport </title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <link rel="stylesheet" href="../public/css/styles.css">
+
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+
+
+
 
 </head>
 <body>
 <header class="header">
   <div class="logo">
-    <img src="../public/images/fogLogo.png" th:src="@{../public/images/fogLogo.png}" alt="Fog Logo">
+
+
+    <img src="../public/images/fogLogo.png"  th:src="@{/images/fogLogo.png}" alt="Fog Logo">
+
   </div>
 </header>
 
@@ -46,6 +55,7 @@
 
       <button type="submit" class="createuser-btn">Opret bruger</button>
 
+
     </form>
     <div class ="checkbox">
       <label>
@@ -54,10 +64,10 @@
       </label>
     </div>
 
+
     <div>
       <p th:text="${message}" class="error-message"></p>
     </div>
-
   </div>
 </div>
 </body>

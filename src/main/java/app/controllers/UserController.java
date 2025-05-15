@@ -1,9 +1,12 @@
 package app.controllers;
 
 
+import app.entities.CustomerProfile;
+import app.entities.Order;
 import app.entities.User;
 import app.exceptions.DatabaseException;
 import app.persistence.ConnectionPool;
+import app.persistence.OrderMapper;
 import app.persistence.UserMapper;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
@@ -19,7 +22,66 @@ public class UserController {
         app.get(login, ctx ->ctx.render("login.html"));
         app.get("createuser", ctx -> ctx.render("createuser.html"));
         app.post("createuser", ctx -> createUser(ctx, connectionPool));
+        app.get("/customerprofile", ctx -> {
+            User user = ctx.sessionAttribute("currentUser");
+            if (user == null){
+                ctx.redirect("/");
+                return;
+            }
 
+            try{
+                CustomerProfile profile = UserMapper.getCustomerProfileById(user.getUserId(), connectionPool);
+                ctx.attribute("profile", profile);
+                ctx.render("customerprofile.html");
+            } catch (DatabaseException e){
+                ctx.status(500).result("Error retrieving profile: " + e.getMessage());
+            }
+        });
+        app.get("/testprofile", ctx -> {
+            int testCustomerId = 6;
+
+            try{
+                CustomerProfile profile = UserMapper.getCustomerProfileById(testCustomerId, connectionPool);
+                String expectedEmail = "jon@example.com";
+                String expectedPassword = "1234";
+
+
+                if (profile.getEmail().trim().equalsIgnoreCase(expectedEmail.trim()) && profile.getPassword().trim().equals(expectedPassword.trim())){
+                    User testUser = new User(testCustomerId, profile.getEmail(), expectedPassword, "customer");
+                    ctx.sessionAttribute("currentUser", testUser);
+
+                    ctx.redirect("/customerprofile");
+                } else {
+                    ctx.status(401).result("Email or password is incorrect");
+                }
+            } catch (DatabaseException e){
+                ctx.status(500).result("Error retrieving user: " + e.getMessage());
+            }
+        });
+        app.get("/sellerdashboard", ctx -> {
+            User user = ctx.sessionAttribute("currentUser");
+
+            if (user == null || !user.getRole().equals("seller")){
+                ctx.redirect("/");
+                return;
+            }
+
+            try {
+                List<Order> orders = OrderMapper.getAllOrders(connectionPool);
+                ctx.attribute("orders", orders);
+                ctx.render("sellerdashboard.html");
+            } catch (DatabaseException e){
+                ctx.status(500).result("Error retrieving orders: " + e.getMessage());
+
+            }
+        });
+
+        app.get("/testsellerlogin", ctx ->{
+            User testSeller = new User(99, "seller@example.com","1234", "seller");
+            ctx.sessionAttribute("currentUser", testSeller);
+
+            ctx.redirect("/sellerdashboard");
+                });
     }
 
     public static void createUser(Context ctx, ConnectionPool connectionPool) {
@@ -50,7 +112,7 @@ public class UserController {
         }
 
         try {
-            UserMapper.createUser(username, password1, "user", connectionPool);
+            UserMapper.createUser(username, password1, "customer", connectionPool);
             // You can add logging here if needed
         } catch (DatabaseException e) {
             throw new RuntimeException("Failed to create user: " + e.getMessage());
@@ -68,17 +130,41 @@ public class UserController {
         String username = ctx.formParam("username");
         String password = ctx.formParam("password");
 
-        //Checks if the user already exists in the database, with the given username and password.
+
 
         try {
             User user = UserMapper.login(username, password, connectionPool);
             ctx.sessionAttribute("currentUser", user);
-            // If the user exists, then it will continue.
-            //LOOK IN THE FOURTHINGSPLUS PROJECT, IT NEEDS TO BE ROUTED DIFFERENTLY, ACCORDING TO WHAT
-            //WE CHOOSE TO NAME THE PATH AND METHODS
+
+            if (user.getRole().equals("seller")){
+                ctx.redirect("/sellerdashboard");
+            }else{
+                ctx.redirect("/customerprofile");
+            }
+
         } catch (DatabaseException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static void displayCustomerProfile(Context ctx, ConnectionPool connectionPool){
+        User currentUser = ctx.sessionAttribute("currentUser");
+
+        if (currentUser == null){
+            ctx.redirect("/login");
+            return;
+        }
+
+        try {
+            int customerId = currentUser.getUserId();
+            CustomerProfile profile = UserMapper.getCustomerProfileById(customerId, connectionPool);
+            ctx.attribute("profile", profile);
+            ctx.render("customerprofile.html");
+        } catch (DatabaseException e){
+            ctx.attribute("message", "Error getting the customer profile.");
+            ctx.render("error.html");
+        }
+
     }
 
 }
