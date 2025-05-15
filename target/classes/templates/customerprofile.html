@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 2rem;
+        }
+
+        h1{
+            color: #2c3e50
+        }
+        .profile-box{
+            border: 1px solid #ccc;
+            padding: 1rem;
+            max-width: 400px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+        }
+
+        .profile-field{
+            margin: 0.5rem 0;
+        }
+
+        .label{
+            font-weight: bold;
+        }
+    </style>
+
+</head>
+<body>
+<h1>Kundeprofil</h1>
+
+<div class="profile-box">
+    <div class="profile-field">
+        <span class="label">Navn:</span>
+        <span th:text="${profile.name}">Navn placeholder</span>
+    </div>
+    <div class="profile-field">
+        <span class="label">Adresse:</span>
+        <span th:text="${profile.address}">Adresse placeholder</span>
+    </div>
+    <div class="profile-field">
+        <span class="label">Postnummer:</span>
+        <span th:text="${profile.postcode}">Postnummer placeholder</span>
+    </div>
+    <div class="profile-field">
+        <span class="label">By:</span>
+        <span th:text="${profile.city}">By placeholder</span>
+    </div>
+    <div class="profile-field">
+        <span class="label">Telefon:</span>
+        <span th:text="${profile.phone}">Telefon placeholder</span>
+    </div>
+    <div class="profile-field">
+        <span class="label">E-mail:</span>
+        <span th:text="${profile.email}">Email placeholder</span>
+    </div>
+    <div class="profile-field">
+        <span class="label">Kunde ID:</span>
+        <span th:text="${profile.customerId}">ID placeholder</span>
+    </div>
+</div>
+
+<br>
+<a href="/">← Tilbage til forsiden</a>
+</body>
+</html>

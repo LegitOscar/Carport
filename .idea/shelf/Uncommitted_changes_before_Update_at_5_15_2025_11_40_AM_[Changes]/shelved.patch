@@ -1,0 +1,908 @@
+Index: src/main/java/app/entities/User.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package app.entities;\r\n\r\npublic class User {\r\n\r\n    private int userId;\r\n    private String userName;\r\n    private String password;\r\n    private String role;\r\n\r\n    public User(int userId, String userName, String password, String role){\r\n\r\n    this.userId = userId;\r\n    this.userName = userName;\r\n    this.password = password;\r\n    this.role = role;\r\n\r\n    }\r\n\r\n    public int getUserId()\r\n    {\r\n        return userId;\r\n    }\r\n\r\n    public String getUserName()\r\n    {\r\n        return userName;\r\n    }\r\n\r\n    public String getPassword()\r\n    {\r\n        return password;\r\n    }\r\n\r\n    public String getRole()\r\n    {\r\n        return role;\r\n    }\r\n\r\n    @Override\r\n    public String toString()\r\n    {\r\n        return \"User{\" +\r\n                \"userId=\" + userId +\r\n                \", userName='\" + userName + '\\'' +\r\n                \", password='\" + password + '\\'' +\r\n                \", role='\" + role + '\\'' +\r\n                '}';\r\n    }\r\n\r\n\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/app/entities/User.java b/src/main/java/app/entities/User.java
+--- a/src/main/java/app/entities/User.java	(revision ebb310132afb09db616c3ecd07da21c95f1b6753)
++++ b/src/main/java/app/entities/User.java	(date 1747297237654)
+@@ -4,48 +4,53 @@
+ 
+     private int userId;
+     private String userName;
++    private String email;
++    private int phone;
+     private String password;
+     private String role;
+ 
+-    public User(int userId, String userName, String password, String role){
+-
+-    this.userId = userId;
+-    this.userName = userName;
+-    this.password = password;
+-    this.role = role;
+-
+-    }
++    public User(int userId, String userName, String email, int phone, String password, String role) {
++        this.userId = userId;
++        this.userName = userName;
++        this.email = email;
++        this.phone = phone;
++        this.password = password;
++        this.role = role;
++    } 
+ 
+-    public int getUserId()
+-    {
++    public int getUserId() {
+         return userId;
+     }
+ 
+-    public String getUserName()
+-    {
++    public String getUserName() {
+         return userName;
+     }
+ 
+-    public String getPassword()
+-    {
++    public String getEmail() {
++        return email;
++    }
++
++    public int getPhone() {
++        return phone;
++    }
++
++    public String getPassword() {
+         return password;
+     }
+ 
+-    public String getRole()
+-    {
++    public String getRole() {
+         return role;
+     }
+ 
+     @Override
+-    public String toString()
+-    {
++    public String toString() {
+         return "User{" +
+                 "userId=" + userId +
+                 ", userName='" + userName + '\'' +
++                ", email='" + email + '\'' +
++                ", phone=" + phone +
+                 ", password='" + password + '\'' +
+                 ", role='" + role + '\'' +
+                 '}';
+     }
+-
+-
+ }
+Index: src/test/java/UserTest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import app.controllers.UserController;\r\nimport app.exceptions.DatabaseException;\r\nimport app.persistence.ConnectionPool;\r\nimport app.persistence.UserMapper;\r\nimport org.junit.jupiter.api.AfterEach;\r\nimport org.junit.jupiter.api.BeforeAll;\r\nimport org.junit.jupiter.api.BeforeEach;\r\nimport org.junit.jupiter.api.Test;\r\n\r\nimport java.sql.Connection;\r\nimport java.sql.PreparedStatement;\r\nimport java.sql.ResultSet;\r\nimport java.sql.SQLException;\r\n\r\nimport static org.junit.jupiter.api.Assertions.*;\r\n\r\npublic class UserTest {\r\n\r\n\r\n    private static ConnectionPool connectionPool;\r\n\r\n    @BeforeAll\r\n    static void setUp() {\r\n        // Use test database credentials here\r\n        String user = \"postgres\";\r\n        String password = \"postgres\";\r\n        String url = \"jdbc:postgresql://localhost:5432/%s?currentSchema=public\"; // or whatever schema you use\r\n        String db = \"carport\";\r\n\r\n        connectionPool = ConnectionPool.getInstance(user, password, url, db);\r\n    }\r\n\r\n    @BeforeEach\r\n    void setupTestData(){} //not setup needed\r\n\r\n\r\n    @Test\r\n    void testCreateUser() throws SQLException, DatabaseException {\r\n        String username = \"456\";\r\n        String password = \"abc\";\r\n        String role = \"customer\";\r\n\r\n        // Act: try to create user\r\n        UserMapper.createUser(username, password, role, connectionPool);\r\n\r\n        // Assert: fetch the user and check data\r\n        try (Connection conn = connectionPool.getConnection()) {\r\n            String sql = \"SELECT * FROM users WHERE user_name = ?\";\r\n            try (PreparedStatement stmt = conn.prepareStatement(sql)) {\r\n                stmt.setString(1, username);\r\n                try (ResultSet rs = stmt.executeQuery()) {\r\n                    assertTrue(rs.next());\r\n                    assertEquals(username, rs.getString(\"user_name\"));\r\n                    assertEquals(password, rs.getString(\"password\"));\r\n                    assertEquals(role, rs.getString(\"role\"));\r\n                }\r\n            }\r\n        }\r\n    }\r\n\r\n\r\n\r\n    @Test\r\n    void testDuplicateUsername() {\r\n        String username = \"test123\";\r\n        String password = \"123\";\r\n        String role = \"customer\";\r\n\r\n        assertDoesNotThrow(() -> {\r\n            UserMapper.createUser(username, password, role, connectionPool);\r\n            UserMapper.createUser(username, password, role, connectionPool); // Should not throw\r\n        });\r\n    }\r\n\r\n\r\n    @Test\r\n    void testLogin(){\r\n        String username = \"usertest\"; // ensure uniqueness\r\n        String password = \"test\";\r\n        String role = \"customer\";\r\n\r\n        assertDoesNotThrow(() -> {\r\n            UserMapper.login(username, password, connectionPool);\r\n        });\r\n    }\r\n\r\n    @Test\r\n    void testPasswordMatch() {\r\n        try {\r\n            assertThrows(IllegalArgumentException.class, () -> {\r\n                UserController.createUser(\"testuser\", \"pass1\", \"pass2\", connectionPool); // pass1 != pass2\r\n            });\r\n            System.out.println(\"Test successful: There was a mismatch in the passwords.\");\r\n        } catch (AssertionError e) {\r\n            System.err.println(\"Test failed: Exception not thrown.\");\r\n            throw e;\r\n        }\r\n    }\r\n\r\n    @AfterEach\r\n    void cleanup() throws SQLException {\r\n        try (Connection conn = connectionPool.getConnection();\r\n             PreparedStatement stmt = conn.prepareStatement(\"DELETE FROM users WHERE user_name LIKE 'test%'\")) {\r\n            stmt.executeUpdate();\r\n        }\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/test/java/UserTest.java b/src/test/java/UserTest.java
+--- a/src/test/java/UserTest.java	(revision ebb310132afb09db616c3ecd07da21c95f1b6753)
++++ b/src/test/java/UserTest.java	(date 1747211755981)
+@@ -24,7 +24,7 @@
+         // Use test database credentials here
+         String user = "postgres";
+         String password = "postgres";
+-        String url = "jdbc:postgresql://localhost:5432/%s?currentSchema=public"; // or whatever schema you use
++        String url = "jdbc:postgresql://164.90.223.15:5432/%s?currentSchema=public"; // or whatever schema you use
+         String db = "carport";
+ 
+         connectionPool = ConnectionPool.getInstance(user, password, url, db);
+@@ -36,12 +36,14 @@
+ 
+     @Test
+     void testCreateUser() throws SQLException, DatabaseException {
+-        String username = "456";
+-        String password = "abc";
++        String username = "john_doe";
++        String password = "secret123";
++        String email = "john@example.com";
++        int phone = 12345678;
+         String role = "customer";
+ 
+         // Act: try to create user
+-        UserMapper.createUser(username, password, role, connectionPool);
++        UserMapper.createUser(username, password, email, phone, role, connectionPool);
+ 
+         // Assert: fetch the user and check data
+         try (Connection conn = connectionPool.getConnection()) {
+@@ -51,33 +53,35 @@
+                 try (ResultSet rs = stmt.executeQuery()) {
+                     assertTrue(rs.next());
+                     assertEquals(username, rs.getString("user_name"));
+-                    assertEquals(password, rs.getString("password"));
+-                    assertEquals(role, rs.getString("role"));
++                    assertEquals(password, rs.getString("user_password"));
++                    assertEquals(email, rs.getString("user_email"));
++                    assertEquals(phone, rs.getInt("user_phone"));
++                    assertEquals(role, rs.getString("user_role"));
+                 }
+             }
+         }
+     }
+-
+ 
+ 
+     @Test
+     void testDuplicateUsername() {
+         String username = "test123";
+         String password = "123";
++        String email = "customer";
++        int phone = 12345678;
+         String role = "customer";
+ 
++
+         assertDoesNotThrow(() -> {
+-            UserMapper.createUser(username, password, role, connectionPool);
+-            UserMapper.createUser(username, password, role, connectionPool); // Should not throw
++            UserMapper.createUser(username, password, email, phone, role, connectionPool);
+         });
+     }
+ 
+ 
+     @Test
+     void testLogin(){
+-        String username = "usertest"; // ensure uniqueness
+-        String password = "test";
+-        String role = "customer";
++        String username = "john_doe"; // ensure uniqueness
++        String password = "secret123";
+ 
+         assertDoesNotThrow(() -> {
+             UserMapper.login(username, password, connectionPool);
+@@ -88,15 +92,18 @@
+     void testPasswordMatch() {
+         try {
+             assertThrows(IllegalArgumentException.class, () -> {
+-                UserController.createUser("testuser", "pass1", "pass2", connectionPool); // pass1 != pass2
++                // Mismatched passwords
++                UserController.createUser("testuser", "test@example.com", 12345678, "pass1", "pass2", "Customer", connectionPool);
+             });
+-            System.out.println("Test successful: There was a mismatch in the passwords.");
++            System.out.println("Test successful: Exception thrown for mismatched passwords.");
+         } catch (AssertionError e) {
+             System.err.println("Test failed: Exception not thrown.");
+             throw e;
+         }
+     }
+ 
++
++
+     @AfterEach
+     void cleanup() throws SQLException {
+         try (Connection conn = connectionPool.getConnection();
+Index: src/main/java/app/controllers/UserController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package app.controllers;\r\n\r\n\r\nimport app.entities.User;\r\nimport app.exceptions.DatabaseException;\r\nimport app.persistence.ConnectionPool;\r\nimport app.persistence.UserMapper;\r\nimport io.javalin.Javalin;\r\nimport io.javalin.http.Context;\r\n\r\nimport java.util.List;\r\n\r\npublic class UserController {\r\n\r\n    public static void addRoutes(Javalin app, ConnectionPool connectionPool) {\r\n\r\n        app.post(\"login\", ctx -> login(ctx, connectionPool));\r\n        app.get(\"logout\", ctx -> logout(ctx));\r\n        app.get(\"createuser\", ctx -> ctx.render(\"createuser.html\"));\r\n        app.post(\"createuser\", ctx -> createUser(ctx, connectionPool));\r\n\r\n    }\r\n\r\n    public static void createUser(Context ctx, ConnectionPool connectionPool) {\r\n\r\n        String username = ctx.formParam(\"username\");\r\n        String password1 = ctx.formParam(\"password1\");\r\n        String password2 = ctx.formParam(\"password2\");\r\n\r\n        if (password1.equals(password2)) {\r\n            try {\r\n                createUser(username, password1, password2, connectionPool);\r\n                ctx.attribute(\"message\", \"Du er hermed blevet oprettet med brugernavnet\" + username + \". Du kan nu logge på.\");\r\n                ctx.render(\"index.html\");\r\n            }catch (IllegalArgumentException e) {\r\n                ctx.attribute(\"message\", \"Dine to passwords stemmer ikke overens.\");\r\n                ctx.render(\"createuser.html\");\r\n            }\r\n\r\n        } else {\r\n            ctx.attribute(\"message\", \"Dine to passwords stemmer ikke overens, sørg for at du har stavet korrekt og prøv igen, eller log ind\");\r\n            ctx.render(\"createuser.html\");\r\n        }\r\n    }\r\n\r\n    public static void createUser(String username, String password1, String password2, ConnectionPool connectionPool) {\r\n        if (!password1.equals(password2)) {\r\n            throw new IllegalArgumentException(\"Passwords do not match\");\r\n        }\r\n\r\n        try {\r\n            UserMapper.createUser(username, password1, \"user\", connectionPool);\r\n            // You can add logging here if needed\r\n        } catch (DatabaseException e) {\r\n            throw new RuntimeException(\"Failed to create user: \" + e.getMessage());\r\n        }\r\n    }\r\n\r\n\r\n    private static void logout(Context ctx) {\r\n        ctx.req().getSession().invalidate();\r\n        ctx.redirect(\"/\");\r\n\r\n    }\r\n\r\n    public static void login(Context ctx, ConnectionPool connectionPool) {\r\n        String username = ctx.formParam(\"username\");\r\n        String password = ctx.formParam(\"password\");\r\n\r\n        //Checks if the user already exists in the database, with the given username and password.\r\n\r\n        try {\r\n            User user = UserMapper.login(username, password, connectionPool);\r\n            ctx.sessionAttribute(\"currentUser\", user);\r\n            // If the user exists, then it will continue.\r\n            //LOOK IN THE FOURTHINGSPLUS PROJECT, IT NEEDS TO BE ROUTED DIFFERENTLY, ACCORDING TO WHAT\r\n            //WE CHOOSE TO NAME THE PATH AND METHODS\r\n        } catch (DatabaseException e) {\r\n            throw new RuntimeException(e);\r\n        }\r\n    }\r\n\r\n}\r\n\r\n\r\n\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/app/controllers/UserController.java b/src/main/java/app/controllers/UserController.java
+--- a/src/main/java/app/controllers/UserController.java	(revision ebb310132afb09db616c3ecd07da21c95f1b6753)
++++ b/src/main/java/app/controllers/UserController.java	(date 1747209884862)
+@@ -1,6 +1,5 @@
+ package app.controllers;
+ 
+-
+ import app.entities.User;
+ import app.exceptions.DatabaseException;
+ import app.persistence.ConnectionPool;
+@@ -8,80 +7,68 @@
+ import io.javalin.Javalin;
+ import io.javalin.http.Context;
+ 
+-import java.util.List;
+-
+ public class UserController {
+ 
+     public static void addRoutes(Javalin app, ConnectionPool connectionPool) {
+-
+         app.post("login", ctx -> login(ctx, connectionPool));
+         app.get("logout", ctx -> logout(ctx));
+         app.get("createuser", ctx -> ctx.render("createuser.html"));
+         app.post("createuser", ctx -> createUser(ctx, connectionPool));
+-
+     }
+ 
+     public static void createUser(Context ctx, ConnectionPool connectionPool) {
+-
+         String username = ctx.formParam("username");
++        String email = ctx.formParam("email");
++        String phoneStr = ctx.formParam("phone");
+         String password1 = ctx.formParam("password1");
+         String password2 = ctx.formParam("password2");
++        String role = ctx.formParam("role");
+ 
+-        if (password1.equals(password2)) {
+-            try {
+-                createUser(username, password1, password2, connectionPool);
+-                ctx.attribute("message", "Du er hermed blevet oprettet med brugernavnet" + username + ". Du kan nu logge på.");
+-                ctx.render("index.html");
+-            }catch (IllegalArgumentException e) {
+-                ctx.attribute("message", "Dine to passwords stemmer ikke overens.");
+-                ctx.render("createuser.html");
+-            }
+-
+-        } else {
+-            ctx.attribute("message", "Dine to passwords stemmer ikke overens, sørg for at du har stavet korrekt og prøv igen, eller log ind");
++        try {
++            int phone = Integer.parseInt(phoneStr); // convert phone to int
++
++            createUser(username, email, phone, password1, password2, role, connectionPool); // call real creator
++            ctx.attribute("message", "Bruger oprettet med brugernavn: " + username);
++            ctx.render("index.html");
++        } catch (IllegalArgumentException e) {
++            ctx.attribute("message", "Passwords matcher ikke.");
++            ctx.render("createuser.html");
++        } catch (RuntimeException e) {
++            ctx.attribute("message", e.getMessage());
+             ctx.render("createuser.html");
+         }
+     }
+ 
+-    public static void createUser(String username, String password1, String password2, ConnectionPool connectionPool) {
++    public static void createUser(String username, String email, int phone, String password1, String password2, String role, ConnectionPool connectionPool) {
+         if (!password1.equals(password2)) {
+             throw new IllegalArgumentException("Passwords do not match");
+         }
+ 
+         try {
+-            UserMapper.createUser(username, password1, "user", connectionPool);
+-            // You can add logging here if needed
++            UserMapper.createUser(username, password1, email, phone, role, connectionPool);
+         } catch (DatabaseException e) {
+             throw new RuntimeException("Failed to create user: " + e.getMessage());
+         }
+     }
+ 
+ 
++
+     private static void logout(Context ctx) {
+         ctx.req().getSession().invalidate();
+         ctx.redirect("/");
+-
+     }
+ 
+     public static void login(Context ctx, ConnectionPool connectionPool) {
+         String username = ctx.formParam("username");
+         String password = ctx.formParam("password");
+ 
+-        //Checks if the user already exists in the database, with the given username and password.
+-
+         try {
+             User user = UserMapper.login(username, password, connectionPool);
+             ctx.sessionAttribute("currentUser", user);
+-            // If the user exists, then it will continue.
+-            //LOOK IN THE FOURTHINGSPLUS PROJECT, IT NEEDS TO BE ROUTED DIFFERENTLY, ACCORDING TO WHAT
+-            //WE CHOOSE TO NAME THE PATH AND METHODS
++            ctx.redirect("/"); // or render dashboard page
+         } catch (DatabaseException e) {
+-            throw new RuntimeException(e);
++            ctx.attribute("message", "Login fejlede: " + e.getMessage());
++            ctx.render("index.html");
+         }
+     }
+-
+ }
+-
+-
+-
+-
+Index: src/main/java/app/Main.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package app;\r\n\r\nimport app.config.SessionConfig;\r\nimport app.config.ThymeleafConfig;\r\nimport app.controllers.UserController;\r\nimport app.persistence.ConnectionPool;\r\nimport io.javalin.Javalin;\r\nimport io.javalin.rendering.template.JavalinThymeleaf;\r\n\r\npublic class Main {\r\n\r\n    // private static final Logger LOGGER = Logger.getLogger(Main.class.getName()); // POTENTIELT FORKERT\r\n\r\n    private static final String USER = \"postgres\";\r\n    private static final String PASSWORD = \"postgres\";\r\n    private static final String URL = \"jdbc:postgresql://localhost:5432/%s?currentSchema=public\";\r\n    private static final String DB = \"carport\";\r\n\r\n\r\n    private static final ConnectionPool connectionPool = ConnectionPool.getInstance(USER, PASSWORD, URL, DB);\r\n\r\n    public static void main(String[] args)\r\n    {\r\n        // Initializing Javalin and Jetty webserver\r\n\r\n        Javalin app = Javalin.create(config -> {\r\n            config.staticFiles.add(\"/public\");\r\n            config.jetty.modifyServletContextHandler(handler ->  handler.setSessionHandler(SessionConfig.sessionConfig()));\r\n            config.fileRenderer(new JavalinThymeleaf(ThymeleafConfig.templateEngine()));}).start(7070);\r\n\r\n        // Routing\r\n        app.get(\"/\", ctx ->  ctx.render(\"createuser.html\")); //todo ændre hovedsite\r\n        UserController.addRoutes(app,connectionPool);\r\n//        OrderController.addRoutes(app, connectionPool);\r\n    }\r\n\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/app/Main.java b/src/main/java/app/Main.java
+--- a/src/main/java/app/Main.java	(revision ebb310132afb09db616c3ecd07da21c95f1b6753)
++++ b/src/main/java/app/Main.java	(date 1747213382506)
+@@ -29,7 +29,7 @@
+             config.fileRenderer(new JavalinThymeleaf(ThymeleafConfig.templateEngine()));}).start(7070);
+ 
+         // Routing
+-        app.get("/", ctx ->  ctx.render("createuser.html")); //todo ændre hovedsite
++        app.get("/", ctx ->  ctx.render("login.html")); //todo ændre hovedsite
+         UserController.addRoutes(app,connectionPool);
+ //        OrderController.addRoutes(app, connectionPool);
+     }
+Index: src/main/java/app/persistence/UserMapper.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package app.persistence;\r\n\r\n\r\nimport app.entities.User;\r\nimport app.exceptions.DatabaseException;\r\n\r\nimport java.sql.Connection;\r\nimport java.sql.PreparedStatement;\r\nimport java.sql.ResultSet;\r\nimport java.sql.SQLException;\r\n\r\npublic class UserMapper\r\n{\r\n\r\n    public static User login(String userName, String password, ConnectionPool connectionPool) throws DatabaseException {\r\n        String sql = \"SELECT * FROM users WHERE user_name=? AND password=?\";\r\n\r\n        try (\r\n                Connection connection = connectionPool.getConnection();\r\n                PreparedStatement ps = connection.prepareStatement(sql)\r\n        ) {\r\n            ps.setString(1, userName);\r\n            ps.setString(2, password); // Now we check password in SQL\r\n\r\n            ResultSet rs = ps.executeQuery();\r\n            if (rs.next()) {\r\n                int id = rs.getInt(\"user_id\");\r\n                String fetchedUsername = rs.getString(\"user_name\");\r\n                String fetchedPassword = rs.getString(\"password\");  // Get the actual password from DB\r\n                String role = rs.getString(\"role\");\r\n\r\n                // \uD83D\uDD39 Print the fetched values to debug\r\n                System.out.println(\"\uD83D\uDD39 Fetched from DB: ID=\" + id + \", Username=\" + fetchedUsername + \", Role=\" + role);\r\n\r\n                return new User(id, fetchedUsername, fetchedPassword, role);\r\n            } else {\r\n                throw new DatabaseException(\"Fejl i login. Forkert brugernavn eller adgangskode.\");\r\n            }\r\n        } catch (SQLException e) {\r\n            throw new DatabaseException(\"DB fejl\", e.getMessage());\r\n        }\r\n    }\r\n\r\n\r\n\r\n    public static void createUser(String userName, String password, String role, ConnectionPool connectionPool) throws DatabaseException {\r\n        // This version uses ON CONFLICT DO NOTHING to silently skip duplicate inserts\r\n        String sql = \"INSERT INTO users (user_name, password, role) VALUES (?,?,?) ON CONFLICT (user_name) DO NOTHING\";\r\n\r\n        try (\r\n                Connection connection = connectionPool.getConnection();\r\n                PreparedStatement ps = connection.prepareStatement(sql)\r\n        ) {\r\n            ps.setString(1, userName);\r\n            ps.setString(2, password);\r\n            ps.setString(3, role);\r\n\r\n            ps.executeUpdate(); // No need to check rows affected, since duplicates are allowed\r\n        } catch (SQLException e) {\r\n            throw new DatabaseException(\"Der er sket en fejl. Prøv igen\", e.getMessage());\r\n        }\r\n    }\r\n\r\n}\r\n\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/app/persistence/UserMapper.java b/src/main/java/app/persistence/UserMapper.java
+--- a/src/main/java/app/persistence/UserMapper.java	(revision ebb310132afb09db616c3ecd07da21c95f1b6753)
++++ b/src/main/java/app/persistence/UserMapper.java	(date 1747209801541)
+@@ -13,26 +13,28 @@
+ {
+ 
+     public static User login(String userName, String password, ConnectionPool connectionPool) throws DatabaseException {
+-        String sql = "SELECT * FROM users WHERE user_name=? AND password=?";
++        String sql = "SELECT * FROM users WHERE user_name=? AND user_password=?";
+ 
+         try (
+                 Connection connection = connectionPool.getConnection();
+                 PreparedStatement ps = connection.prepareStatement(sql)
+         ) {
+             ps.setString(1, userName);
+-            ps.setString(2, password); // Now we check password in SQL
++            ps.setString(2, password);
+ 
+             ResultSet rs = ps.executeQuery();
+             if (rs.next()) {
+                 int id = rs.getInt("user_id");
+                 String fetchedUsername = rs.getString("user_name");
+-                String fetchedPassword = rs.getString("password");  // Get the actual password from DB
+-                String role = rs.getString("role");
++                String email = rs.getString("user_email");
++                int phone = rs.getInt("user_phone");
++                String fetchedPassword = rs.getString("user_password");
++                String role = rs.getString("user_role");
+ 
+-                // 🔹 Print the fetched values to debug
++                // Debug print
+                 System.out.println("🔹 Fetched from DB: ID=" + id + ", Username=" + fetchedUsername + ", Role=" + role);
+ 
+-                return new User(id, fetchedUsername, fetchedPassword, role);
++                return new User(id, fetchedUsername, email, phone, fetchedPassword, role);
+             } else {
+                 throw new DatabaseException("Fejl i login. Forkert brugernavn eller adgangskode.");
+             }
+@@ -43,23 +45,26 @@
+ 
+ 
+ 
+-    public static void createUser(String userName, String password, String role, ConnectionPool connectionPool) throws DatabaseException {
+-        // This version uses ON CONFLICT DO NOTHING to silently skip duplicate inserts
+-        String sql = "INSERT INTO users (user_name, password, role) VALUES (?,?,?) ON CONFLICT (user_name) DO NOTHING";
++
++    public static void createUser(String username, String password, String email, int phone, String role, ConnectionPool connectionPool) throws DatabaseException {
++        String sql = "INSERT INTO users (user_name, user_password, user_email, user_phone, user_role) VALUES (?, ?, ?, ?, ?)";
+ 
+         try (
+-                Connection connection = connectionPool.getConnection();
+-                PreparedStatement ps = connection.prepareStatement(sql)
++                Connection conn = connectionPool.getConnection();
++                PreparedStatement ps = conn.prepareStatement(sql)
+         ) {
+-            ps.setString(1, userName);
++            ps.setString(1, username);
+             ps.setString(2, password);
+-            ps.setString(3, role);
+-
+-            ps.executeUpdate(); // No need to check rows affected, since duplicates are allowed
++            ps.setString(3, email);
++            ps.setInt(4, phone);
++            ps.setString(5, role);
++            ps.executeUpdate();
+         } catch (SQLException e) {
+-            throw new DatabaseException("Der er sket en fejl. Prøv igen", e.getMessage());
++            throw new DatabaseException("Fejl under oprettelse af bruger", e.getMessage());
+         }
+     }
++
++
+ 
+ }
+ 
+Index: src/test/java/OrderTest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import app.controllers.OrderController;\r\nimport app.entities.Order;\r\nimport app.entities.User;\r\nimport app.persistence.ConnectionPool;\r\nimport app.persistence.OrderMapper;\r\nimport org.junit.jupiter.api.BeforeAll;\r\nimport org.junit.jupiter.api.BeforeEach;\r\nimport org.junit.jupiter.api.Test;\r\n\r\nimport static org.junit.jupiter.api.Assertions.*;\r\n\r\npublic class OrderTest {\r\n\r\n    private static ConnectionPool connectionPool;\r\n\r\n    @BeforeAll\r\n    static void setUp() {\r\n        // Use test database credentials here\r\n        String user = \"postgres\";\r\n        String password = \"postgres\";\r\n        String url = \"jdbc:postgresql://localhost:5432/%s?currentSchema=public\"; // or whatever schema you use\r\n        String db = \"carport\";\r\n\r\n        connectionPool = ConnectionPool.getInstance(user, password, url, db);\r\n    }\r\n\r\n    @BeforeEach\r\n    void setupTestData(){} //not setup needed\r\n\r\n    @Test\r\n    void testCreateOrder() {\r\n        User user = new User(1, \"123\", \"123\", \"customer\");\r\n\r\n        assertDoesNotThrow(() -> {\r\n            Order order = OrderController.createOrder(user, connectionPool);\r\n            assertNotNull(order);\r\n            assertTrue(order.getOrderId() > 0);\r\n        });\r\n    }\r\n\r\n    @Test\r\n    void testDeleteOrder() {\r\n        User user = new User(2, \"123\", \"123\", \"customer\");\r\n\r\n        assertDoesNotThrow(() -> {\r\n            Order order = OrderController.createOrder(user, connectionPool);\r\n            int orderId = order.getOrderId();\r\n\r\n            OrderMapper.deleteOrder(orderId, connectionPool);\r\n\r\n            Order deleteOrder = OrderMapper.getOrderById(orderId, connectionPool);\r\n            assertNull(deleteOrder, \"Order should be null after deletion\");\r\n        });\r\n    }\r\n\r\n\r\n}\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/test/java/OrderTest.java b/src/test/java/OrderTest.java
+--- a/src/test/java/OrderTest.java	(revision ebb310132afb09db616c3ecd07da21c95f1b6753)
++++ b/src/test/java/OrderTest.java	(date 1747084154835)
+@@ -1,12 +1,18 @@
+ import app.controllers.OrderController;
+ import app.entities.Order;
+ import app.entities.User;
++import app.exceptions.DatabaseException;
+ import app.persistence.ConnectionPool;
+ import app.persistence.OrderMapper;
+ import org.junit.jupiter.api.BeforeAll;
+ import org.junit.jupiter.api.BeforeEach;
+ import org.junit.jupiter.api.Test;
+ 
++import java.sql.Connection;
++import java.sql.PreparedStatement;
++import java.sql.ResultSet;
++import java.sql.SQLException;
++
+ import static org.junit.jupiter.api.Assertions.*;
+ 
+ public class OrderTest {
+@@ -25,29 +31,45 @@
+     }
+ 
+     @BeforeEach
+-    void setupTestData(){} //not setup needed
++    void setupTestData() {
++        // Set up data if needed (e.g., ensure a clean state)
++    }
+ 
+     @Test
+     void testCreateOrder() {
+-        User user = new User(1, "123", "123", "customer");
++        // Create user with required attributes
++        User user = new User(1, "123", "123", 123, "12345678", "test@example.com");
+ 
+         assertDoesNotThrow(() -> {
++            // Create the order using the OrderController
++            // Assuming workerId = 1 and carportId = 1 for the test
++            int workerId = 1;
++            int carportId = 1;
++
++            // Make sure the createOrder method now matches the updated signature
+             Order order = OrderController.createOrder(user, connectionPool);
++
++            // Assert that the order is created successfully
+             assertNotNull(order);
+-            assertTrue(order.getOrderId() > 0);
++            assertTrue(order.getOrderId() > 0, "Order ID should be greater than 0 after creation");
+         });
+     }
++
+ 
+     @Test
+     void testDeleteOrder() {
+-        User user = new User(2, "123", "123", "customer");
++        // Create a user for the test case
++        User user = new User(2, "456", "456", 12345678, "87654321", "customer");
+ 
+         assertDoesNotThrow(() -> {
++            // Create the order using the OrderController
+             Order order = OrderController.createOrder(user, connectionPool);
+             int orderId = order.getOrderId();
+ 
++            // Delete the created order
+             OrderMapper.deleteOrder(orderId, connectionPool);
+ 
++            // Try to fetch the order by ID, it should not exist
+             Order deleteOrder = OrderMapper.getOrderById(orderId, connectionPool);
+             assertNull(deleteOrder, "Order should be null after deletion");
+         });
+@@ -55,4 +77,3 @@
+ 
+ 
+ }
+-
+Index: src/main/java/app/entities/Order.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package app.entities;\r\n\r\nimport java.sql.Date;\r\n\r\npublic class Order {\r\n    int orderID;\r\n    Date orderDate;\r\n    double totalPrice;\r\n    String orderStatus;\r\n\r\n    public Order (int orderID, Date orderDate, double totalPrice, String orderStatus){\r\n        this.orderID = orderID;\r\n        this.orderDate = orderDate;\r\n        this.totalPrice = totalPrice;\r\n        this.orderStatus = orderStatus;\r\n    }\r\n\r\n    public int getOrderId() {\r\n        return orderID;\r\n    }\r\n\r\n    public void setOrderId(int orderID) {\r\n        this.orderID = orderID;\r\n    }\r\n\r\n    public Date getOrderDate() {\r\n        return orderDate;\r\n    }\r\n\r\n    public void setOrderDate(Date orderDate) {\r\n        this.orderDate = orderDate;\r\n    }\r\n\r\n    public double getTotalPrice() {\r\n        return totalPrice;\r\n    }\r\n\r\n    public void setTotalPrice(double totalPrice) {\r\n        this.totalPrice = totalPrice;\r\n    }\r\n\r\n    public String getOrderStatus() {\r\n        return orderStatus;\r\n    }\r\n\r\n    public void setOrderStatus(String orderStatus) {\r\n        this.orderStatus = orderStatus;\r\n    }\r\n\r\n    @Override\r\n    public String toString() {\r\n        return \"Order{\" +\r\n                \"orderID=\" + orderID +\r\n                \", orderDate=\" + orderDate +\r\n                \", totalPrice=\" + totalPrice +\r\n                \", orderStatus='\" + orderStatus + '\\'' +\r\n                '}';\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/app/entities/Order.java b/src/main/java/app/entities/Order.java
+--- a/src/main/java/app/entities/Order.java	(revision ebb310132afb09db616c3ecd07da21c95f1b6753)
++++ b/src/main/java/app/entities/Order.java	(date 1747082828766)
+@@ -7,14 +7,22 @@
+     Date orderDate;
+     double totalPrice;
+     String orderStatus;
++    int customerId;  // New field for customer ID
++    int workerId;    // New field for worker ID
++    int carportId;   // New field for carport ID
+ 
+-    public Order (int orderID, Date orderDate, double totalPrice, String orderStatus){
++    // Updated constructor to handle the new fields
++    public Order(int orderID, Date orderDate, double totalPrice, String orderStatus, int customerId, int workerId, int carportId) {
+         this.orderID = orderID;
+         this.orderDate = orderDate;
+         this.totalPrice = totalPrice;
+         this.orderStatus = orderStatus;
++        this.customerId = customerId;
++        this.workerId = workerId;
++        this.carportId = carportId;
+     }
+ 
++    // Getters and setters for all fields
+     public int getOrderId() {
+         return orderID;
+     }
+@@ -47,6 +55,30 @@
+         this.orderStatus = orderStatus;
+     }
+ 
++    public int getCustomerId() {
++        return customerId;
++    }
++
++    public void setCustomerId(int customerId) {
++        this.customerId = customerId;
++    }
++
++    public int getWorkerId() {
++        return workerId;
++    }
++
++    public void setWorkerId(int workerId) {
++        this.workerId = workerId;
++    }
++
++    public int getCarportId() {
++        return carportId;
++    }
++
++    public void setCarportId(int carportId) {
++        this.carportId = carportId;
++    }
++
+     @Override
+     public String toString() {
+         return "Order{" +
+@@ -54,6 +86,9 @@
+                 ", orderDate=" + orderDate +
+                 ", totalPrice=" + totalPrice +
+                 ", orderStatus='" + orderStatus + '\'' +
++                ", customerId=" + customerId +
++                ", workerId=" + workerId +
++                ", carportId=" + carportId +
+                 '}';
+     }
+ }
+Index: src/main/java/app/persistence/OrderMapper.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>\r\npackage app.persistence;\r\n\r\nimport app.entities.Order;\r\nimport app.entities.User;\r\nimport app.exceptions.DatabaseException;\r\n\r\nimport java.sql.*;\r\nimport java.util.ArrayList;\r\nimport java.util.List;\r\n\r\npublic class OrderMapper {\r\n\r\n\r\n    public static Order createOrder(User user, ConnectionPool connectionPool) throws DatabaseException, SQLException {\r\n        if (user == null) {\r\n            throw new IllegalArgumentException(\"User cannot be null\");\r\n        }\r\n\r\n        String sql = \"INSERT INTO orders (order_date, total_price, customer_id, order_status) VALUES (?, ?, ?, ?)\";\r\n\r\n        try (\r\n                Connection connection = connectionPool.getConnection();\r\n                PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)\r\n        ) {\r\n            Date currentDate = new Date(System.currentTimeMillis());\r\n\r\n            ps.setDate(1, currentDate); // order_date\r\n            ps.setDouble(2, 0); // default price\r\n            ps.setInt(3, user.getUserId()); // customer_id (ensure this user exists in the users table)\r\n            ps.setString(4, \"Pending\"); // order_status\r\n\r\n            int rowsAffected = ps.executeUpdate();\r\n\r\n            if (rowsAffected == 1) {\r\n                ResultSet keys = ps.getGeneratedKeys();\r\n                if (keys.next()) {\r\n                    int orderId = keys.getInt(1);\r\n                    return new Order(orderId, currentDate, 0, \"Pending\");\r\n                } else {\r\n                    throw new DatabaseException(\"No ID returned when creating order\");\r\n                }\r\n            } else {\r\n                throw new DatabaseException(\"Order creation failed, no rows affected\");\r\n            }\r\n        }\r\n    }\r\n\r\n\r\n\r\n    public static List<Order> getAllOrdersPerUser(int userId, ConnectionPool connectionPool) throws DatabaseException {\r\n        List<Order> orderList = new ArrayList<>();\r\n        String sql = \"SELECT * FROM orders WHERE user_id = ? ORDER BY orderdate DESC\";\r\n\r\n        try (\r\n                Connection connection = connectionPool.getConnection();\r\n                PreparedStatement ps = connection.prepareStatement(sql)\r\n        ) {\r\n            ps.setInt(1, userId);\r\n            ResultSet rs = ps.executeQuery();\r\n\r\n            while (rs.next()) {\r\n                int id = rs.getInt(\"order_id\");\r\n                Date date = rs.getDate(\"orderdate\");\r\n                double price = rs.getDouble(\"totalprice\");\r\n                String status = rs.getString(\"orderstatus\");\r\n                orderList.add(new Order(id, date, price, status));\r\n            }\r\n        } catch (SQLException e) {\r\n            throw new DatabaseException(\"Fejl ved hentning af ordrer for bruger \" + userId, e.getMessage());\r\n        }\r\n\r\n        return orderList;\r\n    }\r\n\r\n    public static List<Order> getAllOrders(ConnectionPool connectionPool) throws DatabaseException {\r\n        List<Order> orderList = new ArrayList<>();\r\n        String sql = \"SELECT * FROM orders ORDER BY orderdate DESC\";\r\n\r\n        try (\r\n                Connection connection = connectionPool.getConnection();\r\n                PreparedStatement ps = connection.prepareStatement(sql)\r\n        ) {\r\n            ResultSet rs = ps.executeQuery();\r\n\r\n            while (rs.next()) {\r\n                int id = rs.getInt(\"order_id\"); //todo ændre navn\r\n                Date date = rs.getDate(\"orderdate\");\r\n                double price = rs.getDouble(\"totalprice\");\r\n                String status = rs.getString(\"orderstatus\");\r\n                orderList.add(new Order(id, date, price, status));\r\n            }\r\n        } catch (SQLException e) {\r\n            throw new DatabaseException(\"Fejl ved hentning af alle ordrer\", e.getMessage());\r\n        }\r\n\r\n        return orderList;\r\n    }\r\n\r\n\r\n\r\n    public static void deleteOrder(int orderId, ConnectionPool connectionPool) throws DatabaseException\r\n    {\r\n        String sql = \"delete from orders where order_id = ?\";\r\n\r\n        try (\r\n                Connection connection = connectionPool.getConnection();\r\n                PreparedStatement ps = connection.prepareStatement(sql)\r\n        )\r\n        {\r\n            ps.setInt(1, orderId);\r\n            int rowsAffected = ps.executeUpdate();\r\n            if (rowsAffected != 1)\r\n            {\r\n                throw new DatabaseException(\"Fejl i opdatering af en task\");\r\n            }\r\n        }\r\n        catch (SQLException e)\r\n        {\r\n            throw new DatabaseException(\"Fejl ved sletning af en task\", e.getMessage());\r\n        }\r\n    }\r\n\r\n    public static Order getOrderById(int orderId, ConnectionPool connectionPool) throws DatabaseException {\r\n        Order order = null;\r\n\r\n        String sql = \"SELECT * FROM orders WHERE order_id = ?\";\r\n\r\n        try (\r\n                Connection connection = connectionPool.getConnection();\r\n                PreparedStatement ps = connection.prepareStatement(sql)\r\n        ) {\r\n            ps.setInt(1, orderId);\r\n            ResultSet rs = ps.executeQuery();\r\n\r\n            if (rs.next()) {\r\n                int id = rs.getInt(\"order_id\");\r\n                Date orderDate = rs.getDate(\"orderdate\");\r\n                double totalPrice = rs.getDouble(\"totalprice\");\r\n                String orderStatus = rs.getString(\"orderstatus\");\r\n\r\n                order = new Order(id, orderDate, totalPrice, orderStatus);\r\n            }\r\n        } catch (SQLException e) {\r\n            throw new DatabaseException(\"Fejl ved hentning af ordre med id = \" + orderId, e.getMessage());\r\n        }\r\n\r\n        return order;\r\n    }\r\n\r\n    public static void updateOrder(Order order, ConnectionPool connectionPool) throws DatabaseException {\r\n        String sql = \"UPDATE orders SET orderstatus = ?, totalprice = ? WHERE order_id = ?\";\r\n\r\n        try (\r\n                Connection connection = connectionPool.getConnection();\r\n                PreparedStatement ps = connection.prepareStatement(sql)\r\n        ) {\r\n            ps.setString(1, order.getOrderStatus());\r\n            ps.setDouble(2, order.getTotalPrice());\r\n            ps.setInt(3, order.getOrderId());\r\n\r\n            int rowsAffected = ps.executeUpdate();\r\n            if (rowsAffected != 1) {\r\n                throw new DatabaseException(\"Fejl under opdatering af ordre med id = \" + order.getOrderId());\r\n            }\r\n        } catch (SQLException e) {\r\n            throw new DatabaseException(\"Fejl i DB connection\", e.getMessage());\r\n        }\r\n    }\r\n}\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/app/persistence/OrderMapper.java b/src/main/java/app/persistence/OrderMapper.java
+--- a/src/main/java/app/persistence/OrderMapper.java	(revision ebb310132afb09db616c3ecd07da21c95f1b6753)
++++ b/src/main/java/app/persistence/OrderMapper.java	(date 1747301801432)
+@@ -1,4 +1,3 @@
+-
+ package app.persistence;
+ 
+ import app.entities.Order;
+@@ -11,13 +10,13 @@
+ 
+ public class OrderMapper {
+ 
+-
+-    public static Order createOrder(User user, ConnectionPool connectionPool) throws DatabaseException, SQLException {
++    // Create Order
++    public static Order createOrder(User user, int workerId, int carportId, ConnectionPool connectionPool) throws DatabaseException, SQLException {
+         if (user == null) {
+             throw new IllegalArgumentException("User cannot be null");
+         }
+ 
+-        String sql = "INSERT INTO orders (order_date, total_price, customer_id, order_status) VALUES (?, ?, ?, ?)";
++        String sql = "INSERT INTO orders (order_date, total_price, customer_id, order_status, customerId, worker_id, carport_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
+ 
+         try (
+                 Connection connection = connectionPool.getConnection();
+@@ -27,8 +26,11 @@
+ 
+             ps.setDate(1, currentDate); // order_date
+             ps.setDouble(2, 0); // default price
+-            ps.setInt(3, user.getUserId()); // customer_id (ensure this user exists in the users table)
+-            ps.setString(4, "Pending"); // order_status
++            ps.setInt(3, customerId);
++            ps.setInt(4, user.getUserId()); // customer_id
++            ps.setString(5, "Pending"); // order_status
++            ps.setInt(6, workerId); // worker_id
++            ps.setInt(7, carportId); // carport_id
+ 
+             int rowsAffected = ps.executeUpdate();
+ 
+@@ -36,7 +38,7 @@
+                 ResultSet keys = ps.getGeneratedKeys();
+                 if (keys.next()) {
+                     int orderId = keys.getInt(1);
+-                    return new Order(orderId, currentDate, 0, "Pending");
++                    return new Order(orderId, currentDate, 0, "Pending", user.getUserId(), workerId, carportId);
+                 } else {
+                     throw new DatabaseException("No ID returned when creating order");
+                 }
+@@ -46,11 +48,10 @@
+         }
+     }
+ 
+-
+-
++    // Get all orders for a user
+     public static List<Order> getAllOrdersPerUser(int userId, ConnectionPool connectionPool) throws DatabaseException {
+         List<Order> orderList = new ArrayList<>();
+-        String sql = "SELECT * FROM orders WHERE user_id = ? ORDER BY orderdate DESC";
++        String sql = "SELECT * FROM orders WHERE customer_id = ? ORDER BY order_date DESC";
+ 
+         try (
+                 Connection connection = connectionPool.getConnection();
+@@ -61,21 +62,25 @@
+ 
+             while (rs.next()) {
+                 int id = rs.getInt("order_id");
+-                Date date = rs.getDate("orderdate");
+-                double price = rs.getDouble("totalprice");
+-                String status = rs.getString("orderstatus");
+-                orderList.add(new Order(id, date, price, status));
++                Date date = rs.getDate("order_date");
++                double price = rs.getDouble("total_price");
++                String status = rs.getString("order_status");
++                int workerId = rs.getInt("worker_id");
++                int carportId = rs.getInt("carport_id");
++
++                orderList.add(new Order(id, date, price, status, userId, workerId, carportId));
+             }
+         } catch (SQLException e) {
+-            throw new DatabaseException("Fejl ved hentning af ordrer for bruger " + userId, e.getMessage());
++            throw new DatabaseException("Error retrieving orders for user " + userId, e.getMessage());
+         }
+ 
+         return orderList;
+     }
+ 
++    // Get all orders
+     public static List<Order> getAllOrders(ConnectionPool connectionPool) throws DatabaseException {
+         List<Order> orderList = new ArrayList<>();
+-        String sql = "SELECT * FROM orders ORDER BY orderdate DESC";
++        String sql = "SELECT * FROM orders ORDER BY order_date DESC";
+ 
+         try (
+                 Connection connection = connectionPool.getConnection();
+@@ -84,43 +89,24 @@
+             ResultSet rs = ps.executeQuery();
+ 
+             while (rs.next()) {
+-                int id = rs.getInt("order_id"); //todo ændre navn
+-                Date date = rs.getDate("orderdate");
+-                double price = rs.getDouble("totalprice");
+-                String status = rs.getString("orderstatus");
+-                orderList.add(new Order(id, date, price, status));
++                int id = rs.getInt("order_id");
++                Date date = rs.getDate("order_date");
++                double price = rs.getDouble("total_price");
++                String status = rs.getString("order_status");
++                int customerId = rs.getInt("customer_id");
++                int workerId = rs.getInt("worker_id");
++                int carportId = rs.getInt("carport_id");
++
++                orderList.add(new Order(id, date, price, status, customerId, workerId, carportId));
+             }
+         } catch (SQLException e) {
+-            throw new DatabaseException("Fejl ved hentning af alle ordrer", e.getMessage());
++            throw new DatabaseException("Error retrieving all orders", e.getMessage());
+         }
+ 
+         return orderList;
+     }
+ 
+-
+-
+-    public static void deleteOrder(int orderId, ConnectionPool connectionPool) throws DatabaseException
+-    {
+-        String sql = "delete from orders where order_id = ?";
+-
+-        try (
+-                Connection connection = connectionPool.getConnection();
+-                PreparedStatement ps = connection.prepareStatement(sql)
+-        )
+-        {
+-            ps.setInt(1, orderId);
+-            int rowsAffected = ps.executeUpdate();
+-            if (rowsAffected != 1)
+-            {
+-                throw new DatabaseException("Fejl i opdatering af en task");
+-            }
+-        }
+-        catch (SQLException e)
+-        {
+-            throw new DatabaseException("Fejl ved sletning af en task", e.getMessage());
+-        }
+-    }
+-
++    // Get order by ID
+     public static Order getOrderById(int orderId, ConnectionPool connectionPool) throws DatabaseException {
+         Order order = null;
+ 
+@@ -135,21 +121,25 @@
+ 
+             if (rs.next()) {
+                 int id = rs.getInt("order_id");
+-                Date orderDate = rs.getDate("orderdate");
+-                double totalPrice = rs.getDouble("totalprice");
+-                String orderStatus = rs.getString("orderstatus");
++                Date orderDate = rs.getDate("order_date");
++                double totalPrice = rs.getDouble("total_price");
++                String orderStatus = rs.getString("order_status");
++                int customerId = rs.getInt("customer_id");
++                int workerId = rs.getInt("worker_id");
++                int carportId = rs.getInt("carport_id");
+ 
+-                order = new Order(id, orderDate, totalPrice, orderStatus);
++                order = new Order(id, orderDate, totalPrice, orderStatus, customerId, workerId, carportId);
+             }
+         } catch (SQLException e) {
+-            throw new DatabaseException("Fejl ved hentning af ordre med id = " + orderId, e.getMessage());
++            throw new DatabaseException("Error retrieving order with ID = " + orderId, e.getMessage());
+         }
+ 
+         return order;
+     }
+ 
++    // Update Order
+     public static void updateOrder(Order order, ConnectionPool connectionPool) throws DatabaseException {
+-        String sql = "UPDATE orders SET orderstatus = ?, totalprice = ? WHERE order_id = ?";
++        String sql = "UPDATE orders SET order_status = ?, total_price = ?, worker_id = ?, carport_id = ? WHERE order_id = ?";
+ 
+         try (
+                 Connection connection = connectionPool.getConnection();
+@@ -157,15 +147,34 @@
+         ) {
+             ps.setString(1, order.getOrderStatus());
+             ps.setDouble(2, order.getTotalPrice());
+-            ps.setInt(3, order.getOrderId());
++            ps.setInt(3, order.getWorkerId());
++            ps.setInt(4, order.getCarportId());
++            ps.setInt(5, order.getOrderId());
+ 
+             int rowsAffected = ps.executeUpdate();
+             if (rowsAffected != 1) {
+-                throw new DatabaseException("Fejl under opdatering af ordre med id = " + order.getOrderId());
++                throw new DatabaseException("Error updating order with ID = " + order.getOrderId());
+             }
+         } catch (SQLException e) {
+-            throw new DatabaseException("Fejl i DB connection", e.getMessage());
++            throw new DatabaseException("Error in DB connection", e.getMessage());
+         }
+     }
++
++    // Delete Order
++    public static void deleteOrder(int orderId, ConnectionPool connectionPool) throws DatabaseException {
++        String sql = "DELETE FROM orders WHERE order_id = ?";
++
++        try (
++                Connection connection = connectionPool.getConnection();
++                PreparedStatement ps = connection.prepareStatement(sql)
++        ) {
++            ps.setInt(1, orderId);
++            int rowsAffected = ps.executeUpdate();
++            if (rowsAffected != 1) {
++                throw new DatabaseException("Error deleting order");
++            }
++        } catch (SQLException e) {
++            throw new DatabaseException("Error deleting order", e.getMessage());
++        }
++    }
+ }
+-
+Index: src/main/java/app/controllers/OrderController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>\r\npackage app.controllers;\r\n\r\nimport app.entities.Order;\r\nimport app.entities.User;\r\nimport app.exceptions.DatabaseException;\r\nimport app.persistence.ConnectionPool;\r\nimport app.persistence.OrderMapper;\r\nimport io.javalin.Javalin;\r\nimport io.javalin.http.Context;\r\n\r\nimport java.sql.Date;\r\nimport java.sql.SQLException;\r\nimport java.util.List;\r\n\r\npublic class OrderController {\r\n\r\n    public static void addRoutes(Javalin app, ConnectionPool connectionPool) {\r\n        app.post(\"addorder\", ctx -> addOrder(ctx, connectionPool));\r\n        app.post(\"deleteorder\", ctx -> deleteOrder(ctx, connectionPool));\r\n        app.post(\"editorder\", ctx -> editOrder(ctx, connectionPool));\r\n        app.post(\"updateorder\", ctx -> updateOrder(ctx, connectionPool));\r\n        app.get(\"getorders\", ctx -> getOrdersForUser(ctx, connectionPool));\r\n        app.get(\"allorders\", ctx -> getAllOrders(ctx, connectionPool));\r\n    }\r\n\r\n    private static void addOrder(Context ctx, ConnectionPool connectionPool) throws DatabaseException, SQLException {\r\n        User user = ctx.sessionAttribute(\"currentUser\");\r\n        if (user == null) {\r\n            ctx.status(401).result(\"Du er ikke logget ind.\");\r\n            return;\r\n        }\r\n\r\n        Order order = OrderMapper.createOrder(user, connectionPool);\r\n        ctx.status(201).result(\"Ordre oprettet med ID: \" + order.getOrderId());\r\n    }\r\n\r\n    private static void deleteOrder(Context ctx, ConnectionPool connectionPool) {\r\n        try {\r\n            int orderId = Integer.parseInt(ctx.formParam(\"orderId\"));\r\n            OrderMapper.deleteOrder(orderId, connectionPool);\r\n            ctx.status(200).result(\"Ordre slettet med ID: \" + orderId);\r\n        } catch (NumberFormatException e) {\r\n            ctx.status(400).result(\"Ugyldigt order ID\");\r\n        } catch (DatabaseException e) {\r\n            ctx.status(500).result(\"Fejl ved sletning af ordre: \" + e.getMessage());\r\n        }\r\n    }\r\n\r\n    private static void editOrder(Context ctx, ConnectionPool connectionPool) {\r\n        try {\r\n            int orderId = Integer.parseInt(ctx.formParam(\"orderId\"));\r\n            Order order = OrderMapper.getOrderById(orderId, connectionPool);\r\n            if (order != null) {\r\n                ctx.attribute(\"order\", order);\r\n                ctx.render(\"editorder.html\"); // todo skal ændres til rigtigt html\r\n            } else {\r\n                ctx.status(404).result(\"Ordre ikke fundet\");\r\n            }\r\n        } catch (Exception e) {\r\n            ctx.status(500).result(\"Fejl ved hentning af ordre: \" + e.getMessage());\r\n        }\r\n    }\r\n\r\n    public static Order createOrder(User user, ConnectionPool connectionPool) throws DatabaseException, SQLException {\r\n        Order newOrder = OrderMapper.createOrder(user, connectionPool);\r\n\r\n        if (newOrder != null) {\r\n            System.out.println(\"Order created successfully with ID: \" + newOrder.getOrderId());\r\n        } else {\r\n            throw new RuntimeException(\"Order creation failed.\");\r\n        }\r\n\r\n        return newOrder;\r\n    }\r\n\r\n\r\n    private static void updateOrder(Context ctx, ConnectionPool connectionPool) {\r\n        try {\r\n            int orderId = Integer.parseInt(ctx.formParam(\"orderId\"));\r\n            Date orderDate = Date.valueOf(ctx.formParam(\"orderDate\"));\r\n            double totalPrice = Double.parseDouble(ctx.formParam(\"totalPrice\"));\r\n            String orderStatus = ctx.formParam(\"orderStatus\");\r\n\r\n            Order order = new Order(orderId, orderDate, totalPrice, orderStatus);\r\n            OrderMapper.updateOrder(order, connectionPool);\r\n\r\n            ctx.status(200).result(\"Ordre opdateret\");\r\n        } catch (Exception e) {\r\n            ctx.status(400).result(\"Fejl ved opdatering af ordre: \" + e.getMessage());\r\n        }\r\n    }\r\n\r\n\r\n    private static void getOrdersForUser(Context ctx, ConnectionPool connectionPool) {\r\n        User user = ctx.sessionAttribute(\"currentUser\");\r\n        if (user == null) {\r\n            ctx.status(401).result(\"Du er ikke logget ind.\");\r\n            return;\r\n        }\r\n\r\n        try {\r\n            List<Order> orders = OrderMapper.getAllOrdersPerUser(user.getUserId(), connectionPool);\r\n            ctx.attribute(\"orders\", orders);\r\n            ctx.render(\"orders.html\"); //todo ændre muligvis HTML\r\n        } catch (DatabaseException e) {\r\n            ctx.status(500).result(\"Fejl ved hentning af ordrer: \" + e.getMessage());\r\n        }\r\n    }\r\n\r\n    private static void getAllOrders(Context ctx, ConnectionPool connectionPool) {\r\n        try {\r\n            List<Order> orders = OrderMapper.getAllOrders(connectionPool);\r\n            ctx.attribute(\"orders\", orders);\r\n            ctx.render(\"allorders.html\"); // todo: opret/tilpas HTML-side\r\n        } catch (DatabaseException e) {\r\n            ctx.status(500).result(\"Fejl ved hentning af alle ordrer: \" + e.getMessage());\r\n        }\r\n    }\r\n}\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/app/controllers/OrderController.java b/src/main/java/app/controllers/OrderController.java
+--- a/src/main/java/app/controllers/OrderController.java	(revision ebb310132afb09db616c3ecd07da21c95f1b6753)
++++ b/src/main/java/app/controllers/OrderController.java	(date 1747083135773)
+@@ -31,10 +31,17 @@
+             return;
+         }
+ 
+-        Order order = OrderMapper.createOrder(user, connectionPool);
++        // Get workerId and carportId (these should come from the request, or from somewhere else in your system)
++        int workerId = Integer.parseInt(ctx.formParam("workerId"));
++        int carportId = Integer.parseInt(ctx.formParam("carportId"));
++
++        // Now create the order with all required parameters
++        Order order = OrderMapper.createOrder(user, workerId, carportId, connectionPool);
++
+         ctx.status(201).result("Ordre oprettet med ID: " + order.getOrderId());
+     }
+ 
++
+     private static void deleteOrder(Context ctx, ConnectionPool connectionPool) {
+         try {
+             int orderId = Integer.parseInt(ctx.formParam("orderId"));
+@@ -63,7 +70,12 @@
+     }
+ 
+     public static Order createOrder(User user, ConnectionPool connectionPool) throws DatabaseException, SQLException {
+-        Order newOrder = OrderMapper.createOrder(user, connectionPool);
++        // Retrieve the workerId and carportId from somewhere (e.g., ctx.formParam() or passed as arguments)
++        int workerId = 1;  // Example: Replace this with actual value or logic
++        int carportId = 1;  // Example: Replace this with actual value or logic
++
++        // Create the order using OrderMapper with all required parameters
++        Order newOrder = OrderMapper.createOrder(user, workerId, carportId, connectionPool);
+ 
+         if (newOrder != null) {
+             System.out.println("Order created successfully with ID: " + newOrder.getOrderId());
+@@ -75,23 +87,36 @@
+     }
+ 
+ 
++
+     private static void updateOrder(Context ctx, ConnectionPool connectionPool) {
+         try {
++            // Extract form parameters for the updated order
+             int orderId = Integer.parseInt(ctx.formParam("orderId"));
+             Date orderDate = Date.valueOf(ctx.formParam("orderDate"));
+             double totalPrice = Double.parseDouble(ctx.formParam("totalPrice"));
+             String orderStatus = ctx.formParam("orderStatus");
+ 
+-            Order order = new Order(orderId, orderDate, totalPrice, orderStatus);
++            // Extract the additional parameters for customer_id, worker_id, and carport_id
++            int customerId = Integer.parseInt(ctx.formParam("customerId"));
++            int workerId = Integer.parseInt(ctx.formParam("workerId"));
++            int carportId = Integer.parseInt(ctx.formParam("carportId"));
++
++            // Create a new Order object with the updated values, including the new fields
++            Order order = new Order(orderId, orderDate, totalPrice, orderStatus, customerId, workerId, carportId);
++
++            // Call the OrderMapper's updateOrder method to update the order in the database
+             OrderMapper.updateOrder(order, connectionPool);
+ 
++            // Send a success response
+             ctx.status(200).result("Ordre opdateret");
+         } catch (Exception e) {
++            // Handle any errors and send a failure response
+             ctx.status(400).result("Fejl ved opdatering af ordre: " + e.getMessage());
+         }
+     }
+ 
+ 
++
+     private static void getOrdersForUser(Context ctx, ConnectionPool connectionPool) {
+         User user = ctx.sessionAttribute("currentUser");
+         if (user == null) {
+Index: src/main/resources/templates/login.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/resources/templates/login.html b/src/main/resources/templates/login.html
+new file mode 100644
+--- /dev/null	(date 1747212916530)
++++ b/src/main/resources/templates/login.html	(date 1747212916530)
+@@ -0,0 +1,25 @@
++<!DOCTYPE html>
++<html lang="en">
++<head>
++    <meta charset="UTF-8">
++    <title>Login - Carport</title>
++</head>
++<body>
++<div class="container">
++  <div class="login-box">
++    <h2>Velkommen til Fog</h2>
++    <p>Please login:</p>
++
++
++    <form method ="post">
++      <input type = "text" name = "username" placeholder="Enter your Username" class="input-field"/>
++      <input  type = "password" name = "password" placeholder="Enter your Password" class="input-field"/>
++      <button type = "submit" formaction="/login" class="login-btn">Log på</button>
++    </form>
++    <div><p th:text="${message}" class="error-message"></p></div>
++    <p><a href="createuser.html" th:href="@{/createuser}" class="create-user-link">Create user</a></p>
++  </div>
++</div>
++
++</body>
++</html>
+\ No newline at end of file
