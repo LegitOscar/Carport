@@ -1,0 +1,19 @@
+<changelist name="Uncommitted_changes_before_Checkout_at_5_15_2025_1_55_PM_[Changes]1" date="1747310130971" recycled="true" deleted="true">
+  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_5_15_2025_1_55_PM_[Changes]1/shelved.patch" />
+  <option name="DESCRIPTION" value="Uncommitted changes before Checkout at 5/15/2025 1:55 PM [Changes]" />
+  <binary>
+    <option name="BEFORE_PATH" value="target/classes/app/Main.class" />
+    <option name="AFTER_PATH" value="target/classes/app/Main.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_5_15_2025_1_55_PM_[Changes]1/Main.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="target/classes/app/persistence/UserMapper.class" />
+    <option name="AFTER_PATH" value="target/classes/app/persistence/UserMapper.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_5_15_2025_1_55_PM_[Changes]1/UserMapper.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="target/classes/app/controllers/UserController.class" />
+    <option name="AFTER_PATH" value="target/classes/app/controllers/UserController.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_5_15_2025_1_55_PM_[Changes]1/UserController.class" />
+  </binary>
+</changelist>
