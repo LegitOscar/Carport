@@ -11,19 +11,20 @@ import io.javalin.http.Context;
 
 import java.sql.Date;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 
 public class OrderController {
 
     public static void addRoutes(Javalin app, ConnectionPool connectionPool) {
-        //app.post("addorder", ctx -> addOrder(ctx, connectionPool));
+        app.post("addorder", ctx -> addOrder(ctx, connectionPool));
         app.post("deleteorder", ctx -> deleteOrder(ctx, connectionPool));
         app.post("editorder", ctx -> editOrder(ctx, connectionPool));
-       // app.post("updateorder", ctx -> updateOrder(ctx, connectionPool));
+        app.post("updateorder", ctx -> updateOrder(ctx, connectionPool));
         app.get("getorders", ctx -> getOrdersForUser(ctx, connectionPool));
         app.get("allorders", ctx -> getAllOrders(ctx, connectionPool));
     }
-/*
+
     private static void addOrder(Context ctx, ConnectionPool connectionPool) throws DatabaseException, SQLException {
         User user = ctx.sessionAttribute("currentUser");
         if (user == null) {
@@ -34,7 +35,7 @@ public class OrderController {
         Order order = OrderMapper.createOrder(user, connectionPool);
         ctx.status(201).result("Ordre oprettet med ID: " + order.getOrderId());
     }
-*/
+
     private static void deleteOrder(Context ctx, ConnectionPool connectionPool) {
         try {
             int orderId = Integer.parseInt(ctx.formParam("orderId"));
@@ -61,7 +62,7 @@ public class OrderController {
             ctx.status(500).result("Fejl ved hentning af ordre: " + e.getMessage());
         }
     }
-/*
+
     public static Order createOrder(User user, ConnectionPool connectionPool) throws DatabaseException, SQLException {
         Order newOrder = OrderMapper.createOrder(user, connectionPool);
 
@@ -76,20 +77,38 @@ public class OrderController {
 
     private static void updateOrder(Context ctx, ConnectionPool connectionPool) {
         try {
+
+            User currentUser = ctx.sessionAttribute("currentUser");
+
+            if (currentUser == null) {
+                ctx.status(401).result("Ingen bruger er logget ind.");
+                return;
+            }
+
+            int customerId = currentUser.getUserId();
+
+
             int orderId = Integer.parseInt(ctx.formParam("orderId"));
-            Date orderDate = Date.valueOf(ctx.formParam("orderDate"));
+            LocalDate orderDate = LocalDate.parse(ctx.formParam("orderDate"));
             double totalPrice = Double.parseDouble(ctx.formParam("totalPrice"));
             String orderStatus = ctx.formParam("orderStatus");
 
-            Order order = new Order(orderId, orderDate, totalPrice, orderStatus);
+
+            int workerId = 0;
+            int carportId = Integer.parseInt(ctx.formParam("carportId")); // Adjust based on your form
+
+
+            Order order = new Order(orderId, orderDate, totalPrice, orderStatus, customerId, workerId, carportId);
             OrderMapper.updateOrder(order, connectionPool);
 
             ctx.status(200).result("Ordre opdateret");
+
         } catch (Exception e) {
             ctx.status(400).result("Fejl ved opdatering af ordre: " + e.getMessage());
         }
     }
-*/
+
+
 
     private static void getOrdersForUser(Context ctx, ConnectionPool connectionPool) {
         User user = ctx.sessionAttribute("currentUser");

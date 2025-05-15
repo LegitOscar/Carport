@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - Cupcake</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/public/css/indexStyle.css" th:href="@{/public/css/styles.css}">
+</head>
+<body>
+<header class="header">
+    <img src="/public/images/cupckaebanner2.png" th:src="@{/images/cupckaebanner2.png}" alt="Cupcakes" class="background-img">
+    <img src="/images/olskerlogo.png" th:src="@{/images/olskerlogo.png}" alt="Olsker Cupcakes" class="logo">
+</header>
+
+<div class="container">
+    <div class="login-box">
+        <h2>Velkommen til Cupcake</h2>
+        <p>Please login:</p>
+
+
+        <form method ="post">
+            <input type = "text" name = "username" placeholder="Enter your Username" class="input-field"/>
+            <input  type = "password" name = "password" placeholder="Enter your Password" class="input-field"/>
+            <button type = "submit" formaction="/login" class="login-btn">Log på</button>
+        </form>
+        <div><p th:text="${message}" class="error-message"></p></div>
+        <p><a href="createuser.html" th:href="@{/createuser}" class="create-user-link">Create user</a></p>
+    </div>
+</div>
+</body>
+</html>
