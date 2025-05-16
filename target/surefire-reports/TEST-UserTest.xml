@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="UserTest" time="0.057" tests="4" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="UserTest" time="0.035" tests="4" errors="1" skipped="0" failures="2">
   <properties>
     <property name="java.specification.version" value="17"/>
     <property name="sun.cpu.isalist" value="amd64"/>
@@ -15,7 +15,7 @@
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="user.country" value="US"/>
     <property name="sun.boot.library.path" value="C:\Users\khnda\.jdks\corretto-17.0.14\bin"/>
-    <property name="sun.java.command" value="C:\Users\khnda\AppData\Local\Temp\surefire16755272177618883689\surefirebooter-20250514121937035_3.jar C:\Users\khnda\AppData\Local\Temp\surefire16755272177618883689 2025-05-14T12-19-36_910-jvmRun1 surefire-20250514121937035_1tmp surefire_0-20250514121937035_2tmp"/>
+    <property name="sun.java.command" value="C:\Users\khnda\AppData\Local\Temp\surefire15261005119264584996\surefirebooter-20250516010844686_3.jar C:\Users\khnda\AppData\Local\Temp\surefire15261005119264584996 2025-05-16T01-08-44_569-jvmRun1 surefire-20250516010844686_1tmp surefire_0-20250516010844686_2tmp"/>
     <property name="jdk.debug" value="release"/>
     <property name="surefire.test.class.path" value="C:\Users\khnda\IdeaProjects\2. Semester\Carport\target\test-classes;C:\Users\khnda\IdeaProjects\2. Semester\Carport\target\classes;C:\Users\khnda\.m2\repository\io\javalin\javalin\6.1.3\javalin-6.1.3.jar;C:\Users\khnda\.m2\repository\org\slf4j\slf4j-api\2.0.12\slf4j-api-2.0.12.jar;C:\Users\khnda\.m2\repository\org\eclipse\jetty\jetty-server\11.0.20\jetty-server-11.0.20.jar;C:\Users\khnda\.m2\repository\org\eclipse\jetty\jetty-http\11.0.20\jetty-http-11.0.20.jar;C:\Users\khnda\.m2\repository\org\eclipse\jetty\jetty-util\11.0.20\jetty-util-11.0.20.jar;C:\Users\khnda\.m2\repository\org\eclipse\jetty\jetty-io\11.0.20\jetty-io-11.0.20.jar;C:\Users\khnda\.m2\repository\org\eclipse\jetty\toolchain\jetty-jakarta-servlet-api\5.0.2\jetty-jakarta-servlet-api-5.0.2.jar;C:\Users\khnda\.m2\repository\org\eclipse\jetty\websocket\websocket-jetty-server\11.0.20\websocket-jetty-server-11.0.20.jar;C:\Users\khnda\.m2\repository\org\eclipse\jetty\jetty-servlet\11.0.20\jetty-servlet-11.0.20.jar;C:\Users\khnda\.m2\repository\org\eclipse\jetty\jetty-security\11.0.20\jetty-security-11.0.20.jar;C:\Users\khnda\.m2\repository\org\eclipse\jetty\jetty-webapp\11.0.20\jetty-webapp-11.0.20.jar;C:\Users\khnda\.m2\repository\org\eclipse\jetty\jetty-xml\11.0.20\jetty-xml-11.0.20.jar;C:\Users\khnda\.m2\repository\org\eclipse\jetty\websocket\websocket-jetty-api\11.0.20\websocket-jetty-api-11.0.20.jar;C:\Users\khnda\.m2\repository\org\eclipse\jetty\websocket\websocket-jetty-common\11.0.20\websocket-jetty-common-11.0.20.jar;C:\Users\khnda\.m2\repository\org\eclipse\jetty\websocket\websocket-core-common\11.0.20\websocket-core-common-11.0.20.jar;C:\Users\khnda\.m2\repository\org\eclipse\jetty\websocket\websocket-servlet\11.0.20\websocket-servlet-11.0.20.jar;C:\Users\khnda\.m2\repository\org\eclipse\jetty\websocket\websocket-core-server\11.0.20\websocket-core-server-11.0.20.jar;C:\Users\khnda\.m2\repository\org\jetbrains\kotlin\kotlin-stdlib-jdk8\1.9.22\kotlin-stdlib-jdk8-1.9.22.jar;C:\Users\khnda\.m2\repository\org\jetbrains\kotlin\kotlin-stdlib\1.9.22\kotlin-stdlib-1.9.22.jar;C:\Users\khnda\.m2\repository\org\jetbrains\annotations\13.0\annotations-13.0.jar;C:\Users\khnda\.m2\repository\org\jetbrains\kotlin\kotlin-stdlib-jdk7\1.9.22\kotlin-stdlib-jdk7-1.9.22.jar;C:\Users\khnda\.m2\repository\org\slf4j\slf4j-simple\2.0.12\slf4j-simple-2.0.12.jar;C:\Users\khnda\.m2\repository\io\javalin\javalin-rendering\6.1.3\javalin-rendering-6.1.3.jar;C:\Users\khnda\.m2\repository\org\thymeleaf\thymeleaf\3.1.2.RELEASE\thymeleaf-3.1.2.RELEASE.jar;C:\Users\khnda\.m2\repository\ognl\ognl\3.3.4\ognl-3.3.4.jar;C:\Users\khnda\.m2\repository\org\javassist\javassist\3.29.0-GA\javassist-3.29.0-GA.jar;C:\Users\khnda\.m2\repository\org\attoparser\attoparser\2.0.7.RELEASE\attoparser-2.0.7.RELEASE.jar;C:\Users\khnda\.m2\repository\org\unbescape\unbescape\1.1.6.RELEASE\unbescape-1.1.6.RELEASE.jar;C:\Users\khnda\.m2\repository\org\thymeleaf\extras\thymeleaf-extras-java8time\3.0.4.RELEASE\thymeleaf-extras-java8time-3.0.4.RELEASE.jar;C:\Users\khnda\.m2\repository\com\fasterxml\jackson\core\jackson-databind\2.17.0-rc1\jackson-databind-2.17.0-rc1.jar;C:\Users\khnda\.m2\repository\com\fasterxml\jackson\core\jackson-annotations\2.17.0-rc1\jackson-annotations-2.17.0-rc1.jar;C:\Users\khnda\.m2\repository\com\fasterxml\jackson\core\jackson-core\2.17.0-rc1\jackson-core-2.17.0-rc1.jar;C:\Users\khnda\.m2\repository\net\bytebuddy\byte-buddy\1.14.9\byte-buddy-1.14.9.jar;C:\Users\khnda\.m2\repository\com\zaxxer\HikariCP\5.1.0\HikariCP-5.1.0.jar;C:\Users\khnda\.m2\repository\org\postgresql\postgresql\42.7.2\postgresql-42.7.2.jar;C:\Users\khnda\.m2\repository\org\checkerframework\checker-qual\3.42.0\checker-qual-3.42.0.jar;C:\Users\khnda\.m2\repository\org\junit\jupiter\junit-jupiter-api\5.10.2\junit-jupiter-api-5.10.2.jar;C:\Users\khnda\.m2\repository\org\opentest4j\opentest4j\1.3.0\opentest4j-1.3.0.jar;C:\Users\khnda\.m2\repository\org\junit\platform\junit-platform-commons\1.10.2\junit-platform-commons-1.10.2.jar;C:\Users\khnda\.m2\repository\org\apiguardian\apiguardian-api\1.1.2\apiguardian-api-1.1.2.jar;C:\Users\khnda\.m2\repository\org\junit\jupiter\junit-jupiter-engine\5.10.2\junit-jupiter-engine-5.10.2.jar;C:\Users\khnda\.m2\repository\org\junit\platform\junit-platform-engine\1.10.2\junit-platform-engine-1.10.2.jar;C:\Users\khnda\.m2\repository\org\hamcrest\hamcrest\2.2\hamcrest-2.2.jar;"/>
     <property name="sun.cpu.endian" value="little"/>
@@ -30,7 +30,7 @@
     <property name="line.separator" value="&#10;"/>
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
-    <property name="surefire.real.class.path" value="C:\Users\khnda\AppData\Local\Temp\surefire16755272177618883689\surefirebooter-20250514121937035_3.jar"/>
+    <property name="surefire.real.class.path" value="C:\Users\khnda\AppData\Local\Temp\surefire15261005119264584996\surefirebooter-20250516010844686_3.jar"/>
     <property name="user.script" value=""/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="java.runtime.version" value="17.0.14+7-LTS"/>
@@ -59,14 +59,65 @@
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="java.class.version" value="61.0"/>
   </properties>
-  <testcase name="testPasswordMatch" classname="UserTest" time="0.011">
-    <system-out><![CDATA[Test successful: Exception thrown for mismatched passwords.
+  <testcase name="testPasswordMatch" classname="UserTest" time="0.007">
+    <system-out><![CDATA[Test successful: There was a mismatch in the passwords.
 ]]></system-out>
   </testcase>
-  <testcase name="testLogin" classname="UserTest" time="0.012">
-    <system-out><![CDATA[🔹 Fetched from DB: ID=1, Username=john_doe, Role=customer
+  <testcase name="testLogin" classname="UserTest" time="0.01">
+    <failure message="Unexpected exception thrown: app.exceptions.DatabaseException: DB fejl" type="org.opentest4j.AssertionFailedError"><![CDATA[org.opentest4j.AssertionFailedError: Unexpected exception thrown: app.exceptions.DatabaseException: DB fejl
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:152)
+	at org.junit.jupiter.api.AssertDoesNotThrow.createAssertionFailedError(AssertDoesNotThrow.java:84)
+	at org.junit.jupiter.api.AssertDoesNotThrow.assertDoesNotThrow(AssertDoesNotThrow.java:53)
+	at org.junit.jupiter.api.AssertDoesNotThrow.assertDoesNotThrow(AssertDoesNotThrow.java:36)
+	at org.junit.jupiter.api.Assertions.assertDoesNotThrow(Assertions.java:3168)
+	at UserTest.testLogin(UserTest.java:82)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+Caused by: app.exceptions.DatabaseException: DB fejl
+	at app.persistence.UserMapper.login(UserMapper.java:37)
+	at UserTest.lambda$testLogin$1(UserTest.java:83)
+	at org.junit.jupiter.api.AssertDoesNotThrow.assertDoesNotThrow(AssertDoesNotThrow.java:49)
+	... 6 more
+]]></failure>
+    <system-out><![CDATA[userMessage: DB fejl
+errorMessage: ERROR: relation "customer" does not exist
+  Position: 15
 ]]></system-out>
   </testcase>
-  <testcase name="testDuplicateUsername" classname="UserTest" time="0.016"/>
-  <testcase name="testCreateUser" classname="UserTest" time="0.01"/>
+  <testcase name="testDuplicateUsername" classname="UserTest" time="0.008">
+    <failure message="Unexpected exception thrown: app.exceptions.DatabaseException: Der er sket en fejl. Prøv igen" type="org.opentest4j.AssertionFailedError"><![CDATA[org.opentest4j.AssertionFailedError: Unexpected exception thrown: app.exceptions.DatabaseException: Der er sket en fejl. Prøv igen
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:152)
+	at org.junit.jupiter.api.AssertDoesNotThrow.createAssertionFailedError(AssertDoesNotThrow.java:84)
+	at org.junit.jupiter.api.AssertDoesNotThrow.assertDoesNotThrow(AssertDoesNotThrow.java:53)
+	at org.junit.jupiter.api.AssertDoesNotThrow.assertDoesNotThrow(AssertDoesNotThrow.java:36)
+	at org.junit.jupiter.api.Assertions.assertDoesNotThrow(Assertions.java:3168)
+	at UserTest.testDuplicateUsername(UserTest.java:69)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+Caused by: app.exceptions.DatabaseException: Der er sket en fejl. Prøv igen
+	at app.persistence.UserMapper.createUser(UserMapper.java:59)
+	at UserTest.lambda$testDuplicateUsername$0(UserTest.java:70)
+	at org.junit.jupiter.api.AssertDoesNotThrow.assertDoesNotThrow(AssertDoesNotThrow.java:49)
+	... 6 more
+]]></failure>
+    <system-out><![CDATA[userMessage: Der er sket en fejl. Prøv igen
+errorMessage: ERROR: relation "customer" does not exist
+  Position: 13
+]]></system-out>
+  </testcase>
+  <testcase name="testCreateUser" classname="UserTest" time="0.007">
+    <error message="Der er sket en fejl. Prøv igen" type="app.exceptions.DatabaseException"><![CDATA[app.exceptions.DatabaseException: Der er sket en fejl. Prøv igen
+	at app.persistence.UserMapper.createUser(UserMapper.java:59)
+	at UserTest.testCreateUser(UserTest.java:44)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+]]></error>
+    <system-out><![CDATA[userMessage: Der er sket en fejl. Prøv igen
+errorMessage: ERROR: relation "customer" does not exist
+  Position: 13
+]]></system-out>
+  </testcase>
 </testsuite>

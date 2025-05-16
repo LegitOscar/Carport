@@ -1,5 +1,7 @@
 package app.entities;
 
+import java.security.PrivateKey;
+
 public class CustomerProfile {
     private int customerId;
     private String name;
@@ -9,6 +11,7 @@ public class CustomerProfile {
     private int postcode;
     private String city;
     private String password;
+    private String role;
 
     public int getCustomerId(){
         return customerId;
@@ -69,6 +72,10 @@ public class CustomerProfile {
     public String getPassword(){
         return password;
     }
+
+    public void setRole(String role){ this.role = role; }
+
+    public String getRole(){ return role; }
 
     public void setPassword(String password){
         this.password = password;

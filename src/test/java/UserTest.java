@@ -23,8 +23,8 @@ public class UserTest {
     static void setUp() {
         // Use test database credentials here
         String user = "postgres";
-        String password = "postgres";
-        String url = "jdbc:postgresql://localhost:5432/%s?currentSchema=public"; // or whatever schema you use
+        String password = "datdat2025!";
+        String url = "jdbc:postgresql://164.90.223.15:5432/%s?currentSchema=public"; // or whatever schema you use
         String db = "carport";
 
         connectionPool = ConnectionPool.getInstance(user, password, url, db);
@@ -45,12 +45,12 @@ public class UserTest {
 
         // Assert: fetch the user and check data
         try (Connection conn = connectionPool.getConnection()) {
-            String sql = "SELECT * FROM users WHERE user_name = ?";
+            String sql = "SELECT * FROM customer WHERE customer_name = ?";
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                 stmt.setString(1, username);
                 try (ResultSet rs = stmt.executeQuery()) {
                     assertTrue(rs.next());
-                    assertEquals(username, rs.getString("user_name"));
+                    assertEquals(username, rs.getString("customer_name"));
                     assertEquals(password, rs.getString("password"));
                     assertEquals(role, rs.getString("role"));
                 }

@@ -29,7 +29,7 @@ public class OrderTest {
 
     @Test
     void testCreateOrder() {
-        User user = new User(1, "123", "123", "customer");
+        User user = new User(1, "123", "123", null);
 
         assertDoesNotThrow(() -> {
             Order order = OrderController.createOrder(user, connectionPool);
@@ -40,7 +40,7 @@ public class OrderTest {
 
     @Test
     void testDeleteOrder() {
-        User user = new User(2, "123", "123", "customer");
+        User user = new User(2, "123", "123", null);
 
         assertDoesNotThrow(() -> {
             Order order = OrderController.createOrder(user, connectionPool);

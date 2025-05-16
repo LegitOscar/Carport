@@ -21,67 +21,11 @@ public class UserController {
         app.get("logout", ctx -> logout(ctx));
         app.get("/login", ctx -> ctx.render("login.html"));
         app.get("createuser", ctx -> ctx.render("createuser.html"));
+        app.get("/design", ctx -> ctx.render("design.html"));
         app.post("createuser", ctx -> createUser(ctx, connectionPool));
-        app.get("/customerprofile", ctx -> {
-            User user = ctx.sessionAttribute("currentUser");
-            if (user == null){
-                ctx.redirect("/");
-                return;
-            }
+        app.get("/seller", ctx -> ctx.render("sellerdashboard.html"));
+        app.get("/customerprofile", ctx -> CustomerProfileController.showProfile(ctx, connectionPool));
 
-            try{
-                CustomerProfile profile = UserMapper.getCustomerProfileById(user.getUserId(), connectionPool);
-                ctx.attribute("profile", profile);
-                ctx.render("customerprofile.html");
-            } catch (DatabaseException e){
-                ctx.status(500).result("Error retrieving profile: " + e.getMessage());
-            }
-        });
-        app.get("/testprofile", ctx -> {
-            int testCustomerId = 6;
-
-            try{
-                CustomerProfile profile = UserMapper.getCustomerProfileById(testCustomerId, connectionPool);
-                String expectedEmail = "jon@example.com";
-                String expectedPassword = "1234";
-
-
-                if (profile.getEmail().trim().equalsIgnoreCase(expectedEmail.trim()) && profile.getPassword().trim().equals(expectedPassword.trim())){
-                    User testUser = new User(testCustomerId, profile.getEmail(), expectedPassword, "customer");
-                    ctx.sessionAttribute("currentUser", testUser);
-
-                    ctx.redirect("/customerprofile");
-                } else {
-                    ctx.status(401).result("Email or password is incorrect");
-                }
-            } catch (DatabaseException e){
-                ctx.status(500).result("Error retrieving user: " + e.getMessage());
-            }
-        });
-        app.get("/sellerdashboard", ctx -> {
-            User user = ctx.sessionAttribute("currentUser");
-
-            if (user == null || !user.getRole().equals("seller")){
-                ctx.redirect("/");
-                return;
-            }
-
-            try {
-                List<Order> orders = OrderMapper.getAllOrders(connectionPool);
-                ctx.attribute("orders", orders);
-                ctx.render("sellerdashboard.html");
-            } catch (DatabaseException e){
-                ctx.status(500).result("Error retrieving orders: " + e.getMessage());
-
-            }
-        });
-
-        app.get("/testsellerlogin", ctx ->{
-            User testSeller = new User(99, "seller@example.com","1234", "seller");
-            ctx.sessionAttribute("currentUser", testSeller);
-
-            ctx.redirect("/sellerdashboard");
-                });
     }
 
     public static void createUser(Context ctx, ConnectionPool connectionPool) {
@@ -127,25 +71,32 @@ public class UserController {
     }
 
     public static void login(Context ctx, ConnectionPool connectionPool) {
-        String username = ctx.formParam("username");
+        String email = ctx.formParam("email");
         String password = ctx.formParam("password");
 
-
-
         try {
-            User user = UserMapper.login(username, password, connectionPool);
+            User user = UserMapper.login(email, password, connectionPool);
             ctx.sessionAttribute("currentUser", user);
 
-            if (user.getRole().equals("seller")){
-                ctx.redirect("/sellerdashboard");
-            }else{
+            Integer roleId = user.getRoleId();
+
+            if (roleId == null) {
                 ctx.redirect("/customerprofile");
+            } else if (roleId == 1) {
+                ctx.redirect("/seller");
+            } else if (roleId == 2) {
+                ctx.redirect("/admin");
+            } else {
+                ctx.redirect("/customerprofile"); // fallback
             }
 
         } catch (DatabaseException e) {
-            throw new RuntimeException(e);
+            ctx.attribute("message", "Forkert brugernavn eller adgangskode");
+            ctx.render("login.html");
         }
     }
+
+
 
     public static void displayCustomerProfile(Context ctx, ConnectionPool connectionPool){
         User currentUser = ctx.sessionAttribute("currentUser");
