@@ -4,18 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simple Logo and Buttons</title>
-    <link rel="stylesheet" href="../public/css/index.css"/>
+    <link rel="stylesheet" th:href="@{/css/index.css}" />
 </head>
 <body>
 
 
 <div class="container">
-<img src="../public/images/fogLogo.png" th:src="@{../public/images/fogLogo.png}" alt="Fog Logo"/>
+    <img th:src="@{/images/fogLogo.png}" alt="Fog Logo" />
 
-<div class="button-container">
-<a href="login.html" class="btn">LOGIN</a>
-<a href="design.html" class="btn">DESIGN</a>
-</div>
+    <div class="button-container">
+        <a href="/login" class="btn">Log på</a>
+        <a href="/design" class="btn">Design</a>
+
+    </div>
+
 </div>
 
 </body>

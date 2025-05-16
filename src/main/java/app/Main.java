@@ -1,44 +1,49 @@
 package app;
 
+import app.config.SessionConfig;
+import app.config.ThymeleafConfig;
+import app.controllers.OrderController;
+import app.controllers.UserController;
 import app.persistence.ConnectionPool;
-import app.persistence.OrderMapper;
-import app.entities.Order;
-import app.entities.User;
-
-import java.time.LocalDate;
+import io.javalin.Javalin;
+import io.javalin.rendering.template.JavalinThymeleaf;
+import io.javalin.http.staticfiles.Location;
 
 
 public class Main {
-    public static void main(String[] args) {
-        ConnectionPool connectionPool = ConnectionPool.getInstance(
-                "postgres", "datdat2025!", "jdbc:postgresql://164.90.223.15:5432/%s", "carport");
 
-        try {
-            // Simulate a logged-in user
-            User currentUser = new User(1, "joe", "123", "customer");
-            int customerId = currentUser.getUserId();
+    // private static final Logger LOGGER = Logger.getLogger(Main.class.getName()); // POTENTIELT FORKERT
 
-            // Provide test values for the order
-            int orderId = 6; // existing order ID
-            LocalDate orderDate = LocalDate.now();
-            double totalPrice = 4999.95;
-            String orderStatus = "bekræftet";
-            int workerId = 0; // or actual worker ID
-            int carportId = 1; // make sure this exists
+    private static final String USER = "postgres";
+    private static final String PASSWORD = "postgres";
+    private static final String URL = "jdbc:postgresql://localhost:5432/%s?currentSchema=public";
+    private static final String DB = "carport";
 
-            // Create the Order
-            Order order = new Order(orderId, orderDate, totalPrice, orderStatus, customerId, workerId, carportId);
 
-            // Call the update method
-            OrderMapper.updateOrder(order, connectionPool);
+    private static final ConnectionPool connectionPool = ConnectionPool.getInstance(USER, PASSWORD, URL, DB);
 
-            System.out.println("Ordre opdateret!");
+    public static void main(String[] args)
+    {
+        // Initializing Javalin and Jetty webserver
 
-        } catch (Exception e) {
-            System.err.println("Fejl ved opdatering af ordre: " + e.getMessage());
-            e.printStackTrace();
-        } finally {
-            connectionPool.close();
-        }
+        Javalin app = Javalin.create(config -> {
+            config.staticFiles.add(staticFiles -> {
+                staticFiles.directory = "/public";
+                staticFiles.hostedPath = "/";
+                staticFiles.location = Location.CLASSPATH;
+            });
+            config.jetty.modifyServletContextHandler(handler ->
+                    handler.setSessionHandler(SessionConfig.sessionConfig()));
+            config.fileRenderer(new JavalinThymeleaf(ThymeleafConfig.templateEngine()));
+        }).start(7070);
+
+
+        // Routing
+        app.get("/", ctx ->  ctx.render("index.html"));
+        UserController.addRoutes(app,connectionPool);
+        OrderController.addRoutes(app, connectionPool);
+
+
+
     }
 }

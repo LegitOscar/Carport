@@ -1,4 +1,46 @@
 -------------------------------------------------------------------------------
 Test set: UserTest
 -------------------------------------------------------------------------------
-Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.057 s -- in UserTest
+Tests run: 4, Failures: 2, Errors: 1, Skipped: 0, Time elapsed: 0.035 s <<< FAILURE! -- in UserTest
+UserTest.testLogin -- Time elapsed: 0.010 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: Unexpected exception thrown: app.exceptions.DatabaseException: DB fejl
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:152)
+	at org.junit.jupiter.api.AssertDoesNotThrow.createAssertionFailedError(AssertDoesNotThrow.java:84)
+	at org.junit.jupiter.api.AssertDoesNotThrow.assertDoesNotThrow(AssertDoesNotThrow.java:53)
+	at org.junit.jupiter.api.AssertDoesNotThrow.assertDoesNotThrow(AssertDoesNotThrow.java:36)
+	at org.junit.jupiter.api.Assertions.assertDoesNotThrow(Assertions.java:3168)
+	at UserTest.testLogin(UserTest.java:82)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+Caused by: app.exceptions.DatabaseException: DB fejl
+	at app.persistence.UserMapper.login(UserMapper.java:37)
+	at UserTest.lambda$testLogin$1(UserTest.java:83)
+	at org.junit.jupiter.api.AssertDoesNotThrow.assertDoesNotThrow(AssertDoesNotThrow.java:49)
+	... 6 more
+
+UserTest.testDuplicateUsername -- Time elapsed: 0.008 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: Unexpected exception thrown: app.exceptions.DatabaseException: Der er sket en fejl. Prøv igen
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:152)
+	at org.junit.jupiter.api.AssertDoesNotThrow.createAssertionFailedError(AssertDoesNotThrow.java:84)
+	at org.junit.jupiter.api.AssertDoesNotThrow.assertDoesNotThrow(AssertDoesNotThrow.java:53)
+	at org.junit.jupiter.api.AssertDoesNotThrow.assertDoesNotThrow(AssertDoesNotThrow.java:36)
+	at org.junit.jupiter.api.Assertions.assertDoesNotThrow(Assertions.java:3168)
+	at UserTest.testDuplicateUsername(UserTest.java:69)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+Caused by: app.exceptions.DatabaseException: Der er sket en fejl. Prøv igen
+	at app.persistence.UserMapper.createUser(UserMapper.java:59)
+	at UserTest.lambda$testDuplicateUsername$0(UserTest.java:70)
+	at org.junit.jupiter.api.AssertDoesNotThrow.assertDoesNotThrow(AssertDoesNotThrow.java:49)
+	... 6 more
+
+UserTest.testCreateUser -- Time elapsed: 0.007 s <<< ERROR!
+app.exceptions.DatabaseException: Der er sket en fejl. Prøv igen
+	at app.persistence.UserMapper.createUser(UserMapper.java:59)
+	at UserTest.testCreateUser(UserTest.java:44)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+
