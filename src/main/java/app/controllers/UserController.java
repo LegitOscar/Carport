@@ -22,46 +22,43 @@ public class UserController {
         app.get("/login", ctx -> ctx.render("login.html"));
         app.get("createuser", ctx -> ctx.render("createuser.html"));
         app.get("/design", ctx -> ctx.render("design.html"));
-        app.post("createuser", ctx -> createUser(ctx, connectionPool));
         app.get("/seller", ctx -> ctx.render("sellerdashboard.html"));
         app.get("/customerprofile", ctx -> CustomerProfileController.showProfile(ctx, connectionPool));
+        app.post("createuser", ctx -> UserController.createUser(ctx, connectionPool));
+
+
 
     }
 
     public static void createUser(Context ctx, ConnectionPool connectionPool) {
-
-        String username = ctx.formParam("username");
+        String navn = ctx.formParam("navn");
+        String adresse = ctx.formParam("adresse");
+        int postnummer = Integer.parseInt(ctx.formParam("postnummer"));
+        String by = ctx.formParam("by");
+        int telefon = Integer.parseInt(ctx.formParam("telefon"));
+        String email = ctx.formParam("email");
         String password1 = ctx.formParam("password1");
         String password2 = ctx.formParam("password2");
 
-        if (password1.equals(password2)) {
-            try {
-                createUser(username, password1, password2, connectionPool);
-                ctx.attribute("message", "Du er hermed blevet oprettet med brugernavnet" + username + ". Du kan nu logge på.");
-                ctx.render("index.html");
-            }catch (IllegalArgumentException e) {
-                ctx.attribute("message", "Dine to passwords stemmer ikke overens.");
-                ctx.render("createuser.html");
-            }
-
-        } else {
-            ctx.attribute("message", "Dine to passwords stemmer ikke overens, sørg for at du har stavet korrekt og prøv igen, eller log ind");
-            ctx.render("createuser.html");
-        }
-    }
-
-    public static void createUser(String username, String password1, String password2, ConnectionPool connectionPool) {
         if (!password1.equals(password2)) {
-            throw new IllegalArgumentException("Passwords do not match");
+            ctx.attribute("message", "Passwords do not match.");
+            ctx.render("createuser.html");
+            return;
         }
+
+        User user = new User(navn, adresse, postnummer, by, telefon, email, password1);
+        UserMapper userMapper = new UserMapper(connectionPool);
 
         try {
-            UserMapper.createUser(username, password1, "customer", connectionPool);
-            // You can add logging here if needed
-        } catch (DatabaseException e) {
-            throw new RuntimeException("Failed to create user: " + e.getMessage());
+            userMapper.createUser(user);
+            ctx.attribute("message", "Bruger oprettet!");
+        } catch (Exception e) {
+            ctx.attribute("message", "Fejl under oprettelse af bruger: " + e.getMessage());
         }
+
+        ctx.render("createuser.html");
     }
+
 
 
     private static void logout(Context ctx) {

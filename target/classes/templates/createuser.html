@@ -26,7 +26,7 @@
 <div class="container">
   <div class="login-box">
 
-    <form class="login-form" method="get" th:action="@{/createuser}">
+    <form class="login-form" method="post" th:action="@{/createuser}">
       <label for="navn">Fulde navn:</label>
       <input type="text" id="navn" name="navn" placeholder="Indtast dit fulde navn" class="input-field" />
 
@@ -40,7 +40,7 @@
       <input type="text" id="by" name="by" placeholder="Indtast by" class="input-field" />
 
       <label for="telefon">Tlf-nummer:</label>
-      <input type="text" id="telefon" name="telefon-nummer" placeholder="Indtast telefonnummer" class="input-field" />
+      <input type="text" id="telefon" name="telefon" placeholder="Indtast telefonnummer" class="input-field" />
 
       <label for="email">Email:</label>
       <input type="email" id="email" name="email" placeholder="Indtast email" class="input-field" />
