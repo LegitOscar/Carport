@@ -5,27 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="24c281b8-f515-42aa-aabd-1ff073604b67" name="Changes" comment="Second push - UserController and User">
-      <change afterPath="$PROJECT_DIR$/src/main/java/app/controllers/CustomerProfileController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/app/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/app/controllers/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/controllers/UserController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/app/entities/CustomerProfile.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/entities/CustomerProfile.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/app/entities/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/entities/User.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/app/persistence/UserMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/persistence/UserMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/public/css/loginStyles.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/public/css/login.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/login.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/OrderTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/OrderTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/UserTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/UserTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/Carport-1.0-SNAPSHOT-shaded.jar" beforeDir="false" afterPath="$PROJECT_DIR$/target/Carport-1.0-SNAPSHOT-shaded.jar" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/app.jar" beforeDir="false" afterPath="$PROJECT_DIR$/target/app.jar" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/app/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/app/Main.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/app/controllers/UserController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/app/controllers/UserController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/app/entities/CustomerProfile.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/app/entities/CustomerProfile.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/app/entities/User.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/app/entities/User.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/app/persistence/UserMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/app/persistence/UserMapper.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/public/css/loginStyles.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/templates/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/templates/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/templates/login.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/original-app.jar" beforeDir="false" afterPath="$PROJECT_DIR$/target/original-app.jar" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/surefire-reports/OrderTest.txt" beforeDir="false" afterPath="$PROJECT_DIR$/target/surefire-reports/OrderTest.txt" afterDir="false" />
@@ -33,7 +18,6 @@
       <change beforePath="$PROJECT_DIR$/target/surefire-reports/TEST-UserTest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/target/surefire-reports/TEST-UserTest.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/surefire-reports/UserTest.txt" beforeDir="false" afterPath="$PROJECT_DIR$/target/surefire-reports/UserTest.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/test-classes/OrderTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/OrderTest.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/test-classes/UserTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/UserTest.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -67,6 +51,16 @@
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/LegitOscar/Carport.git&quot;,
     &quot;accountId&quot;: &quot;ce5b9cec-6726-4d33-90fc-1b18021aec65&quot;
+  },
+  &quot;recentNewPullRequestHead&quot;: {
+    &quot;server&quot;: {
+      &quot;useHttp&quot;: false,
+      &quot;host&quot;: &quot;github.com&quot;,
+      &quot;port&quot;: null,
+      &quot;suffix&quot;: null
+    },
+    &quot;owner&quot;: &quot;LegitOscar&quot;,
+    &quot;repository&quot;: &quot;Carport&quot;
   }
 }</component>
   <component name="ProjectColorInfo">{
@@ -191,7 +185,7 @@
             </option>
             <option name="passParentEnv" value="true" />
             <option name="runMavenInBackground" value="true" />
-            <option name="skipTests" value="false" />
+            <option name="skipTests" value="true" />
             <option name="vmOptions" value="" />
           </MavenRunnerSettings>
         </option>
@@ -232,18 +226,6 @@
       </server-settings>
       <predefined_log_file enabled="true" id="Tomcat" />
       <predefined_log_file enabled="true" id="TOMCAT_LOCALHOST_LOG_ID" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="#com.intellij.j2ee.web.tomcat.TomcatRunConfigurationFactory" factoryName="Local" ALTERNATIVE_JRE_ENABLED="false">
-      <deployment />
-      <server-settings />
-      <predefined_log_file enabled="true" id="Tomcat" />
-      <predefined_log_file enabled="true" id="Tomcat Catalina" />
-      <predefined_log_file id="Tomcat Manager" />
-      <predefined_log_file id="Tomcat Host Manager" />
-      <predefined_log_file id="Tomcat Localhost Access" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -296,7 +278,9 @@
       <workItem from="1747297157437" duration="7976000" />
       <workItem from="1747340381639" duration="5774000" />
       <workItem from="1747348954521" duration="5173000" />
-      <workItem from="1747383008406" duration="7826000" />
+      <workItem from="1747383008406" duration="9951000" />
+      <workItem from="1747434546575" duration="3486000" />
+      <workItem from="1747486059747" duration="350000" />
     </task>
     <task id="LOCAL-00001" summary="push">
       <option name="closed" value="true" />
@@ -314,7 +298,23 @@
       <option name="project" value="LOCAL" />
       <updated>1747307019743</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Second push - UserController and User">
+      <option name="closed" value="true" />
+      <created>1747392254380</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1747392254380</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Second push - UserController and User">
+      <option name="closed" value="true" />
+      <created>1747392270861</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1747392270861</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
