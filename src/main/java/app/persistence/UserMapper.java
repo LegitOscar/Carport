@@ -5,13 +5,16 @@ import app.entities.CustomerProfile;
 import app.entities.User;
 import app.exceptions.DatabaseException;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class UserMapper
 {
+    private final ConnectionPool connectionPool;
+
+    public UserMapper(ConnectionPool connectionPool) {
+        this.connectionPool = connectionPool;
+    }
+
 
     public static User login(String email, String password, ConnectionPool connectionPool) throws DatabaseException {
         try (Connection connection = connectionPool.getConnection()) {
@@ -52,55 +55,49 @@ public class UserMapper
     }
 
 
-    public static void createUser(String userName, String password, String role, ConnectionPool connectionPool) throws DatabaseException {
+    public void createUser(User user) {
+        String insertCustomerSql = "INSERT INTO customer (customer_name, customer_email, customer_phone, password) " +
+                "VALUES (?, ?, ?, ?) RETURNING customer_id";
 
-        String sql = "INSERT INTO customer (customer_name, password, role) VALUES (?,?,?)";
+        String insertZipSql = "INSERT INTO customer_zip (customer_id, postcode, address, city) VALUES (?, ?, ?, ?)";
 
-        try (
-                Connection connection = connectionPool.getConnection();
-                PreparedStatement ps = connection.prepareStatement(sql)
-        ) {
-            ps.setString(1, userName);
-            ps.setString(2, password);
-            ps.setString(3, role);
+        try (Connection conn = connectionPool.getConnection()) {
+            conn.setAutoCommit(false);  // start transaction
 
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            throw new DatabaseException("Der er sket en fejl. Prøv igen", e.getMessage());
-        }
-    }
+            int customerId;
+            try (PreparedStatement stmt = conn.prepareStatement(insertCustomerSql)) {
+                stmt.setString(1, user.getName());
+                stmt.setString(2, user.getEmail());
+                stmt.setInt(3, user.getPhone());
+                stmt.setString(4, user.getPassword());
 
-    public static CustomerProfile getCustomerProfileById(int customerId, ConnectionPool connectionPool) throws DatabaseException {
-        String sql = """
-        SELECT c.customer_id, c.customer_name, c.customer_email, c.customer_phone, 
-               c.password,
-               cz.address, cz.postcode, cz.city
-        FROM customer c
-        LEFT JOIN customer_zip cz ON c.customer_id = cz.customer_id
-        WHERE c.customer_id = ?
-    """;
-
-        try (Connection conn = connectionPool.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, customerId);
-            try (ResultSet rs = ps.executeQuery()) {
+                ResultSet rs = stmt.executeQuery();
                 if (rs.next()) {
-                    CustomerProfile profile = new CustomerProfile();
-                    profile.setCustomerId(rs.getInt("customer_id"));
-                    profile.setName(rs.getString("customer_name"));
-                    profile.setEmail(rs.getString("customer_email"));
-                    profile.setPhone(rs.getInt("customer_phone"));
-                    profile.setAddress(rs.getString("address"));
-                    profile.setPostcode(rs.getInt("postcode"));
-                    profile.setCity(rs.getString("city"));
-                    profile.setPassword(rs.getString("password"));
-                    return profile;
+                    customerId = rs.getInt("customer_id");
                 } else {
-                    throw new DatabaseException("No customer found with ID: " + customerId);
+                    throw new SQLException("Creating customer failed, no ID obtained.");
                 }
             }
+
+            try (PreparedStatement stmt2 = conn.prepareStatement(insertZipSql)) {
+                stmt2.setInt(1, customerId);
+                stmt2.setInt(2, user.getPostcode());
+                stmt2.setString(3, user.getAddress());
+                stmt2.setString(4, user.getCity());
+
+                stmt2.executeUpdate();
+            }
+
+            conn.commit();  // commit transaction if all good
+
         } catch (SQLException e) {
-            throw new DatabaseException("Error fetching customer profile", e.getMessage());
+            e.printStackTrace();  // print full stack trace for debugging
+            try {
+                connectionPool.getConnection().rollback();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+            throw new RuntimeException("Error creating user", e);
         }
     }
 }

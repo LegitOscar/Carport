@@ -1,47 +1,69 @@
 package app.entities;
 
 public class User {
-
-    private int userId;
-    private String userName;
+    private int id; // for worker_id or customer_id
+    private String name;
+    private String address;
+    private int postcode;
+    private String city;
+    private int phone;
+    private String email;
     private String password;
-    private Integer roleId;
+    private Integer roleId; // nullable
 
-
-    public User(int userId, String userName, String passwordt, Integer roleId) {
-
-    this.userId = userId;
-    this.userName = userName;
-    this.password = password;
-    this.roleId = roleId;
-
+    // Constructor for worker login
+    public User(int id, String email, String password, Integer roleId) {
+        this.id = id;
+        this.email = email;
+        this.password = password;
+        this.roleId = roleId;
     }
 
-    public int getUserId()
-    {
-        return userId;
+    // Constructor for customer creation
+    public User(String name, String address, int postcode, String city, int phone, String email, String password) {
+        this.name = name;
+        this.address = address;
+        this.postcode = postcode;
+        this.city = city;
+        this.phone = phone;
+        this.email = email;
+        this.password = password;
     }
 
-    public String getUserName()
-    {
-        return userName;
+    // Getters
+    public int getUserId() {
+        return id;
     }
 
-    public String getPassword()
-    {
+    public String getName() {
+        return name;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public int getPostcode() {
+        return postcode;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public int getPhone() {
+        return phone;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPassword() {
         return password;
     }
-    public Integer getRoleId() { return roleId; }
 
-
-    @Override
-    public String toString()
-    {
-        return "User{" +
-                "userId=" + userId +
-                ", userName='" + userName + '\'' +
-                ", password='" + password + '\'' +
-                '}';
+    public Integer getRoleId() {
+        return roleId;
     }
-
 }
