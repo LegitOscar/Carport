@@ -4,14 +4,28 @@ public class Product {
     private int productId;
     private String name;
     private String unit;
-    private int price;
+    private double price;
 
-    public Product(int productId, String name, String unit, int price) {
+    public Product(int productId, String name, String unit, double price) {
         this.productId = productId;
         this.name = name;
+        this.unit = unit;
         this.price = price;
     }
-    public int getProductId(){
-        return 0; // muligvis forkert
+
+    public int getProductId() {
+        return productId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public double getPrice() {
+        return price;
     }
 }
