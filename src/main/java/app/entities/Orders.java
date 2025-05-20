@@ -85,7 +85,9 @@ public class Orders {
                 ", totalPrice=" + totalPrice +
                 ", orderStatus='" + orderStatus + '\'' +
                 ", customerId=" + customerId +
-                ", workerId=" + workerId + +
+                ", workerId=" + workerId +
+                ", carportId=" + carportId +
                 '}';
+
     }
 }
