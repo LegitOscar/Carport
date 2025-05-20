@@ -18,7 +18,10 @@ public class WoodVariantMapper {
     }
 
     public WoodVariant findByMaterialIdAndLength(int materialId, int lengthCm) {
-        String sql = "SELECT * FROM wood_variant WHERE material_id = ? AND length_cm = ?";
+        String sql = "SELECT w.wood_variant_id, w.material_id, w.length_cm, w.size, w.price, m.material_name\n" +
+                "FROM wood_variant w\n" +
+                "JOIN material m ON w.material_id = m.material_id\n" +
+                "WHERE w.material_id = ? AND w.length_cm = ?";
         try (Connection conn = connectionPool.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, materialId);
@@ -27,7 +30,8 @@ public class WoodVariantMapper {
             if (rs.next()) {
                 return new WoodVariant(
                         rs.getInt("wood_variant_id"),
-                        rs.getInt("material_id"),
+                        rs.getString("material_name"),
+                        rs.getInt("material-id"),
                         rs.getInt("length_cm"),
                         rs.getString("size"),
                         rs.getDouble("price")

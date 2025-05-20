@@ -5,6 +5,7 @@ import app.entities.OrderItem;
 import app.entities.Orders;
 import app.entities.WoodVariant;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -159,7 +160,7 @@ public class Calculator {
         return result;
     }
     public List<OrderItem> generateBillOfMaterials(Carport carport) {
-        Orders dummyOrder = new Orders(0, null, 0, null, 0, 0, 0);
+        Orders dummyOrder = new Orders(0, LocalDate.now(), 0, null, 0, 0, carport.getCarportId());
         return calculateMaterials(carport, dummyOrder);
     }
 
