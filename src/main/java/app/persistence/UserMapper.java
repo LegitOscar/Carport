@@ -5,94 +5,101 @@ import app.entities.CustomerProfile;
 import app.entities.User;
 import app.exceptions.DatabaseException;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class UserMapper
 {
+    private final ConnectionPool connectionPool;
+
+    public UserMapper(ConnectionPool connectionPool) {
+        this.connectionPool = connectionPool;
+    }
+
 
     public static User login(String email, String password, ConnectionPool connectionPool) throws DatabaseException {
-        String sql = "SELECT * FROM customer WHERE customer_email=? AND password=?";
+        try (Connection connection = connectionPool.getConnection()) {
+            // Check customer
+            String sqlCustomer = "SELECT * FROM customer WHERE customer_email=? AND password=?";
+            try (PreparedStatement ps = connection.prepareStatement(sqlCustomer)) {
+                ps.setString(1, email);
+                ps.setString(2, password);
+                ResultSet rs = ps.executeQuery();
 
-        try (
-                Connection connection = connectionPool.getConnection();
-                PreparedStatement ps = connection.prepareStatement(sql)
-        ) {
-            ps.setString(1, email);
-            ps.setString(2, password);
-
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                int id = rs.getInt("customer_id");
-                String fetchedEmail = rs.getString("customer_email");
-
-                return new User(id, fetchedEmail, password, "customer");
-            } else {
-                throw new DatabaseException("Fejl i login. Forkert brugernavn eller adgangskode.");
-            }
-        } catch (SQLException e) {
-            throw new DatabaseException("DB fejl", e.getMessage());
-        }
-    }
-
-
-
-
-    public static void createUser(String userName, String password, String role, ConnectionPool connectionPool) throws DatabaseException {
-        // This version uses ON CONFLICT DO NOTHING to silently skip duplicate inserts
-        String sql = "INSERT INTO users (user_name, password, role) VALUES (?,?,?) ON CONFLICT (user_name) DO NOTHING";
-
-        try (
-                Connection connection = connectionPool.getConnection();
-                PreparedStatement ps = connection.prepareStatement(sql)
-        ) {
-            ps.setString(1, userName);
-            ps.setString(2, password);
-            ps.setString(3, role);
-
-            ps.executeUpdate(); // No need to check rows affected, since duplicates are allowed
-        } catch (SQLException e) {
-            throw new DatabaseException("Der er sket en fejl. Prøv igen", e.getMessage());
-        }
-    }
-
-    public static CustomerProfile getCustomerProfileById(int customerId, ConnectionPool connectionPool) throws DatabaseException{
-        String sql = """
-            SELECT c.customer_id, c.customer_name, c.customer_email, c.customer_phone, 
-                   c.password,
-                cz.address, cz.postcode, cz.city
-                FROM customer c
-                JOIN customer_zip cz ON c.customer_id = cz.customer_id
-                WHERE c.customer_id = ?
-        """;
-
-        try (Connection conn = connectionPool.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, customerId);
-            try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    CustomerProfile profile = new CustomerProfile();
-                    profile.setCustomerId(rs.getInt("customer_id"));
-                    profile.setName(rs.getString("customer_name"));
-                    profile.setEmail(rs.getString("customer_email"));
-                    profile.setPhone(rs.getInt("customer_phone"));
-                    profile.setAddress(rs.getString("address"));
-                    profile.setPostcode(rs.getInt("postcode"));
-                    profile.setCity(rs.getString("city"));
-                    profile.setPassword(rs.getString("password"));
-                    return profile;
-                } else {
-                    throw new DatabaseException("No customer found with ID: " + customerId);
+                    int id = rs.getInt("customer_id");
+                    String fetchedEmail = rs.getString("customer_email");
+                    return new User(id, fetchedEmail, password, null); // roleId is null
                 }
             }
-        }catch (SQLException e){
-            throw new DatabaseException("Error fetching customer profile", e.getMessage());
-        }
 
+            // Check worker
+            String sqlWorker = "SELECT * FROM workers WHERE worker_email=? AND password=?";
+            try (PreparedStatement ps = connection.prepareStatement(sqlWorker)) {
+                ps.setString(1, email);
+                ps.setString(2, password);
+                ResultSet rs = ps.executeQuery();
+
+                if (rs.next()) {
+                    int id = rs.getInt("worker_id");
+                    String fetchedEmail = rs.getString("worker_email");
+                    Integer roleId = rs.getInt("role_id");
+                    return new User(id, fetchedEmail, password, roleId);
+                }
+            }
+
+            throw new DatabaseException("Login failed: no such user.");
+
+        } catch (SQLException e) {
+            throw new DatabaseException("DB error during login", e.getMessage());
+        }
     }
 
+
+    public void createUser(User user) {
+        String insertCustomerSql = "INSERT INTO customer (customer_name, customer_email, customer_phone, password) " +
+                "VALUES (?, ?, ?, ?) RETURNING customer_id";
+
+        String insertZipSql = "INSERT INTO customer_zip (customer_id, postcode, address, city) VALUES (?, ?, ?, ?)";
+
+        try (Connection conn = connectionPool.getConnection()) {
+            conn.setAutoCommit(false);  // start transaction
+
+            int customerId;
+            try (PreparedStatement stmt = conn.prepareStatement(insertCustomerSql)) {
+                stmt.setString(1, user.getName());
+                stmt.setString(2, user.getEmail());
+                stmt.setInt(3, user.getPhone());
+                stmt.setString(4, user.getPassword());
+
+                ResultSet rs = stmt.executeQuery();
+                if (rs.next()) {
+                    customerId = rs.getInt("customer_id");
+                } else {
+                    throw new SQLException("Creating customer failed, no ID obtained.");
+                }
+            }
+
+            try (PreparedStatement stmt2 = conn.prepareStatement(insertZipSql)) {
+                stmt2.setInt(1, customerId);
+                stmt2.setInt(2, user.getPostcode());
+                stmt2.setString(3, user.getAddress());
+                stmt2.setString(4, user.getCity());
+
+                stmt2.executeUpdate();
+            }
+
+            conn.commit();  // commit transaction if all good
+
+        } catch (SQLException e) {
+            e.printStackTrace();  // print full stack trace for debugging
+            try {
+                connectionPool.getConnection().rollback();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+            throw new RuntimeException("Error creating user", e);
+        }
+    }
 }
 
 

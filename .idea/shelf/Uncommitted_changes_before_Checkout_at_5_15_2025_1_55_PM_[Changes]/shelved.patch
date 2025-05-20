@@ -1,0 +1,290 @@
+Index: src/main/java/app/Main.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package app;\r\n\r\nimport app.persistence.ConnectionPool;\r\nimport app.persistence.OrderMapper;\r\nimport app.entities.Order;\r\nimport app.entities.User;\r\n\r\nimport java.time.LocalDate;\r\n\r\n\r\npublic class Main {\r\n    public static void main(String[] args) {\r\n        ConnectionPool connectionPool = ConnectionPool.getInstance(\r\n                \"postgres\", \"datdat2025!\", \"jdbc:postgresql://164.90.223.15:5432/%s\", \"carport\");\r\n\r\n        try {\r\n            // Simulate a logged-in user\r\n            User currentUser = new User(1, \"joe\", \"123\", \"customer\");\r\n            int customerId = currentUser.getUserId();\r\n\r\n            // Provide test values for the order\r\n            int orderId = 6; // existing order ID\r\n            LocalDate orderDate = LocalDate.now();\r\n            double totalPrice = 4999.95;\r\n            String orderStatus = \"bekræftet\";\r\n            int workerId = 0; // or actual worker ID\r\n            int carportId = 1; // make sure this exists\r\n\r\n            // Create the Order\r\n            Order order = new Order(orderId, orderDate, totalPrice, orderStatus, customerId, workerId, carportId);\r\n\r\n            // Call the update method\r\n            OrderMapper.updateOrder(order, connectionPool);\r\n\r\n            System.out.println(\"Ordre opdateret!\");\r\n\r\n        } catch (Exception e) {\r\n            System.err.println(\"Fejl ved opdatering af ordre: \" + e.getMessage());\r\n            e.printStackTrace();\r\n        } finally {\r\n            connectionPool.close();\r\n        }\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/app/Main.java b/src/main/java/app/Main.java
+--- a/src/main/java/app/Main.java	(revision f8fefcb7ce2a8dc019b6024e851ae76371a60000)
++++ b/src/main/java/app/Main.java	(date 1747307985563)
+@@ -1,44 +1,38 @@
+ package app;
+ 
++import app.config.SessionConfig;
++import app.config.ThymeleafConfig;
++import app.controllers.OrderController;
++import app.controllers.UserController;
+ import app.persistence.ConnectionPool;
+-import app.persistence.OrderMapper;
+-import app.entities.Order;
+-import app.entities.User;
+-
+-import java.time.LocalDate;
+-
++import io.javalin.Javalin;
++import io.javalin.rendering.template.JavalinThymeleaf;
+ 
+ public class Main {
+-    public static void main(String[] args) {
+-        ConnectionPool connectionPool = ConnectionPool.getInstance(
+-                "postgres", "datdat2025!", "jdbc:postgresql://164.90.223.15:5432/%s", "carport");
++
++    // private static final Logger LOGGER = Logger.getLogger(Main.class.getName()); // POTENTIELT FORKERT
+ 
+-        try {
+-            // Simulate a logged-in user
+-            User currentUser = new User(1, "joe", "123", "customer");
+-            int customerId = currentUser.getUserId();
++    private static final String USER = "postgres";
++    private static final String PASSWORD = "datdat2025!";
++    private static final String URL = "jdbc:postgresql://164.90.223.15:5432/%s?currentSchema=public";
++    private static final String DB = "carport";
+ 
+-            // Provide test values for the order
+-            int orderId = 6; // existing order ID
+-            LocalDate orderDate = LocalDate.now();
+-            double totalPrice = 4999.95;
+-            String orderStatus = "bekræftet";
+-            int workerId = 0; // or actual worker ID
+-            int carportId = 1; // make sure this exists
+ 
+-            // Create the Order
+-            Order order = new Order(orderId, orderDate, totalPrice, orderStatus, customerId, workerId, carportId);
++    private static final ConnectionPool connectionPool = ConnectionPool.getInstance(USER, PASSWORD, URL, DB);
+ 
+-            // Call the update method
+-            OrderMapper.updateOrder(order, connectionPool);
++    public static void main(String[] args)
++    {
++        // Initializing Javalin and Jetty webserver
+ 
+-            System.out.println("Ordre opdateret!");
++        Javalin app = Javalin.create(config -> {
++            config.staticFiles.add("/public");
++            config.jetty.modifyServletContextHandler(handler ->  handler.setSessionHandler(SessionConfig.sessionConfig()));
++            config.fileRenderer(new JavalinThymeleaf(ThymeleafConfig.templateEngine()));}).start(7070);
+ 
+-        } catch (Exception e) {
+-            System.err.println("Fejl ved opdatering af ordre: " + e.getMessage());
+-            e.printStackTrace();
+-        } finally {
+-            connectionPool.close();
+-        }
++        // Routing
++        app.get("/", ctx ->  ctx.render("index.html"));
++        UserController.addRoutes(app,connectionPool);
++        OrderController.addRoutes(app, connectionPool);
++
+     }
+ }
+Index: src/main/java/app/persistence/UserMapper.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package app.persistence;\r\n\r\n\r\nimport app.entities.CustomerProfile;\r\nimport app.entities.User;\r\nimport app.exceptions.DatabaseException;\r\n\r\nimport java.sql.Connection;\r\nimport java.sql.PreparedStatement;\r\nimport java.sql.ResultSet;\r\nimport java.sql.SQLException;\r\n\r\npublic class UserMapper\r\n{\r\n\r\n    public static User login(String email, String password, ConnectionPool connectionPool) throws DatabaseException {\r\n        String sql = \"SELECT * FROM customer WHERE customer_email=? AND password=?\";\r\n\r\n        try (\r\n                Connection connection = connectionPool.getConnection();\r\n                PreparedStatement ps = connection.prepareStatement(sql)\r\n        ) {\r\n            ps.setString(1, email);\r\n            ps.setString(2, password);\r\n\r\n            ResultSet rs = ps.executeQuery();\r\n            if (rs.next()) {\r\n                int id = rs.getInt(\"customer_id\");\r\n                String fetchedEmail = rs.getString(\"customer_email\");\r\n\r\n                return new User(id, fetchedEmail, password, \"customer\");\r\n            } else {\r\n                throw new DatabaseException(\"Fejl i login. Forkert brugernavn eller adgangskode.\");\r\n            }\r\n        } catch (SQLException e) {\r\n            throw new DatabaseException(\"DB fejl\", e.getMessage());\r\n        }\r\n    }\r\n\r\n\r\n\r\n\r\n    public static void createUser(String userName, String password, String role, ConnectionPool connectionPool) throws DatabaseException {\r\n        // This version uses ON CONFLICT DO NOTHING to silently skip duplicate inserts\r\n        String sql = \"INSERT INTO users (user_name, password, role) VALUES (?,?,?) ON CONFLICT (user_name) DO NOTHING\";\r\n\r\n        try (\r\n                Connection connection = connectionPool.getConnection();\r\n                PreparedStatement ps = connection.prepareStatement(sql)\r\n        ) {\r\n            ps.setString(1, userName);\r\n            ps.setString(2, password);\r\n            ps.setString(3, role);\r\n\r\n            ps.executeUpdate(); // No need to check rows affected, since duplicates are allowed\r\n        } catch (SQLException e) {\r\n            throw new DatabaseException(\"Der er sket en fejl. Prøv igen\", e.getMessage());\r\n        }\r\n    }\r\n\r\n    public static CustomerProfile getCustomerProfileById(int customerId, ConnectionPool connectionPool) throws DatabaseException{\r\n        String sql = \"\"\"\r\n            SELECT c.customer_id, c.customer_name, c.customer_email, c.customer_phone, \r\n                   c.password,\r\n                cz.address, cz.postcode, cz.city\r\n                FROM customer c\r\n                JOIN customer_zip cz ON c.customer_id = cz.customer_id\r\n                WHERE c.customer_id = ?\r\n        \"\"\";\r\n\r\n        try (Connection conn = connectionPool.getConnection();\r\n             PreparedStatement ps = conn.prepareStatement(sql)) {\r\n            ps.setInt(1, customerId);\r\n            try (ResultSet rs = ps.executeQuery()) {\r\n                if (rs.next()) {\r\n                    CustomerProfile profile = new CustomerProfile();\r\n                    profile.setCustomerId(rs.getInt(\"customer_id\"));\r\n                    profile.setName(rs.getString(\"customer_name\"));\r\n                    profile.setEmail(rs.getString(\"customer_email\"));\r\n                    profile.setPhone(rs.getInt(\"customer_phone\"));\r\n                    profile.setAddress(rs.getString(\"address\"));\r\n                    profile.setPostcode(rs.getInt(\"postcode\"));\r\n                    profile.setCity(rs.getString(\"city\"));\r\n                    profile.setPassword(rs.getString(\"password\"));\r\n                    return profile;\r\n                } else {\r\n                    throw new DatabaseException(\"No customer found with ID: \" + customerId);\r\n                }\r\n            }\r\n        }catch (SQLException e){\r\n            throw new DatabaseException(\"Error fetching customer profile\", e.getMessage());\r\n        }\r\n\r\n    }\r\n\r\n}\r\n\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/app/persistence/UserMapper.java b/src/main/java/app/persistence/UserMapper.java
+--- a/src/main/java/app/persistence/UserMapper.java	(revision f8fefcb7ce2a8dc019b6024e851ae76371a60000)
++++ b/src/main/java/app/persistence/UserMapper.java	(date 1747309215303)
+@@ -14,28 +14,29 @@
+ {
+ 
+     public static User login(String email, String password, ConnectionPool connectionPool) throws DatabaseException {
+-        String sql = "SELECT * FROM customer WHERE customer_email=? AND password=?";
++        String sql = "SELECT * FROM customer WHERE customer_email = ? AND password = ?";
+ 
+-        try (
+-                Connection connection = connectionPool.getConnection();
+-                PreparedStatement ps = connection.prepareStatement(sql)
+-        ) {
++        try (Connection connection = connectionPool.getConnection();
++             PreparedStatement ps = connection.prepareStatement(sql)) {
++
+             ps.setString(1, email);
+             ps.setString(2, password);
+ 
+             ResultSet rs = ps.executeQuery();
++
+             if (rs.next()) {
+-                int id = rs.getInt("customer_id");
+-                String fetchedEmail = rs.getString("customer_email");
+-
+-                return new User(id, fetchedEmail, password, "customer");
++                int id = rs.getInt("customer_id");  // or "id", depending on your table
++                String role = rs.getString("role"); // or set a default like "customer"
++                return new User(id, email, password, role);
+             } else {
+-                throw new DatabaseException("Fejl i login. Forkert brugernavn eller adgangskode.");
++                return null;
+             }
++
+         } catch (SQLException e) {
+-            throw new DatabaseException("DB fejl", e.getMessage());
++            throw new DatabaseException("Fejl under login", e.getMessage());
+         }
+     }
++
+ 
+ 
+ 
+Index: src/main/resources/templates/login.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><!DOCTYPE html>\r\n<html lang=\"da\" xmlns:th=\"http://www.thymeleaf.org\" xmlns=\"http://www.w3.org/1999/html\">\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <title>Opret Bruger - Carport </title>\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <link rel=\"stylesheet\" href=\"../public/css/loginStyles.css\">\r\n\r\n</head>\r\n<body>\r\n<header class=\"header\">\r\n  <div class=\"logo\">\r\n    <img src=\"../public/images/fogLogo.png\" th:src=\"@{../public/images/fogLogo.png}\" alt=\"Fog Logo\">\r\n  </div>\r\n</header>\r\n\r\n<div class=\"container\">\r\n  <form class=\"login-form\">\r\n    <label for=\"email\">Email adress:</label>\r\n    <input type=\"email\" id=\"email\" class=\"input-field\" placeholder=\"Indtast din email\">\r\n\r\n    <label for=\"password\">Password:</label>\r\n    <input type=\"password\" id=\"password\" class=\"input-field\" placeholder=\"Indtast dit password\">\r\n\r\n    <button type=\"submit\" class=\"login-btn\">Login</button>\r\n  </form>\r\n\r\n  <a href=\"#\" class=\"createuser-link\">Opret bruger</a>\r\n</div>\r\n    <div>\r\n      <p th:text=\"${message}\" class=\"error-message\"></p>\r\n    </div>\r\n\r\n</div>\r\n</body>\r\n</html>\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/resources/templates/login.html b/src/main/resources/templates/login.html
+--- a/src/main/resources/templates/login.html	(revision f8fefcb7ce2a8dc019b6024e851ae76371a60000)
++++ b/src/main/resources/templates/login.html	(date 1747308550640)
+@@ -15,8 +15,8 @@
+ </header>
+ 
+ <div class="container">
+-  <form class="login-form">
+-    <label for="email">Email adress:</label>
++  <form class="login-form" method="post" th:action="@{/login}">
++  <label for="email">Email adress:</label>
+     <input type="email" id="email" class="input-field" placeholder="Indtast din email">
+ 
+     <label for="password">Password:</label>
+Index: target/classes/templates/login.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><!DOCTYPE html>\r\n<html lang=\"da\" xmlns:th=\"http://www.thymeleaf.org\" xmlns=\"http://www.w3.org/1999/html\">\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <title>Opret Bruger - Carport </title>\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <link rel=\"stylesheet\" href=\"../public/css/loginStyles.css\">\r\n\r\n</head>\r\n<body>\r\n<header class=\"header\">\r\n  <div class=\"logo\">\r\n    <img src=\"../public/images/fogLogo.png\" th:src=\"@{../public/images/fogLogo.png}\" alt=\"Fog Logo\">\r\n  </div>\r\n</header>\r\n\r\n<div class=\"container\">\r\n  <form class=\"login-form\">\r\n    <label for=\"email\">Email adress:</label>\r\n    <input type=\"email\" id=\"email\" class=\"input-field\" placeholder=\"Indtast din email\">\r\n\r\n    <label for=\"password\">Password:</label>\r\n    <input type=\"password\" id=\"password\" class=\"input-field\" placeholder=\"Indtast dit password\">\r\n\r\n    <button type=\"submit\" class=\"login-btn\">Login</button>\r\n  </form>\r\n\r\n  <a href=\"#\" class=\"createuser-link\">Opret bruger</a>\r\n</div>\r\n    <div>\r\n      <p th:text=\"${message}\" class=\"error-message\"></p>\r\n    </div>\r\n\r\n</div>\r\n</body>\r\n</html>\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/target/classes/templates/login.html b/target/classes/templates/login.html
+--- a/target/classes/templates/login.html	(revision f8fefcb7ce2a8dc019b6024e851ae76371a60000)
++++ b/target/classes/templates/login.html	(date 1747308550640)
+@@ -15,8 +15,8 @@
+ </header>
+ 
+ <div class="container">
+-  <form class="login-form">
+-    <label for="email">Email adress:</label>
++  <form class="login-form" method="post" th:action="@{/login}">
++  <label for="email">Email adress:</label>
+     <input type="email" id="email" class="input-field" placeholder="Indtast din email">
+ 
+     <label for="password">Password:</label>
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"AutoImportSettings\">\r\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\r\n  </component>\r\n  <component name=\"ChangeListManager\">\r\n    <list default=\"true\" id=\"24c281b8-f515-42aa-aabd-1ff073604b67\" name=\"Changes\" comment=\"push\" />\r\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\r\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\r\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\r\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\r\n  </component>\r\n  <component name=\"FileTemplateManagerImpl\">\r\n    <option name=\"RECENT_TEMPLATES\">\r\n      <list>\r\n        <option value=\"HTML File\" />\r\n      </list>\r\n    </option>\r\n  </component>\r\n  <component name=\"Git.Settings\">\r\n    <option name=\"RECENT_BRANCH_BY_REPOSITORY\">\r\n      <map>\r\n        <entry key=\"$PROJECT_DIR$\" value=\"main\" />\r\n      </map>\r\n    </option>\r\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\r\n  </component>\r\n  <component name=\"GitHubPullRequestSearchHistory\">{\r\n  &quot;lastFilter&quot;: {\r\n    &quot;state&quot;: &quot;OPEN&quot;,\r\n    &quot;assignee&quot;: &quot;KhuongNDang&quot;\r\n  }\r\n}</component>\r\n  <component name=\"GithubPullRequestsUISettings\">{\r\n  &quot;selectedUrlAndAccountId&quot;: {\r\n    &quot;url&quot;: &quot;https://github.com/LegitOscar/Carport.git&quot;,\r\n    &quot;accountId&quot;: &quot;ce5b9cec-6726-4d33-90fc-1b18021aec65&quot;\r\n  }\r\n}</component>\r\n  <component name=\"ProjectColorInfo\">{\r\n  &quot;associatedIndex&quot;: 5\r\n}</component>\r\n  <component name=\"ProjectId\" id=\"2x0fZrcZJUnewxvLeTvXCRysoiI\" />\r\n  <component name=\"ProjectViewState\">\r\n    <option name=\"showLibraryContents\" value=\"true\" />\r\n  </component>\r\n  <component name=\"PropertiesComponent\"><![CDATA[{\r\n  \"keyToString\": {\r\n    \"Application.Main.executor\": \"Run\",\r\n    \"DefaultHtmlFileTemplate\": \"HTML File\",\r\n    \"JUnit.OrderTest.executor\": \"Run\",\r\n    \"JUnit.OrderTest.testCreateOrder.executor\": \"Run\",\r\n    \"JUnit.OrderTest.testDeleteOrder.executor\": \"Run\",\r\n    \"JUnit.OrderTest.testDeleteOrder2.executor\": \"Run\",\r\n    \"JUnit.UserTest.executor\": \"Run\",\r\n    \"JUnit.UserTest.testCreateUser.executor\": \"Run\",\r\n    \"JUnit.UserTest.testDuplicateUsername.executor\": \"Run\",\r\n    \"JUnit.UserTest.testLogin.executor\": \"Run\",\r\n    \"JUnit.UserTest.testPasswordMatch.executor\": \"Run\",\r\n    \"Maven.Carport [package].executor\": \"Run\",\r\n    \"RunOnceActivity.ShowReadmeOnStart\": \"true\",\r\n    \"git-widget-placeholder\": \"createOrder__Khuong\",\r\n    \"ignore.virus.scanning.warn.message\": \"true\",\r\n    \"kotlin-language-version-configured\": \"true\",\r\n    \"node.js.detected.package.eslint\": \"true\",\r\n    \"node.js.detected.package.tslint\": \"true\",\r\n    \"node.js.selected.package.eslint\": \"(autodetect)\",\r\n    \"node.js.selected.package.tslint\": \"(autodetect)\",\r\n    \"nodejs_package_manager_path\": \"npm\",\r\n    \"vue.rearranger.settings.migration\": \"true\"\r\n  }\r\n}]]></component>\r\n  <component name=\"RunManager\" selected=\"Application.Main\">\r\n    <configuration name=\"Main\" type=\"Application\" factoryName=\"Application\" temporary=\"true\" nameIsGenerated=\"true\">\r\n      <option name=\"MAIN_CLASS_NAME\" value=\"app.Main\" />\r\n      <module name=\"Carport\" />\r\n      <extension name=\"coverage\">\r\n        <pattern>\r\n          <option name=\"PATTERN\" value=\"app.*\" />\r\n          <option name=\"ENABLED\" value=\"true\" />\r\n        </pattern>\r\n      </extension>\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration name=\"UserTest\" type=\"JUnit\" factoryName=\"JUnit\" temporary=\"true\" nameIsGenerated=\"true\">\r\n      <module name=\"Carport\" />\r\n      <option name=\"PACKAGE_NAME\" value=\"\" />\r\n      <option name=\"MAIN_CLASS_NAME\" value=\"UserTest\" />\r\n      <option name=\"TEST_OBJECT\" value=\"class\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration name=\"UserTest.testCreateUser\" type=\"JUnit\" factoryName=\"JUnit\" temporary=\"true\" nameIsGenerated=\"true\">\r\n      <module name=\"Carport\" />\r\n      <option name=\"PACKAGE_NAME\" value=\"\" />\r\n      <option name=\"MAIN_CLASS_NAME\" value=\"UserTest\" />\r\n      <option name=\"METHOD_NAME\" value=\"testCreateUser\" />\r\n      <option name=\"TEST_OBJECT\" value=\"method\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration name=\"UserTest.testDuplicateUsername\" type=\"JUnit\" factoryName=\"JUnit\" temporary=\"true\" nameIsGenerated=\"true\">\r\n      <module name=\"Carport\" />\r\n      <option name=\"PACKAGE_NAME\" value=\"\" />\r\n      <option name=\"MAIN_CLASS_NAME\" value=\"UserTest\" />\r\n      <option name=\"METHOD_NAME\" value=\"testDuplicateUsername\" />\r\n      <option name=\"TEST_OBJECT\" value=\"method\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration name=\"UserTest.testLogin\" type=\"JUnit\" factoryName=\"JUnit\" temporary=\"true\" nameIsGenerated=\"true\">\r\n      <module name=\"Carport\" />\r\n      <option name=\"PACKAGE_NAME\" value=\"\" />\r\n      <option name=\"MAIN_CLASS_NAME\" value=\"UserTest\" />\r\n      <option name=\"METHOD_NAME\" value=\"testLogin\" />\r\n      <option name=\"TEST_OBJECT\" value=\"method\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <recent_temporary>\r\n      <list>\r\n        <item itemvalue=\"Application.Main\" />\r\n        <item itemvalue=\"JUnit.UserTest.testLogin\" />\r\n        <item itemvalue=\"JUnit.UserTest.testDuplicateUsername\" />\r\n        <item itemvalue=\"JUnit.UserTest.testCreateUser\" />\r\n        <item itemvalue=\"JUnit.UserTest\" />\r\n      </list>\r\n    </recent_temporary>\r\n  </component>\r\n  <component name=\"SharedIndexes\">\r\n    <attachedChunks>\r\n      <set>\r\n        <option value=\"bundled-jdk-9823dce3aa75-28b599e66164-intellij.indexing.shared.core-IU-242.24807.4\" />\r\n        <option value=\"bundled-js-predefined-d6986cc7102b-5c90d61e3bab-JavaScript-IU-242.24807.4\" />\r\n      </set>\r\n    </attachedChunks>\r\n  </component>\r\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\r\n  <component name=\"TaskManager\">\r\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\r\n      <changelist id=\"24c281b8-f515-42aa-aabd-1ff073604b67\" name=\"Changes\" comment=\"\" />\r\n      <created>1747079970860</created>\r\n      <option name=\"number\" value=\"Default\" />\r\n      <option name=\"presentableId\" value=\"Default\" />\r\n      <updated>1747079970860</updated>\r\n      <workItem from=\"1747079972304\" duration=\"51000\" />\r\n      <workItem from=\"1747080030128\" duration=\"4121000\" />\r\n      <workItem from=\"1747130157493\" duration=\"1684000\" />\r\n      <workItem from=\"1747209380259\" duration=\"5319000\" />\r\n      <workItem from=\"1747297157437\" duration=\"7976000\" />\r\n    </task>\r\n    <task id=\"LOCAL-00001\" summary=\"push\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1747302114121</created>\r\n      <option name=\"number\" value=\"00001\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1747302114121</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00002\" summary=\"push\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1747307019743</created>\r\n      <option name=\"number\" value=\"00002\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00002\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1747307019743</updated>\r\n    </task>\r\n    <option name=\"localTasksCounter\" value=\"3\" />\r\n    <servers />\r\n  </component>\r\n  <component name=\"TypeScriptGeneratedFilesManager\">\r\n    <option name=\"version\" value=\"3\" />\r\n  </component>\r\n  <component name=\"Vcs.Log.Tabs.Properties\">\r\n    <option name=\"TAB_STATES\">\r\n      <map>\r\n        <entry key=\"MAIN\">\r\n          <value>\r\n            <State />\r\n          </value>\r\n        </entry>\r\n      </map>\r\n    </option>\r\n  </component>\r\n  <component name=\"VcsManagerConfiguration\">\r\n    <MESSAGE value=\"push\" />\r\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"push\" />\r\n  </component>\r\n</project>
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision f8fefcb7ce2a8dc019b6024e851ae76371a60000)
++++ b/.idea/workspace.xml	(date 1747309846203)
+@@ -4,7 +4,17 @@
+     <option name="autoReloadType" value="SELECTIVE" />
+   </component>
+   <component name="ChangeListManager">
+-    <list default="true" id="24c281b8-f515-42aa-aabd-1ff073604b67" name="Changes" comment="push" />
++    <list default="true" id="24c281b8-f515-42aa-aabd-1ff073604b67" name="Changes" comment="push">
++      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/app/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/Main.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/app/controllers/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/controllers/UserController.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/app/persistence/UserMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/persistence/UserMapper.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/login.html" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/target/classes/app/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/app/Main.class" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/target/classes/app/controllers/UserController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/app/controllers/UserController.class" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/target/classes/app/persistence/UserMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/app/persistence/UserMapper.class" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/target/classes/templates/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/templates/login.html" afterDir="false" />
++    </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+@@ -20,7 +30,7 @@
+   <component name="Git.Settings">
+     <option name="RECENT_BRANCH_BY_REPOSITORY">
+       <map>
+-        <entry key="$PROJECT_DIR$" value="main" />
++        <entry key="$PROJECT_DIR$" value="createOrder_Khuong" />
+       </map>
+     </option>
+     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+@@ -31,12 +41,22 @@
+     &quot;assignee&quot;: &quot;KhuongNDang&quot;
+   }
+ }</component>
+-  <component name="GithubPullRequestsUISettings">{
+-  &quot;selectedUrlAndAccountId&quot;: {
+-    &quot;url&quot;: &quot;https://github.com/LegitOscar/Carport.git&quot;,
+-    &quot;accountId&quot;: &quot;ce5b9cec-6726-4d33-90fc-1b18021aec65&quot;
+-  }
+-}</component>
++  <component name="GithubPullRequestsUISettings"><![CDATA[{
++  "selectedUrlAndAccountId": {
++    "url": "https://github.com/LegitOscar/Carport.git",
++    "accountId": "ce5b9cec-6726-4d33-90fc-1b18021aec65"
++  },
++  "recentNewPullRequestHead": {
++    "server": {
++      "useHttp": false,
++      "host": "github.com",
++      "port": null,
++      "suffix": null
++    },
++    "owner": "LegitOscar",
++    "repository": "Carport"
++  }
++}]]></component>
+   <component name="ProjectColorInfo">{
+   &quot;associatedIndex&quot;: 5
+ }</component>
+@@ -59,7 +79,7 @@
+     "JUnit.UserTest.testPasswordMatch.executor": "Run",
+     "Maven.Carport [package].executor": "Run",
+     "RunOnceActivity.ShowReadmeOnStart": "true",
+-    "git-widget-placeholder": "createOrder__Khuong",
++    "git-widget-placeholder": "fixed__main__Khuong",
+     "ignore.virus.scanning.warn.message": "true",
+     "kotlin-language-version-configured": "true",
+     "node.js.detected.package.eslint": "true",
+@@ -153,7 +173,7 @@
+       <workItem from="1747080030128" duration="4121000" />
+       <workItem from="1747130157493" duration="1684000" />
+       <workItem from="1747209380259" duration="5319000" />
+-      <workItem from="1747297157437" duration="7976000" />
++      <workItem from="1747297157437" duration="10758000" />
+     </task>
+     <task id="LOCAL-00001" summary="push">
+       <option name="closed" value="true" />
+@@ -171,7 +191,15 @@
+       <option name="project" value="LOCAL" />
+       <updated>1747307019743</updated>
+     </task>
+-    <option name="localTasksCounter" value="3" />
++    <task id="LOCAL-00003" summary="push">
++      <option name="closed" value="true" />
++      <created>1747307072507</created>
++      <option name="number" value="00003" />
++      <option name="presentableId" value="LOCAL-00003" />
++      <option name="project" value="LOCAL" />
++      <updated>1747307072507</updated>
++    </task>
++    <option name="localTasksCounter" value="4" />
+     <servers />
+   </component>
+   <component name="TypeScriptGeneratedFilesManager">
+@@ -192,4 +220,15 @@
+     <MESSAGE value="push" />
+     <option name="LAST_COMMIT_MESSAGE" value="push" />
+   </component>
++  <component name="XDebuggerManager">
++    <breakpoint-manager>
++      <breakpoints>
++        <line-breakpoint enabled="true" type="java-line">
++          <url>file://$PROJECT_DIR$/src/main/java/app/Main.java</url>
++          <line>10</line>
++          <option name="timeStamp" value="5" />
++        </line-breakpoint>
++      </breakpoints>
++    </breakpoint-manager>
++  </component>
+ </project>
+\ No newline at end of file

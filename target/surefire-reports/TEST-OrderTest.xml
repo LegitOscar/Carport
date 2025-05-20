@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="OrderTest" time="0.343" tests="2" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="OrderTest" time="1.253" tests="1" errors="1" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="17"/>
     <property name="sun.cpu.isalist" value="amd64"/>
@@ -15,7 +15,7 @@
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="user.country" value="US"/>
     <property name="sun.boot.library.path" value="C:\Users\khnda\.jdks\corretto-17.0.14\bin"/>
-    <property name="sun.java.command" value="C:\Users\khnda\AppData\Local\Temp\surefire16755272177618883689\surefirebooter-20250514121937035_3.jar C:\Users\khnda\AppData\Local\Temp\surefire16755272177618883689 2025-05-14T12-19-36_910-jvmRun1 surefire-20250514121937035_1tmp surefire_0-20250514121937035_2tmp"/>
+    <property name="sun.java.command" value="C:\Users\khnda\AppData\Local\Temp\surefire6966330586725717173\surefirebooter-20250517004544160_3.jar C:\Users\khnda\AppData\Local\Temp\surefire6966330586725717173 2025-05-17T00-45-44_022-jvmRun1 surefire-20250517004544160_1tmp surefire_0-20250517004544160_2tmp"/>
     <property name="jdk.debug" value="release"/>
     <property name="surefire.test.class.path" value="C:\Users\khnda\IdeaProjects\2. Semester\Carport\target\test-classes;C:\Users\khnda\IdeaProjects\2. Semester\Carport\target\classes;C:\Users\khnda\.m2\repository\io\javalin\javalin\6.1.3\javalin-6.1.3.jar;C:\Users\khnda\.m2\repository\org\slf4j\slf4j-api\2.0.12\slf4j-api-2.0.12.jar;C:\Users\khnda\.m2\repository\org\eclipse\jetty\jetty-server\11.0.20\jetty-server-11.0.20.jar;C:\Users\khnda\.m2\repository\org\eclipse\jetty\jetty-http\11.0.20\jetty-http-11.0.20.jar;C:\Users\khnda\.m2\repository\org\eclipse\jetty\jetty-util\11.0.20\jetty-util-11.0.20.jar;C:\Users\khnda\.m2\repository\org\eclipse\jetty\jetty-io\11.0.20\jetty-io-11.0.20.jar;C:\Users\khnda\.m2\repository\org\eclipse\jetty\toolchain\jetty-jakarta-servlet-api\5.0.2\jetty-jakarta-servlet-api-5.0.2.jar;C:\Users\khnda\.m2\repository\org\eclipse\jetty\websocket\websocket-jetty-server\11.0.20\websocket-jetty-server-11.0.20.jar;C:\Users\khnda\.m2\repository\org\eclipse\jetty\jetty-servlet\11.0.20\jetty-servlet-11.0.20.jar;C:\Users\khnda\.m2\repository\org\eclipse\jetty\jetty-security\11.0.20\jetty-security-11.0.20.jar;C:\Users\khnda\.m2\repository\org\eclipse\jetty\jetty-webapp\11.0.20\jetty-webapp-11.0.20.jar;C:\Users\khnda\.m2\repository\org\eclipse\jetty\jetty-xml\11.0.20\jetty-xml-11.0.20.jar;C:\Users\khnda\.m2\repository\org\eclipse\jetty\websocket\websocket-jetty-api\11.0.20\websocket-jetty-api-11.0.20.jar;C:\Users\khnda\.m2\repository\org\eclipse\jetty\websocket\websocket-jetty-common\11.0.20\websocket-jetty-common-11.0.20.jar;C:\Users\khnda\.m2\repository\org\eclipse\jetty\websocket\websocket-core-common\11.0.20\websocket-core-common-11.0.20.jar;C:\Users\khnda\.m2\repository\org\eclipse\jetty\websocket\websocket-servlet\11.0.20\websocket-servlet-11.0.20.jar;C:\Users\khnda\.m2\repository\org\eclipse\jetty\websocket\websocket-core-server\11.0.20\websocket-core-server-11.0.20.jar;C:\Users\khnda\.m2\repository\org\jetbrains\kotlin\kotlin-stdlib-jdk8\1.9.22\kotlin-stdlib-jdk8-1.9.22.jar;C:\Users\khnda\.m2\repository\org\jetbrains\kotlin\kotlin-stdlib\1.9.22\kotlin-stdlib-1.9.22.jar;C:\Users\khnda\.m2\repository\org\jetbrains\annotations\13.0\annotations-13.0.jar;C:\Users\khnda\.m2\repository\org\jetbrains\kotlin\kotlin-stdlib-jdk7\1.9.22\kotlin-stdlib-jdk7-1.9.22.jar;C:\Users\khnda\.m2\repository\org\slf4j\slf4j-simple\2.0.12\slf4j-simple-2.0.12.jar;C:\Users\khnda\.m2\repository\io\javalin\javalin-rendering\6.1.3\javalin-rendering-6.1.3.jar;C:\Users\khnda\.m2\repository\org\thymeleaf\thymeleaf\3.1.2.RELEASE\thymeleaf-3.1.2.RELEASE.jar;C:\Users\khnda\.m2\repository\ognl\ognl\3.3.4\ognl-3.3.4.jar;C:\Users\khnda\.m2\repository\org\javassist\javassist\3.29.0-GA\javassist-3.29.0-GA.jar;C:\Users\khnda\.m2\repository\org\attoparser\attoparser\2.0.7.RELEASE\attoparser-2.0.7.RELEASE.jar;C:\Users\khnda\.m2\repository\org\unbescape\unbescape\1.1.6.RELEASE\unbescape-1.1.6.RELEASE.jar;C:\Users\khnda\.m2\repository\org\thymeleaf\extras\thymeleaf-extras-java8time\3.0.4.RELEASE\thymeleaf-extras-java8time-3.0.4.RELEASE.jar;C:\Users\khnda\.m2\repository\com\fasterxml\jackson\core\jackson-databind\2.17.0-rc1\jackson-databind-2.17.0-rc1.jar;C:\Users\khnda\.m2\repository\com\fasterxml\jackson\core\jackson-annotations\2.17.0-rc1\jackson-annotations-2.17.0-rc1.jar;C:\Users\khnda\.m2\repository\com\fasterxml\jackson\core\jackson-core\2.17.0-rc1\jackson-core-2.17.0-rc1.jar;C:\Users\khnda\.m2\repository\net\bytebuddy\byte-buddy\1.14.9\byte-buddy-1.14.9.jar;C:\Users\khnda\.m2\repository\com\zaxxer\HikariCP\5.1.0\HikariCP-5.1.0.jar;C:\Users\khnda\.m2\repository\org\postgresql\postgresql\42.7.2\postgresql-42.7.2.jar;C:\Users\khnda\.m2\repository\org\checkerframework\checker-qual\3.42.0\checker-qual-3.42.0.jar;C:\Users\khnda\.m2\repository\org\junit\jupiter\junit-jupiter-api\5.10.2\junit-jupiter-api-5.10.2.jar;C:\Users\khnda\.m2\repository\org\opentest4j\opentest4j\1.3.0\opentest4j-1.3.0.jar;C:\Users\khnda\.m2\repository\org\junit\platform\junit-platform-commons\1.10.2\junit-platform-commons-1.10.2.jar;C:\Users\khnda\.m2\repository\org\apiguardian\apiguardian-api\1.1.2\apiguardian-api-1.1.2.jar;C:\Users\khnda\.m2\repository\org\junit\jupiter\junit-jupiter-engine\5.10.2\junit-jupiter-engine-5.10.2.jar;C:\Users\khnda\.m2\repository\org\junit\platform\junit-platform-engine\1.10.2\junit-platform-engine-1.10.2.jar;C:\Users\khnda\.m2\repository\org\hamcrest\hamcrest\2.2\hamcrest-2.2.jar;"/>
     <property name="sun.cpu.endian" value="little"/>
@@ -30,7 +30,7 @@
     <property name="line.separator" value="&#10;"/>
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
-    <property name="surefire.real.class.path" value="C:\Users\khnda\AppData\Local\Temp\surefire16755272177618883689\surefirebooter-20250514121937035_3.jar"/>
+    <property name="surefire.real.class.path" value="C:\Users\khnda\AppData\Local\Temp\surefire6966330586725717173\surefirebooter-20250517004544160_3.jar"/>
     <property name="user.script" value=""/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="java.runtime.version" value="17.0.14+7-LTS"/>
@@ -59,18 +59,35 @@
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="java.class.version" value="61.0"/>
   </properties>
-  <testcase name="testDeleteOrder" classname="OrderTest" time="0.057">
-    <system-out><![CDATA[Order created successfully with ID: 24
-]]></system-out>
-    <system-err><![CDATA[May 14, 2025 12:19:37 PM app.persistence.ConnectionPool createHikariConnectionPool
+  <testcase name="" classname="OrderTest" time="1.253">
+    <error message="Failed to initialize pool: FATAL: password authentication failed for user &quot;postgres&quot;" type="com.zaxxer.hikari.pool.HikariPool$PoolInitializationException"><![CDATA[com.zaxxer.hikari.pool.HikariPool$PoolInitializationException: Failed to initialize pool: FATAL: password authentication failed for user "postgres"
+	at com.zaxxer.hikari.pool.HikariPool.throwPoolInitializationException(HikariPool.java:584)
+	at com.zaxxer.hikari.pool.HikariPool.checkFailFast(HikariPool.java:571)
+	at com.zaxxer.hikari.pool.HikariPool.<init>(HikariPool.java:98)
+	at com.zaxxer.hikari.HikariDataSource.<init>(HikariDataSource.java:80)
+	at app.persistence.ConnectionPool.createHikariConnectionPool(ConnectionPool.java:100)
+	at app.persistence.ConnectionPool.getInstance(ConnectionPool.java:52)
+	at OrderTest.setUp(OrderTest.java:24)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+Caused by: org.postgresql.util.PSQLException: FATAL: password authentication failed for user "postgres"
+	at org.postgresql.core.v3.ConnectionFactoryImpl.doAuthentication(ConnectionFactoryImpl.java:698)
+	at org.postgresql.core.v3.ConnectionFactoryImpl.tryConnect(ConnectionFactoryImpl.java:207)
+	at org.postgresql.core.v3.ConnectionFactoryImpl.openConnectionImpl(ConnectionFactoryImpl.java:262)
+	at org.postgresql.core.ConnectionFactory.openConnection(ConnectionFactory.java:54)
+	at org.postgresql.jdbc.PgConnection.<init>(PgConnection.java:273)
+	at org.postgresql.Driver.makeConnection(Driver.java:446)
+	at org.postgresql.Driver.connect(Driver.java:298)
+	at com.zaxxer.hikari.util.DriverDataSource.getConnection(DriverDataSource.java:137)
+	at com.zaxxer.hikari.pool.PoolBase.newConnection(PoolBase.java:360)
+	at com.zaxxer.hikari.pool.PoolBase.newPoolEntry(PoolBase.java:202)
+	at com.zaxxer.hikari.pool.HikariPool.createPoolEntry(HikariPool.java:461)
+	at com.zaxxer.hikari.pool.HikariPool.checkFailFast(HikariPool.java:550)
+	... 7 more
+]]></error>
+    <system-err><![CDATA[May 17, 2025 12:45:44 AM app.persistence.ConnectionPool createHikariConnectionPool
 INFO: Connection Pool created for: (postgres, postgres, jdbc:postgresql://localhost:5432/%s?currentSchema=public, carport)
 [main] INFO com.zaxxer.hikari.HikariDataSource - Postgresql Pool - Starting...
-[main] INFO com.zaxxer.hikari.pool.HikariPool - Postgresql Pool - Added connection org.postgresql.jdbc.PgConnection@12591ac8
-[main] INFO com.zaxxer.hikari.HikariDataSource - Postgresql Pool - Start completed.
 ]]></system-err>
-  </testcase>
-  <testcase name="testCreateOrder" classname="OrderTest" time="0.007">
-    <system-out><![CDATA[Order created successfully with ID: 25
-]]></system-out>
   </testcase>
 </testsuite>

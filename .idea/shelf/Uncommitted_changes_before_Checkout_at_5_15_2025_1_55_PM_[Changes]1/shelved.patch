@@ -1,0 +1,46 @@
+Index: src/main/java/app/controllers/UserController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package app.controllers;\r\n\r\n\r\nimport app.entities.CustomerProfile;\r\nimport app.entities.Order;\r\nimport app.entities.User;\r\nimport app.exceptions.DatabaseException;\r\nimport app.persistence.ConnectionPool;\r\nimport app.persistence.OrderMapper;\r\nimport app.persistence.UserMapper;\r\nimport io.javalin.Javalin;\r\nimport io.javalin.http.Context;\r\n\r\nimport java.util.List;\r\n\r\npublic class UserController {\r\n\r\n    public static void addRoutes(Javalin app, ConnectionPool connectionPool) {\r\n\r\n        app.post(\"login\", ctx -> login(ctx, connectionPool));\r\n        app.get(\"logout\", ctx -> logout(ctx));\r\n        app.get(\"/login\", ctx -> ctx.render(\"login.html\"));\r\n        app.get(\"createuser\", ctx -> ctx.render(\"createuser.html\"));\r\n        app.post(\"createuser\", ctx -> createUser(ctx, connectionPool));\r\n        app.get(\"/customerprofile\", ctx -> {\r\n            User user = ctx.sessionAttribute(\"currentUser\");\r\n            if (user == null){\r\n                ctx.redirect(\"/\");\r\n                return;\r\n            }\r\n\r\n            try{\r\n                CustomerProfile profile = UserMapper.getCustomerProfileById(user.getUserId(), connectionPool);\r\n                ctx.attribute(\"profile\", profile);\r\n                ctx.render(\"customerprofile.html\");\r\n            } catch (DatabaseException e){\r\n                ctx.status(500).result(\"Error retrieving profile: \" + e.getMessage());\r\n            }\r\n        });\r\n        app.get(\"/testprofile\", ctx -> {\r\n            int testCustomerId = 6;\r\n\r\n            try{\r\n                CustomerProfile profile = UserMapper.getCustomerProfileById(testCustomerId, connectionPool);\r\n                String expectedEmail = \"jon@example.com\";\r\n                String expectedPassword = \"1234\";\r\n\r\n\r\n                if (profile.getEmail().trim().equalsIgnoreCase(expectedEmail.trim()) && profile.getPassword().trim().equals(expectedPassword.trim())){\r\n                    User testUser = new User(testCustomerId, profile.getEmail(), expectedPassword, \"customer\");\r\n                    ctx.sessionAttribute(\"currentUser\", testUser);\r\n\r\n                    ctx.redirect(\"/customerprofile\");\r\n                } else {\r\n                    ctx.status(401).result(\"Email or password is incorrect\");\r\n                }\r\n            } catch (DatabaseException e){\r\n                ctx.status(500).result(\"Error retrieving user: \" + e.getMessage());\r\n            }\r\n        });\r\n        app.get(\"/sellerdashboard\", ctx -> {\r\n            User user = ctx.sessionAttribute(\"currentUser\");\r\n\r\n            if (user == null || !user.getRole().equals(\"seller\")){\r\n                ctx.redirect(\"/\");\r\n                return;\r\n            }\r\n\r\n            try {\r\n                List<Order> orders = OrderMapper.getAllOrders(connectionPool);\r\n                ctx.attribute(\"orders\", orders);\r\n                ctx.render(\"sellerdashboard.html\");\r\n            } catch (DatabaseException e){\r\n                ctx.status(500).result(\"Error retrieving orders: \" + e.getMessage());\r\n\r\n            }\r\n        });\r\n\r\n        app.get(\"/testsellerlogin\", ctx ->{\r\n            User testSeller = new User(99, \"seller@example.com\",\"1234\", \"seller\");\r\n            ctx.sessionAttribute(\"currentUser\", testSeller);\r\n\r\n            ctx.redirect(\"/sellerdashboard\");\r\n                });\r\n    }\r\n\r\n    public static void createUser(Context ctx, ConnectionPool connectionPool) {\r\n\r\n        String username = ctx.formParam(\"username\");\r\n        String password1 = ctx.formParam(\"password1\");\r\n        String password2 = ctx.formParam(\"password2\");\r\n\r\n        if (password1.equals(password2)) {\r\n            try {\r\n                createUser(username, password1, password2, connectionPool);\r\n                ctx.attribute(\"message\", \"Du er hermed blevet oprettet med brugernavnet\" + username + \". Du kan nu logge på.\");\r\n                ctx.render(\"index.html\");\r\n            }catch (IllegalArgumentException e) {\r\n                ctx.attribute(\"message\", \"Dine to passwords stemmer ikke overens.\");\r\n                ctx.render(\"createuser.html\");\r\n            }\r\n\r\n        } else {\r\n            ctx.attribute(\"message\", \"Dine to passwords stemmer ikke overens, sørg for at du har stavet korrekt og prøv igen, eller log ind\");\r\n            ctx.render(\"createuser.html\");\r\n        }\r\n    }\r\n\r\n    public static void createUser(String username, String password1, String password2, ConnectionPool connectionPool) {\r\n        if (!password1.equals(password2)) {\r\n            throw new IllegalArgumentException(\"Passwords do not match\");\r\n        }\r\n\r\n        try {\r\n            UserMapper.createUser(username, password1, \"customer\", connectionPool);\r\n            // You can add logging here if needed\r\n        } catch (DatabaseException e) {\r\n            throw new RuntimeException(\"Failed to create user: \" + e.getMessage());\r\n        }\r\n    }\r\n\r\n\r\n    private static void logout(Context ctx) {\r\n        ctx.req().getSession().invalidate();\r\n        ctx.redirect(\"/\");\r\n\r\n    }\r\n\r\n    public static void login(Context ctx, ConnectionPool connectionPool) {\r\n        String username = ctx.formParam(\"username\");\r\n        String password = ctx.formParam(\"password\");\r\n\r\n\r\n\r\n        try {\r\n            User user = UserMapper.login(username, password, connectionPool);\r\n            ctx.sessionAttribute(\"currentUser\", user);\r\n\r\n            if (user.getRole().equals(\"seller\")){\r\n                ctx.redirect(\"/sellerdashboard\");\r\n            }else{\r\n                ctx.redirect(\"/customerprofile\");\r\n            }\r\n\r\n        } catch (DatabaseException e) {\r\n            throw new RuntimeException(e);\r\n        }\r\n    }\r\n\r\n    public static void displayCustomerProfile(Context ctx, ConnectionPool connectionPool){\r\n        User currentUser = ctx.sessionAttribute(\"currentUser\");\r\n\r\n        if (currentUser == null){\r\n            ctx.redirect(\"/login\");\r\n            return;\r\n        }\r\n\r\n        try {\r\n            int customerId = currentUser.getUserId();\r\n            CustomerProfile profile = UserMapper.getCustomerProfileById(customerId, connectionPool);\r\n            ctx.attribute(\"profile\", profile);\r\n            ctx.render(\"customerprofile.html\");\r\n        } catch (DatabaseException e){\r\n            ctx.attribute(\"message\", \"Error getting the customer profile.\");\r\n            ctx.render(\"error.html\");\r\n        }\r\n\r\n    }\r\n\r\n}\r\n\r\n\r\n\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/app/controllers/UserController.java b/src/main/java/app/controllers/UserController.java
+--- a/src/main/java/app/controllers/UserController.java	(revision f8fefcb7ce2a8dc019b6024e851ae76371a60000)
++++ b/src/main/java/app/controllers/UserController.java	(date 1747309622695)
+@@ -126,24 +126,24 @@
+ 
+     }
+ 
+-    public static void login(Context ctx, ConnectionPool connectionPool) {
+-        String username = ctx.formParam("username");
++    private static void login(Context ctx, ConnectionPool connectionPool) {
++        String email = ctx.formParam("email");
+         String password = ctx.formParam("password");
+ 
+-
+-
+         try {
+-            User user = UserMapper.login(username, password, connectionPool);
+-            ctx.sessionAttribute("currentUser", user);
++            User user = UserMapper.login(email, password, connectionPool);
+ 
+-            if (user.getRole().equals("seller")){
+-                ctx.redirect("/sellerdashboard");
+-            }else{
+-                ctx.redirect("/customerprofile");
++            if (user != null) {
++                ctx.sessionAttribute("currentUser", user);  // save user in session
++                ctx.redirect("/"); // or dashboard
++            } else {
++                ctx.attribute("message", "Forkert email eller kodeord");
++                ctx.render("login.html");
+             }
+ 
+         } catch (DatabaseException e) {
+-            throw new RuntimeException(e);
++            ctx.attribute("message", "Login fejlede: " + e.getMessage());
++            ctx.render("/login.html");
+         }
+     }
+ 
