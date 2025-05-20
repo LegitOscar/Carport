@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+</html>
+
+
+<h2>Stykliste</h2>
+<table>
+    <tr>
+        <th>Beskrivelse</th>
+        <th>Længde</th>
+        <th>Antal</th>
+        <th>Pris/stk</th>
+        <th>Total</th>
+    </tr>
+    <th:block th:each="item : ${orderItems}">
+        <tr>
+            <td th:text="${item.woodVariant.material.name}"></td>
+            <td th:text="${item.woodVariant.lengthCm} + ' cm'"></td>
+            <td th:text="${item.amount}"></td>
+            <td th:text="${item.woodVariant.price} + ' kr'"></td>
+            <td th:text="${item.totalPrice} + ' kr'"></td>
+        </tr>
+    </th:block>
+</table>
+
+<h3>Total pris: <span th:text="${totalPrice} + ' kr'"></span></h3>
+
+<form action="/beregn-carport" method="post">
+    <label>Længde (cm):</label>
+    <input type="number" name="lengthCm" required>
+    <label>Bredde (cm):</label>
+    <input type="number" name="widthCm" required>
+    <button type="submit">Beregn</button>
+</form>

@@ -32,6 +32,8 @@ public class Main {
         app.get("/", ctx ->  ctx.render("createuser.html")); //todo ændre hovedsite
         UserController.addRoutes(app,connectionPool);
 //        OrderController.addRoutes(app, connectionPool);
+
+        // gem! app.post("/beregn-carport", ctx -> CarportController.beregnCarport(ctx, connectionPool));
     }
 
 }
