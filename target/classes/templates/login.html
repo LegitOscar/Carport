@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="da" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+  <meta charset="UTF-8">
+  <title>Opret Bruger - Carport </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../public/css/loginStyles.css">
+  <link rel="stylesheet" th:href="@{/css/loginStyles.css}">
+</head>
+<body>
+<header class="header">
+  <div class="logo">
+    <img src="../public/images/fogLogo.png" th:src="@{/images/fogLogo.png}" alt="Fog Logo">
+  </div>
+</header>
+
+<div class="container">
+  <form class="login-form">
+    <label for="email">Email adress:</label>
+    <input type="email" id="email" class="input-field" placeholder="Indtast din email">
+
+    <label for="password">Password:</label>
+    <input type="password" id="password" class="input-field" placeholder="Indtast dit password">
+
+    <button type="submit" class="login-btn">Login</button>
+  </form>
+
+  <a href="#" class="createuser-link">Opret bruger</a>
+</div>
+    <div>
+      <p th:text="${message}" class="error-message"></p>
+    </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,1729 @@
+Index: src/main/resources/templates/createuser.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><!DOCTYPE html>\n<html lang=\"da\" xmlns:th=\"http://www.thymeleaf.org\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>Opret Bruger - Carport </title>\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <link rel=\"stylesheet\" href=\"../public/css/styles.css\">\n\n</head>\n<body>\n<header class=\"header\">\n  <div class=\"logo\">\n    <img src=\"../public/images/fogLogo.png\" th:src=\"@{../public/images/fogLogo.png}\" alt=\"Fog Logo\">\n  </div>\n</header>\n\n<div class=\"container\">\n  <div class=\"login-box\">\n\n    <form class=\"login-form\" method=\"get\" th:action=\"@{/createuser}\">\n      <label for=\"navn\">Fulde navn:</label>\n      <input type=\"text\" id=\"navn\" name=\"navn\" placeholder=\"Indtast dit fulde navn\" class=\"input-field\" />\n\n      <label for=\"adresse\">Adresse:</label>\n      <input type=\"text\" id=\"adresse\" name=\"adresse\" placeholder=\"Indtast adresse\" class=\"input-field\" />\n\n      <label for=\"postnummer\">Postnummer:</label>\n      <input type=\"text\" id=\"postnummer\" name=\"postnummer\" placeholder=\"Indtast postnummer\" class=\"input-field\" />\n\n      <label for=\"by\">By:</label>\n      <input type=\"text\" id=\"by\" name=\"by\" placeholder=\"Indtast by\" class=\"input-field\" />\n\n      <label for=\"telefon\">Tlf-nummer:</label>\n      <input type=\"text\" id=\"telefon\" name=\"telefon-nummer\" placeholder=\"Indtast telefonnummer\" class=\"input-field\" />\n\n      <label for=\"email\">Email:</label>\n      <input type=\"email\" id=\"email\" name=\"email\" placeholder=\"Indtast email\" class=\"input-field\" />\n\n      <label for=\"password1\">Password:</label>\n      <input type=\"password\" id=\"password1\" name=\"password1\" placeholder=\"Indtast password\" class=\"input-field\" />\n\n      <label for=\"password2\">Bekræft Password:</label>\n      <input type=\"password\" id=\"password2\" name=\"password2\" placeholder=\"Gentag password\" class=\"input-field\" />\n\n\n\n      <button type=\"submit\" class=\"createuser-btn\">Opret bruger</button>\n\n    </form>\n    <div class =\"checkbox\">\n      <label>\n        <input type=\"checkbox\" name=\"tilladelse\" value=\"yes\">\n        Fog må benytte de afgivne oplysninger til at sende nyhedsbrev og salgstilbud.\n      </label>\n    </div>\n\n    <div>\n      <p th:text=\"${message}\" class=\"error-message\"></p>\n    </div>\n\n  </div>\n</div>\n</body>\n</html>\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/resources/templates/createuser.html b/src/main/resources/templates/createuser.html
+--- a/src/main/resources/templates/createuser.html	(revision 4e80d0d5b386dcec999aaed7768eac840cf637f9)
++++ b/src/main/resources/templates/createuser.html	(date 1747224434674)
+@@ -4,20 +4,21 @@
+   <meta charset="UTF-8">
+   <title>Opret Bruger - Carport </title>
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+-  <link rel="stylesheet" href="../public/css/styles.css">
++  <link rel="stylesheet" href="/public/css/styles.css">
++  <link rel="stylesheet" th:href="@{/css/styles.css}">
+ 
+ </head>
+ <body>
+ <header class="header">
+   <div class="logo">
+-    <img src="../public/images/fogLogo.png" th:src="@{../public/images/fogLogo.png}" alt="Fog Logo">
++    <img src="../public/images/fogLogo.png" th:src="@{/images/fogLogo.png}" alt="Fog Logo">
+   </div>
+ </header>
+ 
+ <div class="container">
+   <div class="login-box">
+ 
+-    <form class="login-form" method="get" th:action="@{/createuser}">
++    <form class="login-form" method="post" th:action="@{/createuser}">
+       <label for="navn">Fulde navn:</label>
+       <input type="text" id="navn" name="navn" placeholder="Indtast dit fulde navn" class="input-field" />
+ 
+Index: src/main/java/app/Main.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package app;\n\npublic class Main {\n    public static void main(String[] args) {\n        System.out.println(\"Hello, World!\");\n    }\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/app/Main.java b/src/main/java/app/Main.java
+--- a/src/main/java/app/Main.java	(revision 4e80d0d5b386dcec999aaed7768eac840cf637f9)
++++ b/src/main/java/app/Main.java	(date 1747737705708)
+@@ -1,7 +1,40 @@
+ package app;
+ 
++import app.config.SessionConfig;
++import app.config.ThymeleafConfig;
++
++import app.controllers.OrderController;
++import app.controllers.UserController;
++import app.persistence.ConnectionPool;
++import app.persistence.UserMapper;
++import io.javalin.Javalin;
++import io.javalin.rendering.template.JavalinThymeleaf;
++
+ public class Main {
+-    public static void main(String[] args) {
+-        System.out.println("Hello, World!");
++
++    // private static final Logger LOGGER = Logger.getLogger(Main.class.getName()); // POTENTIELT FORKERT
++
++    private static final String USER = "postgres";
++    private static final String PASSWORD = "postgres";
++    private static final String URL = "jdbc:postgresql://localhost:5432/%s?currentSchema=test";
++    private static final String DB = "carport";
++
++
++    private static final ConnectionPool connectionPool = ConnectionPool.getInstance(USER, PASSWORD, URL, DB);
++
++    public static void main(String[] args)
++    {
++        // Initializing Javalin and Jetty webserver
++
++        Javalin app = Javalin.create(config -> {
++            config.staticFiles.add("/public");
++            config.jetty.modifyServletContextHandler(handler ->  handler.setSessionHandler(SessionConfig.sessionConfig()));
++            config.fileRenderer(new JavalinThymeleaf(ThymeleafConfig.templateEngine()));}).start(7070);
++
++        // Routing
++        app.get("/", ctx ->  ctx.render("orderSite.html"));
++        OrderController.addRoutes(app, connectionPool);
++
+     }
+-}
+\ No newline at end of file
++
++}
+Index: src/main/java/app/services/Svg.java
+===================================================================
+diff --git a/src/main/java/app/services/Svg.java b/src/main/java/app/services/Svg.java
+new file mode 100644
+--- /dev/null	(date 1747313525771)
++++ b/src/main/java/app/services/Svg.java	(date 1747313525771)
+@@ -0,0 +1,59 @@
++package app.services;
++
++public class Svg
++{
++    private static final String SVG_TEMPLATE = "<svg version=\"1.1\"\n" +
++            "     x=\"%d\" y=\"%d\"\n" +
++            "     viewBox=\"%s\"  width=\"%s\" \n" +
++            "     preserveAspectRatio=\"xMinYMin\">";
++
++    private static final String SVG_ARROW_DEFS = "<defs>\n" +
++            "        <marker id=\"beginArrow\" markerWidth=\"12\" markerHeight=\"12\" refX=\"0\" refY=\"6\" orient=\"auto\">\n" +
++            "            <path d=\"M0,6 L12,0 L12,12 L0,6\" style=\"fill: #000000;\" />\n" +
++            "        </marker>\n" +
++            "        <marker id=\"endArrow\" markerWidth=\"12\" markerHeight=\"12\" refX=\"12\" refY=\"6\" orient=\"auto\">\n" +
++            "            <path d=\"M0,0 L12,6 L0,12 L0,0 \" style=\"fill: #000000;\" />\n" +
++            "        </marker>\n" +
++            "    </defs>";
++
++    private static final String SVG_RECT_TEMPLATE = "<rect x=\"%d\" y=\"%d\" height=\"%f\" width=\"%f\" style=\"%s\" />";
++
++    private StringBuilder svg = new StringBuilder();
++
++    public Svg(int x, int y, String viewBox, String width, String height)
++    {
++
++        svg.append(String.format(SVG_TEMPLATE, x, y, viewBox, width));
++        svg.append(SVG_ARROW_DEFS);
++    }
++
++    public void addRectangle(double x, double y, double height, double width, String style)
++    {
++        svg.append(String.format(SVG_RECT_TEMPLATE, x, y, height, width, style ));
++    }
++
++
++    public void addLine(int x1, int y1, int x2, int y2, String style)
++    {
++    }
++
++    public void addArrow(int x1, int y1, int x2, int y2, String style)
++    {
++        // Kald addLine med en style der indeholder pilehoveder
++    }
++
++    public void addText(int x, int y, int rotation, String text)
++    {
++    }
++
++    public void addSvg(Svg innerSvg)
++    {
++        svg.append(innerSvg.toString());
++    }
++
++    @Override
++    public String toString()
++    {
++        return svg.append("</svg>").toString();
++    }
++}
+\ No newline at end of file
+Index: pom.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project xmlns=\"http://maven.apache.org/POM/4.0.0\"\n         xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n         xsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd\">\n    <modelVersion>4.0.0</modelVersion>\n\n    <groupId>app</groupId>\n    <artifactId>Carport3</artifactId>\n    <version>1.0-SNAPSHOT</version>\n\n    <properties>\n        <maven.compiler.source>17</maven.compiler.source>\n        <maven.compiler.target>17</maven.compiler.target>\n        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>\n    </properties>\n\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/pom.xml b/pom.xml
+--- a/pom.xml	(revision 4e80d0d5b386dcec999aaed7768eac840cf637f9)
++++ b/pom.xml	(date 1747223428382)
+@@ -7,11 +7,135 @@
+     <groupId>app</groupId>
+     <artifactId>Carport3</artifactId>
+     <version>1.0-SNAPSHOT</version>
++    <packaging>jar</packaging>
++
++    <name>${project.artifactId}</name>
+ 
+     <properties>
+         <maven.compiler.source>17</maven.compiler.source>
+         <maven.compiler.target>17</maven.compiler.target>
++        <javalin.version>6.1.3</javalin.version>
++        <javalin-rendering.version>6.1.3</javalin-rendering.version>
++        <thymeleaf.version>3.1.2.RELEASE</thymeleaf.version>
++        <thymeleaf-extras.version>3.0.4.RELEASE</thymeleaf-extras.version>
++        <slf4j.version>2.0.12</slf4j.version>
++        <jackson.version>2.17.0-rc1</jackson.version>
++        <hikariCP.version>5.1.0</hikariCP.version>
++        <junit.version>5.10.2</junit.version>
++        <hamcrest.version>2.2</hamcrest.version>
++        <postgresql.version>42.7.2</postgresql.version>
++
+         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+     </properties>
+ 
++    <dependencies>
++        <dependency>
++            <groupId>io.javalin</groupId>
++            <artifactId>javalin</artifactId>
++            <version>${javalin.version}</version>
++        </dependency>
++        <dependency>
++            <groupId>org.slf4j</groupId>
++            <artifactId>slf4j-simple</artifactId>
++            <version>${slf4j.version}</version>
++        </dependency>
++        <dependency>
++            <groupId>io.javalin</groupId>
++            <artifactId>javalin-rendering</artifactId>
++            <version>${javalin-rendering.version}</version>
++        </dependency>
++        <dependency>
++            <groupId>org.thymeleaf</groupId>
++            <artifactId>thymeleaf</artifactId>
++            <version>${thymeleaf.version}</version>
++        </dependency>
++        <dependency>
++            <groupId>org.thymeleaf.extras</groupId>
++            <artifactId>thymeleaf-extras-java8time</artifactId>
++            <version>${thymeleaf-extras.version}</version>
++        </dependency>
++        <dependency>
++            <groupId>com.fasterxml.jackson.core</groupId>
++            <artifactId>jackson-databind</artifactId>
++            <version>${jackson.version}</version>
++        </dependency>
++        <dependency>
++            <groupId>com.zaxxer</groupId>
++            <artifactId>HikariCP</artifactId>
++            <version>${hikariCP.version}</version>
++        </dependency>
++        <dependency>
++            <groupId>org.postgresql</groupId>
++            <artifactId>postgresql</artifactId>
++            <version>${postgresql.version}</version>
++        </dependency>
++        <dependency>
++            <groupId>org.junit.jupiter</groupId>
++            <artifactId>junit-jupiter-api</artifactId>
++            <version>${junit.version}</version>
++            <scope>test</scope>
++        </dependency>
++        <dependency>
++            <groupId>org.junit.jupiter</groupId>
++            <artifactId>junit-jupiter-engine</artifactId>
++            <version>${junit.version}</version>
++            <scope>test</scope>
++        </dependency>
++        <dependency>
++            <groupId>org.hamcrest</groupId>
++            <artifactId>hamcrest</artifactId>
++            <version>${hamcrest.version}</version>
++            <scope>test</scope>
++        </dependency>
++
++    </dependencies>
++
++    <build>
++
++        <finalName>app</finalName>
++
++        <plugins>
++            <plugin>
++                <groupId>org.apache.maven.plugins</groupId>
++                <artifactId>maven-compiler-plugin</artifactId>
++                <version>3.10.1</version>
++                <configuration>
++                    <source>17</source>
++                    <target>17</target>
++                </configuration>
++            </plugin>
++            <plugin>
++                <groupId>org.apache.maven.plugins</groupId>
++                <artifactId>maven-shade-plugin</artifactId>
++                <version>3.4.1</version>
++                <configuration>
++                    <transformers>
++                        <transformer
++                                implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
++                            <mainClass>app.Main</mainClass>
++                        </transformer>
++                    </transformers>
++                    <filters>
++                        <filter>
++                            <artifact>*:*</artifact>
++                            <excludes>
++                                <exclude>META-INF/*.SF</exclude>
++                                <exclude>META-INF/*.DSA</exclude>
++                                <exclude>META-INF/*.RSA</exclude>
++                            </excludes>
++                        </filter>
++                    </filters>
++                </configuration>
++                <executions>
++                    <execution>
++                        <phase>package</phase>
++                        <goals>
++                            <goal>shade</goal>
++                        </goals>
++                    </execution>
++                </executions>
++            </plugin>
++        </plugins>
++    </build>
++
+ </project>
+\ No newline at end of file
+Index: src/main/resources/public/css/orderSite2.css
+===================================================================
+diff --git a/src/main/resources/public/css/orderSite2.css b/src/main/resources/public/css/orderSite2.css
+new file mode 100644
+--- /dev/null	(date 1747741238963)
++++ b/src/main/resources/public/css/orderSite2.css	(date 1747741238963)
+@@ -0,0 +1,136 @@
++* {
++    box-sizing: border-box;
++    margin: 0;
++    padding: 0;
++    font-family: Arial, sans-serif;
++}
++
++body {
++    background-color: #f8f8f8;
++}
++
++.container {
++    display: flex;
++    height: 100vh;
++}
++
++.sidebar {
++    width: 250px;
++    background-color: #0f3e7e;
++    color: white;
++    padding: 2rem 1rem;
++    display: flex;
++    flex-direction: column;
++    align-items: center;
++}
++
++.logo {
++    font-size: 2rem;
++    font-weight: bold;
++    margin-bottom: 2rem;
++}
++
++.steps {
++    display: flex;
++    flex-direction: column;
++    align-items: center;
++    gap: 1rem;
++    margin-bottom: 2rem;
++}
++
++.step {
++    width: 40px;
++    height: 40px;
++    background-color: #ffffff44;
++    color: white;
++    border: 2px solid white;
++    border-radius: 500%;
++    text-align: center;
++    line-height: 36px;
++    font-size: 1.2rem;
++    font-weight: bold;
++
++}
++
++.step.active {
++    background-color: #59f59c;
++    color: #000;
++}
++
++.step.icon {
++    width: 40px;
++    height: 40px;
++    background-color: #ffffff44;
++    color: white;
++    border: 2px solid white;
++    border-radius: 500%;
++    text-align: center;
++    line-height: 36px;
++    font-size: 1.2rem;
++    font-weight: bold;
++}
++
++.info-text {
++    list-style: none;
++    margin-top: auto;
++    padding-left: 0;
++    font-size: 0.85rem;
++    text-align: left;
++}
++
++.form-section {
++
++    flex:1;
++    padding: 4rem;
++    background-color: white;
++    justify-content: center;
++}
++
++.form-section h1 {
++    font-size: 2.5rem;
++    margin-bottom: 2rem;
++    font-weight: bold;
++}
++
++.form-section h2 {
++    font-size: 1.2rem;
++    font-weight: normal;
++    color: #555;
++}
++
++form {
++    display: flex;
++    flex-direction: column;
++    gap: 1rem;
++    max-width: 400px;
++    justify-content:center;
++}
++
++label {
++    font-weight: bold;
++}
++
++select, textarea {
++    padding: 0.7rem;
++    border: 1px solid #ccc;
++    border-radius: 4px;
++    font-size: 1rem;
++}
++
++button {
++    margin-top: 1.5rem;
++    padding: 0.8rem;
++    background-color: #59f59c;
++    border: none;
++    border-radius: 20px;
++    font-size: 1.2rem;
++    font-weight: bold;
++    color: white;
++    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
++    cursor: pointer;
++    transition: background-color 0.2s ease;
++}
++
++button:hover {
++    background-color: #4dd78c;
++}
+Index: src/main/resources/templates/showOrder.html
+===================================================================
+diff --git a/src/main/resources/templates/showOrder.html b/src/main/resources/templates/showOrder.html
+new file mode 100644
+--- /dev/null	(date 1747311734792)
++++ b/src/main/resources/templates/showOrder.html	(date 1747311734792)
+@@ -0,0 +1,22 @@
++<!DOCTYPE html>
++<html lang = "da" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
++
++<title>Frontpage</title>
++<meta charset="UTF-8">
++<meta name="viewport" content="width=device-width, initial-scale=1.0">
++<link href="../public/css/showOrderStyles.css" th:href="@{/css/showOrderStyles.css}" rel="stylesheet"/>
++
++<body>
++
++<h1>Show Order #12143</h1>
++
++<p>This is where we show the order details and the drawing when the customer has accepted the offer</p>
++
++<p>We want to inject a SVG drawing below:</p>
++
++<div class="carport-svg-topview">
++        <div th:utext = "${Svg}"></div>
++</div>
++
++</body>
++</html>
+\ No newline at end of file
+Index: src/main/resources/templates/orderSite2.html
+===================================================================
+diff --git a/src/main/resources/templates/orderSite2.html b/src/main/resources/templates/orderSite2.html
+new file mode 100644
+--- /dev/null	(date 1747742015623)
++++ b/src/main/resources/templates/orderSite2.html	(date 1747742015623)
+@@ -0,0 +1,57 @@
++<!DOCTYPE html>
++<html lang="da">
++<head>
++  <meta charset="UTF-8">
++  <title>Carport Formular</title>
++  <link rel="stylesheet" href="../public/css/orderSite2.css">
++  <link rel="stylesheet" th:href="@{/css/orderSite2.css}">
++</head>
++<body>
++<div class="container-sidebar">
++  <aside class="sidebar">
++    <div class="logo">Fog</div>
++    <div class="steps">
++      <div class="step ">1</div>
++      <div class="step active">2</div>
++      <div class="step">3</div>
++      <div class="step icon">🚘</div>
++    </div>
++    <ul class="info-text">
++      <li><strong>Bredde:</strong> </li>
++      <li><strong>Længde:</strong></li>
++      <li><strong>Højde:</strong> </li>
++      <li><strong>Trapeztag:</strong> </li>
++    </ul>
++  </aside>
++
++  <main class="form-section">
++    <h2>udfyld formularen</h2>
++    <h1>REDSKABSRUM</h1>
++
++    <form method ="get" action = "/orderSite3">
++      <div class="toggle-group">
++        <label>Tilføj redskabsrum?:</label>
++        <div class="toggle">
++          <input type="radio" id="ja" name="redskabsrum" value="ja" checked>
++          <label for="ja" class="yes">JA</label>
++
++          <input type="radio" id="nej" name="redskabsrum" value="nej">
++          <label for="nej" class="no">NEJ</label>
++        </div>
++      </div>
++
++      <label for="bredde">Redskabsrum Bredde:</label>
++        <input type="text" id="bredde" name="navn" placeholder="Indtast bredde" class="input-field" />
++
++
++      <label for="Længde">Redskabsrum Længde:</label>
++      <input type="text" id="Længde" name="navn" placeholder="Indtast Længde" class="input-field" />
++
++
++
++      <button type="submit">Fortsæt</button>
++    </form>
++  </main>
++</div>
++</body>
++</html>
+Index: src/main/java/app/controllers/UserController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package app.controllers;\n\n\nimport app.entities.User;\nimport app.exceptions.DatabaseException;\nimport app.persistence.ConnectionPool;\nimport app.persistence.UserMapper;\nimport io.javalin.Javalin;\nimport io.javalin.http.Context;\n\nimport java.util.List;\n\npublic class UserController {\n\n    public static void addRoutes(Javalin app, ConnectionPool connectionPool) {\n\n        app.post(\"login\", ctx -> login(ctx, connectionPool));\n        app.get(\"logout\", ctx -> logout(ctx));\n        app.get(login, ctx ->ctx.render(\"login.html\"));\n        app.get(\"createuser\", ctx -> ctx.render(\"createuser.html\"));\n        app.post(\"createuser\", ctx -> createUser(ctx, connectionPool));\n\n    }\n\n    public static void createUser(Context ctx, ConnectionPool connectionPool) {\n\n        String username = ctx.formParam(\"username\");\n        String password1 = ctx.formParam(\"password1\");\n        String password2 = ctx.formParam(\"password2\");\n\n        if (password1.equals(password2)) {\n            try {\n                createUser(username, password1, password2, connectionPool);\n                ctx.attribute(\"message\", \"Du er hermed blevet oprettet med brugernavnet\" + username + \". Du kan nu logge på.\");\n                ctx.render(\"index.html\");\n            }catch (IllegalArgumentException e) {\n                ctx.attribute(\"message\", \"Dine to passwords stemmer ikke overens.\");\n                ctx.render(\"createuser.html\");\n            }\n\n        } else {\n            ctx.attribute(\"message\", \"Dine to passwords stemmer ikke overens, sørg for at du har stavet korrekt og prøv igen, eller log ind\");\n            ctx.render(\"createuser.html\");\n        }\n    }\n\n    public static void createUser(String username, String password1, String password2, ConnectionPool connectionPool) {\n        if (!password1.equals(password2)) {\n            throw new IllegalArgumentException(\"Passwords do not match\");\n        }\n\n        try {\n            UserMapper.createUser(username, password1, \"user\", connectionPool);\n            // You can add logging here if needed\n        } catch (DatabaseException e) {\n            throw new RuntimeException(\"Failed to create user: \" + e.getMessage());\n        }\n    }\n\n\n    private static void logout(Context ctx) {\n        ctx.req().getSession().invalidate();\n        ctx.redirect(\"/\");\n\n    }\n\n    public static void login(Context ctx, ConnectionPool connectionPool) {\n        String username = ctx.formParam(\"username\");\n        String password = ctx.formParam(\"password\");\n\n        //Checks if the user already exists in the database, with the given username and password.\n\n        try {\n            User user = UserMapper.login(username, password, connectionPool);\n            ctx.sessionAttribute(\"currentUser\", user);\n            // If the user exists, then it will continue.\n            //LOOK IN THE FOURTHINGSPLUS PROJECT, IT NEEDS TO BE ROUTED DIFFERENTLY, ACCORDING TO WHAT\n            //WE CHOOSE TO NAME THE PATH AND METHODS\n        } catch (DatabaseException e) {\n            throw new RuntimeException(e);\n        }\n    }\n\n}\n\n\n\n\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/app/controllers/UserController.java b/src/main/java/app/controllers/UserController.java
+--- a/src/main/java/app/controllers/UserController.java	(revision 4e80d0d5b386dcec999aaed7768eac840cf637f9)
++++ b/src/main/java/app/controllers/UserController.java	(date 1747232070033)
+@@ -16,46 +16,44 @@
+ 
+         app.post("login", ctx -> login(ctx, connectionPool));
+         app.get("logout", ctx -> logout(ctx));
+-        app.get(login, ctx ->ctx.render("login.html"));
+-        app.get("createuser", ctx -> ctx.render("createuser.html"));
++        app.get("login", ctx ->ctx.render("login.html"));
++        app.get("createuser", ctx -> ctx.render("createuser.html,styles.css"));
+         app.post("createuser", ctx -> createUser(ctx, connectionPool));
+ 
+     }
+ 
+-    public static void createUser(Context ctx, ConnectionPool connectionPool) {
++    private static void createUser(Context ctx, ConnectionPool connectionPool) {
++        String name = ctx.formParam("navn");
++        String email = ctx.formParam("email");
++        String phoneString = ctx.formParam("telefon");  // Få telefonen som en String
++        String address = ctx.formParam("adresse");
+ 
+-        String username = ctx.formParam("username");
+-        String password1 = ctx.formParam("password1");
+-        String password2 = ctx.formParam("password2");
+-
+-        if (password1.equals(password2)) {
+-            try {
+-                createUser(username, password1, password2, connectionPool);
+-                ctx.attribute("message", "Du er hermed blevet oprettet med brugernavnet" + username + ". Du kan nu logge på.");
+-                ctx.render("index.html");
+-            }catch (IllegalArgumentException e) {
+-                ctx.attribute("message", "Dine to passwords stemmer ikke overens.");
+-                ctx.render("createuser.html");
+-            }
++        // Prøv at konvertere telefonnummeret til en integer
++        Integer phone = null;
++        try {
++            phone = Integer.parseInt(phoneString);  // Konverter til Integer
++        } catch (NumberFormatException e) {
++            ctx.attribute("message", "Fejl: Telefon nummeret er ugyldigt.");
++            return;
++        }
+ 
+-        } else {
+-            ctx.attribute("message", "Dine to passwords stemmer ikke overens, sørg for at du har stavet korrekt og prøv igen, eller log ind");
+-            ctx.render("createuser.html");
+-        }
+-    }
++        System.out.println("➡️ Data fra formular: " + name + ", " + email + ", " + phone + ", " + address);
+ 
+-    public static void createUser(String username, String password1, String password2, ConnectionPool connectionPool) {
+-        if (!password1.equals(password2)) {
+-            throw new IllegalArgumentException("Passwords do not match");
+-        }
++        // Brug fx role_id = 2 for "customer"
++        int roleId = 2;
+ 
+         try {
+-            UserMapper.createUser(username, password1, "user", connectionPool);
+-            // You can add logging here if needed
++            UserMapper.createUser(name, email, phone, address, roleId, connectionPool);
++            ctx.attribute("message", "Bruger oprettet!");
++            ctx.render("login.html");
+         } catch (DatabaseException e) {
+-            throw new RuntimeException("Failed to create user: " + e.getMessage());
++            ctx.attribute("message", "Fejl: " + e.getMessage());
+         }
++
++        ctx.render("createuser.html");
+     }
++
++
+ 
+ 
+     private static void logout(Context ctx) {
+@@ -65,13 +63,13 @@
+     }
+ 
+     public static void login(Context ctx, ConnectionPool connectionPool) {
+-        String username = ctx.formParam("username");
++        String email = ctx.formParam("email");
+         String password = ctx.formParam("password");
+ 
+         //Checks if the user already exists in the database, with the given username and password.
+ 
+         try {
+-            User user = UserMapper.login(username, password, connectionPool);
++            User user = UserMapper.login(email, password, connectionPool);
+             ctx.sessionAttribute("currentUser", user);
+             // If the user exists, then it will continue.
+             //LOOK IN THE FOURTHINGSPLUS PROJECT, IT NEEDS TO BE ROUTED DIFFERENTLY, ACCORDING TO WHAT
+Index: src/main/resources/templates/index.html
+===================================================================
+diff --git a/src/main/resources/templates/index.html b/src/main/resources/templates/index.html
+new file mode 100644
+--- /dev/null	(date 1747309943471)
++++ b/src/main/resources/templates/index.html	(date 1747309943471)
+@@ -0,0 +1,17 @@
++<!DOCTYPE html>
++<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
++
++<title>Frontpage</title>
++<meta charset="UTF-8">
++<meta name="viewport" content="width=device-width, initial-scale=1.0">
++<link href="../public/css/styles.css" th:href="@{/css/showOrderStyles.css}" rel="stylesheet"/>
++</head>
++
++<body>
++
++<h1>Welcome to the SVG demo</h1>
++
++<a th:href="@{/templates/showOrder.html}" href="showOrder.html">Show order</a>
++
++</body>
++</html>
+\ No newline at end of file
+Index: src/main/resources/public/css/showOrderStyles.css
+===================================================================
+diff --git a/src/main/resources/public/css/showOrderStyles.css b/src/main/resources/public/css/showOrderStyles.css
+new file mode 100644
+--- /dev/null	(date 1747308893047)
++++ b/src/main/resources/public/css/showOrderStyles.css	(date 1747308893047)
+@@ -0,0 +1,13 @@
++h1 {
++    color: #369;
++    font-family: Arial, Helvetica, sans-serif;
++    font-size: 3rem;
++}
++
++/* SVG */
++
++.carport-svg-topview
++{
++    max-width: 600px;
++    max-height:600px ;
++}
+\ No newline at end of file
+Index: src/main/java/app/persistence/UserMapper.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package app.persistence;\n\n\nimport app.entities.User;\nimport app.exceptions.DatabaseException;\n\nimport java.sql.Connection;\nimport java.sql.PreparedStatement;\nimport java.sql.ResultSet;\nimport java.sql.SQLException;\n\npublic class UserMapper\n{\n\n    public static User login(String userName, String password, ConnectionPool connectionPool) throws DatabaseException {\n        String sql = \"SELECT * FROM users WHERE user_name=? AND password=?\";\n\n        try (\n                Connection connection = connectionPool.getConnection();\n                PreparedStatement ps = connection.prepareStatement(sql)\n        ) {\n            ps.setString(1, userName);\n            ps.setString(2, password); // Now we check password in SQL\n\n            ResultSet rs = ps.executeQuery();\n            if (rs.next()) {\n                int id = rs.getInt(\"user_id\");\n                String fetchedUsername = rs.getString(\"user_name\");\n                String fetchedPassword = rs.getString(\"password\");  // Get the actual password from DB\n                String role = rs.getString(\"role\");\n\n                // \uD83D\uDD39 Print the fetched values to debug\n                System.out.println(\"\uD83D\uDD39 Fetched from DB: ID=\" + id + \", Username=\" + fetchedUsername + \", Role=\" + role);\n\n                return new User(id, fetchedUsername, fetchedPassword, role);\n            } else {\n                throw new DatabaseException(\"Fejl i login. Forkert brugernavn eller adgangskode.\");\n            }\n        } catch (SQLException e) {\n            throw new DatabaseException(\"DB fejl\", e.getMessage());\n        }\n    }\n\n\n\n    public static void createUser(String userName, String password, String role, ConnectionPool connectionPool) throws DatabaseException {\n        // This version uses ON CONFLICT DO NOTHING to silently skip duplicate inserts\n        String sql = \"INSERT INTO users (user_name, password, role) VALUES (?,?,?) ON CONFLICT (user_name) DO NOTHING\";\n\n        try (\n                Connection connection = connectionPool.getConnection();\n                PreparedStatement ps = connection.prepareStatement(sql)\n        ) {\n            ps.setString(1, userName);\n            ps.setString(2, password);\n            ps.setString(3, role);\n\n            ps.executeUpdate(); // No need to check rows affected, since duplicates are allowed\n        } catch (SQLException e) {\n            throw new DatabaseException(\"Der er sket en fejl. Prøv igen\", e.getMessage());\n        }\n    }\n\n}\n\n\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/app/persistence/UserMapper.java b/src/main/java/app/persistence/UserMapper.java
+--- a/src/main/java/app/persistence/UserMapper.java	(revision 4e80d0d5b386dcec999aaed7768eac840cf637f9)
++++ b/src/main/java/app/persistence/UserMapper.java	(date 1747232217105)
+@@ -9,11 +9,9 @@
+ import java.sql.ResultSet;
+ import java.sql.SQLException;
+ 
+-public class UserMapper
+-{
+-
++public class UserMapper {
+     public static User login(String userName, String password, ConnectionPool connectionPool) throws DatabaseException {
+-        String sql = "SELECT * FROM users WHERE user_name=? AND password=?";
++        String sql = "SELECT * FROM user WHERE email=? AND password=?";
+ 
+         try (
+                 Connection connection = connectionPool.getConnection();
+@@ -25,14 +23,14 @@
+             ResultSet rs = ps.executeQuery();
+             if (rs.next()) {
+                 int id = rs.getInt("user_id");
+-                String fetchedUsername = rs.getString("user_name");
++                String fetchedEmail = rs.getString("user_email");
+                 String fetchedPassword = rs.getString("password");  // Get the actual password from DB
+                 String role = rs.getString("role");
+ 
+                 // 🔹 Print the fetched values to debug
+-                System.out.println("🔹 Fetched from DB: ID=" + id + ", Username=" + fetchedUsername + ", Role=" + role);
++                System.out.println("🔹 Fetched from DB: ID=" + id + ", Username=" + fetchedEmail + ", Role=" + role);
+ 
+-                return new User(id, fetchedUsername, fetchedPassword, role);
++                return new User(id, fetchedEmail, fetchedPassword, role);
+             } else {
+                 throw new DatabaseException("Fejl i login. Forkert brugernavn eller adgangskode.");
+             }
+@@ -43,21 +41,25 @@
+ 
+ 
+ 
+-    public static void createUser(String userName, String password, String role, ConnectionPool connectionPool) throws DatabaseException {
+-        // This version uses ON CONFLICT DO NOTHING to silently skip duplicate inserts
+-        String sql = "INSERT INTO users (user_name, password, role) VALUES (?,?,?) ON CONFLICT (user_name) DO NOTHING";
++    public static void createUser(String name, String email, int phone, String address, int roleId, ConnectionPool connectionPool) throws DatabaseException {
++        String sql = "INSERT INTO \"user\"  (user_name, user_email, user_phone, user_address, role_id) VALUES (?, ?, ?, ?, ?)";
+ 
+         try (
+                 Connection connection = connectionPool.getConnection();
+                 PreparedStatement ps = connection.prepareStatement(sql)
+         ) {
+-            ps.setString(1, userName);
+-            ps.setString(2, password);
+-            ps.setString(3, role);
++            ps.setString(1, name);
++            ps.setString(2, email);
++            ps.setInt(3, phone);
++            ps.setString(4, address);
++            ps.setInt(5, roleId);
+ 
+-            ps.executeUpdate(); // No need to check rows affected, since duplicates are allowed
++            int rowsAffected = ps.executeUpdate();
++            System.out.println("✅ Bruger oprettet: " + rowsAffected + " række(r) indsat");
++
+         } catch (SQLException e) {
+-            throw new DatabaseException("Der er sket en fejl. Prøv igen", e.getMessage());
++            e.printStackTrace();
++            throw new DatabaseException("Der skete en fejl ved oprettelse af bruger", e.getMessage());
+         }
+     }
+ 
+Index: src/main/java/app/services/CarportSvg.java
+===================================================================
+diff --git a/src/main/java/app/services/CarportSvg.java b/src/main/java/app/services/CarportSvg.java
+new file mode 100644
+--- /dev/null	(date 1747313574636)
++++ b/src/main/java/app/services/CarportSvg.java	(date 1747313574636)
+@@ -0,0 +1,36 @@
++package app.services;
++
++public class CarportSvg
++{
++    private int width;
++    private int length;
++    private Svg carportSvg;
++
++    public CarportSvg(int width, int height)
++    {
++        this.width = width;
++        this.length = length;
++        carportSvg = new Svg(0, 0, "0 0 855 690", "75%","75%");
++        carportSvg.addRectangle(0,0,600, 780, "stroke-width:1px; stroke:#000000; fill: #ffffff");
++        addBeams();
++        addRafters();
++    }
++
++    private void addBeams(){
++        carportSvg.addRectangle(0,35,4.5, 780, "stroke-width:1px; stroke:#000000; fill: #ffffff");
++        carportSvg.addRectangle(0,565,4.5, 780, "stroke-width:1px; stroke:#000000; fill: #ffffff");
++    }
++
++    private void addRafters(){
++        for (double i = 0; i < 780; i+= 55.714)
++        {
++            carportSvg.addRectangle(i, 0.0, 600, 4.5,"stroke:#000000; fill: #ffffff" );
++        }
++    }
++
++    @Override
++    public String toString()
++    {
++        return carportSvg.toString();
++    }
++}
+\ No newline at end of file
+Index: src/main/resources/public/css/orderSite.css
+===================================================================
+diff --git a/src/main/resources/public/css/orderSite.css b/src/main/resources/public/css/orderSite.css
+new file mode 100644
+--- /dev/null	(date 1747733084619)
++++ b/src/main/resources/public/css/orderSite.css	(date 1747733084619)
+@@ -0,0 +1,134 @@
++* {
++    box-sizing: border-box;
++    margin: 0;
++    padding: 0;
++    font-family: Arial, sans-serif;
++}
++
++body {
++    background-color: #f8f8f8;
++}
++
++.container {
++    display: flex;
++    height: 100vh;
++}
++
++.sidebar {
++    width: 20%;
++    background-color: #0f3e7e;
++    color: white;
++    padding: 2rem 1rem;
++    display: flex;
++    flex-direction: column;
++    align-items: center;
++}
++
++.logo {
++    font-size: 2rem;
++    font-weight: bold;
++    margin-bottom: 2rem;
++}
++
++.steps {
++    display: flex;
++    flex-direction: column;
++    align-items: center;
++    gap: 1rem;
++    margin-bottom: 2rem;
++}
++
++.step {
++    width: 40px;
++    height: 40px;
++    background-color: #ffffff44;
++    color: white;
++    border: 2px solid white;
++    border-radius: 500%;
++    text-align: center;
++    line-height: 36px;
++    font-size: 1.2rem;
++    font-weight: bold;
++
++}
++
++.step.active {
++    background-color: #59f59c;
++    color: #000;
++}
++.step.icon {
++    width: 40px;
++    height: 40px;
++    background-color: #ffffff44;
++    color: white;
++    border: 2px solid white;
++    border-radius: 500%;
++    text-align: center;
++    line-height: 36px;
++    font-size: 1.2rem;
++    font-weight: bold;
++}
++
++.info-text {
++    list-style: none;
++    margin-top: auto;
++    padding-left: 0;
++    font-size: 0.85rem;
++    text-align: left;
++}
++
++.form-section {
++    width: 80%;
++    padding: 4rem;
++    background-color: white;
++    justify-content: center;
++}
++
++.form-section h1 {
++    font-size: 2.5rem;
++    margin-bottom: 2rem;
++    font-weight: bold;
++}
++
++.form-section h2 {
++    font-size: 1.2rem;
++    font-weight: normal;
++    color: #555;
++}
++
++form {
++    display: flex;
++    flex-direction: column;
++    gap: 1rem;
++    max-width: 400px;
++    justify-content:center;
++}
++
++label {
++    font-weight: bold;
++}
++
++select, textarea {
++    padding: 0.7rem;
++    border: 1px solid #ccc;
++    border-radius: 4px;
++    font-size: 1rem;
++}
++
++button {
++    margin-top: 1.5rem;
++    padding: 0.8rem;
++    background-color: #59f59c;
++    border: none;
++    border-radius: 20px;
++    font-size: 1.2rem;
++    font-weight: bold;
++    color: white;
++    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
++    cursor: pointer;
++    transition: background-color 0.2s ease;
++}
++
++button:hover {
++    background-color: #4dd78c;
++}
+Index: src/main/resources/templates/orderSite.html
+===================================================================
+diff --git a/src/main/resources/templates/orderSite.html b/src/main/resources/templates/orderSite.html
+new file mode 100644
+--- /dev/null	(date 1747738725298)
++++ b/src/main/resources/templates/orderSite.html	(date 1747738725298)
+@@ -0,0 +1,91 @@
++<!DOCTYPE html>
++<html lang="da">
++<head>
++  <meta charset="UTF-8">
++  <title>Carport Formular</title>
++  <link rel="stylesheet" href="../public/css/orderSite.css">
++  <link rel="stylesheet" th:href="@{/css/orderSite.css}">
++</head>
++<body>
++<div class="container">
++  <aside class="sidebar">
++    <div class="logo">Fog<sup>®</sup></div>
++    <div class="steps">
++      <div class="step active">1</div>
++      <div class="step">2</div>
++      <div class="step">3</div>
++      <div class="step icon">🚘</div>
++    </div>
++    <ul class="info-text">
++      <li><strong>Bredde:</strong> <span th:text="${session.bredde}"></span></li>
++      <li><strong>Længde:</strong> <span th:text="${session.længde}"></span></li>
++      <li><strong>Trapeztag:</strong> <span th:text="${session.tag}"></span></li>
++    </ul>
++  </aside>
++
++  <main class="form-section">
++    <h2>udfyld formularen</h2>
++    <h1>CARPORT MÅL</h1>
++
++    <form method ="post" action = "/measurements">
++      <label for="bredde">Carport Bredde:</label>
++      <select id="bredde">
++        <option disabled selected>Vælg bredde</option>
++        <option value="210">210 cm</option>
++        <option value="240">240 cm</option>
++        <option value="270">270 cm</option>
++        <option value="300">300 cm</option>
++        <option value="330">330 cm</option>
++        <option value="360">360 cm</option>
++        <option value="390">390 cm</option>
++        <option value="420">420 cm</option>
++        <option value="450">450 cm</option>
++        <option value="480">480 cm</option>
++        <option value="510">510 cm</option>
++        <option value="540">540 cm</option>
++        <option value="570">570 cm</option>
++        <option value="600">600 cm</option>
++      </select>
++
++      <label for="laengde">Carport Længde:</label>
++      <select id="laengde">
++        <option disabled selected>Vælg længde</option>
++        <option value="210">210 cm</option>
++        <option value="240">240 cm</option>
++        <option value="270">270 cm</option>
++        <option value="300">300 cm</option>
++        <option value="330">330 cm</option>
++        <option value="360">360 cm</option>
++        <option value="390">390 cm</option>
++        <option value="420">420 cm</option>
++        <option value="450">450 cm</option>
++        <option value="480">480 cm</option>
++        <option value="510">510 cm</option>
++        <option value="540">540 cm</option>
++        <option value="570">570 cm</option>
++        <option value="600">600 cm</option>
++        <option value="630">630 cm</option>
++        <option value="660">660 cm</option>
++        <option value="690">690 cm</option>
++        <option value="720">720 cm</option>
++        <option value="750">750 cm</option>
++        <option value="780">780 cm</option>
++      </select>
++
++      <label for="tag">Carport trapeztag:</label>
++      <select id="tag">
++        <option disabled selected>Vælg trapeztag</option>
++        <option>ja</option>
++        <option>nej</option>
++      </select>
++
++      <label for="bemærkning">Evt. bemærkninger/ særlige ønsker:</label>
++      <textarea id="bemærkning" rows="3"></textarea>
++
++      <button type="submit">Fortsæt</button>
++
++    </form>
++  </main>
++</div>
++</body>
++</html>
+Index: src/main/resources/templates/orderConfirmation.html
+===================================================================
+diff --git a/src/main/resources/templates/orderConfirmation.html b/src/main/resources/templates/orderConfirmation.html
+new file mode 100644
+--- /dev/null	(date 1747730784056)
++++ b/src/main/resources/templates/orderConfirmation.html	(date 1747730784056)
+@@ -0,0 +1,45 @@
++
++<!DOCTYPE html>
++<html lang="da">
++<head>
++  <meta charset="UTF-8">
++  <title>Carport Formular</title>
++  <link rel="stylesheet" href="../public/css/orderConfirmation.css">
++  <link rel="stylesheet" th:href="@{/css/orderConfirmation.css}">
++</head>
++<body>
++<div class="container">
++  <aside class="sidebar">
++    <div class="logo">Fog<sup>®</sup></div>
++    <div class="steps">
++      <div class="step ">1</div>
++      <div class="step">2</div>
++      <div class="step">3</div>
++      <div class="step icon active">🚘</div>
++    </div>
++  </aside>
++
++  <main class="main-content">
++    <h1>ORDRE BEKRÆFTELSE</h1>
++
++    <div class="confirmation-box">
++      <p class="thank-you"><strong>Tak for din bestilling:</strong></p>
++      <p>
++        Tak for din bestilling af carport.<br>
++        Du vil blive kontaktet af en Fog medarbejder inden for
++        <span class="highlight">1-3 arbejdsdage.</span>
++      </p>
++      <p>
++        Skulle du have eventuelle spørgsmål til din bestilling kan du kontakte vores kundeservice på:<br>
++        • Tlf: +45 47160800<br>
++        • Email: fogkundeservice@fog.dk
++      </p>
++    </div>
++
++    <h3>Følg din ordrestatus på “Min profil”</h3>
++    <button class="profile-btn">Min profil</button>
++  </main>
++</div>
++</body>
++</html>
++
+Index: src/main/resources/public/css/orderConfirmation.css
+===================================================================
+diff --git a/src/main/resources/public/css/orderConfirmation.css b/src/main/resources/public/css/orderConfirmation.css
+new file mode 100644
+--- /dev/null	(date 1747730629401)
++++ b/src/main/resources/public/css/orderConfirmation.css	(date 1747730629401)
+@@ -0,0 +1,123 @@
++* {
++    box-sizing: border-box;
++    margin: 0;
++    padding: 0;
++    font-family: Arial, sans-serif;
++}
++
++body {
++    background-color: white;
++}
++
++.container {
++    display: flex;
++    height: 100vh;
++    border: 3px solid #0098ff;
++}
++
++.sidebar {
++    width: 20%;
++    background-color: #0f3e7e;
++    color: white;
++    padding: 2rem 1rem;
++    display: flex;
++    flex-direction: column;
++    align-items: center;
++}
++
++.logo {
++    font-size: 2rem;
++    font-weight: bold;
++    margin-bottom: 2rem;
++}
++
++.steps {
++    display: flex;
++    flex-direction: column;
++    align-items: center;
++    gap: 1rem;
++    margin-bottom: 2rem;
++}
++
++.step {
++    width: 40px;
++    height: 40px;
++    background-color: #ffffff44;
++    color: white;
++    border: 2px solid white;
++    border-radius: 500%;
++    text-align: center;
++    line-height: 36px;
++    font-size: 1.2rem;
++    font-weight: bold;
++
++}
++
++.step.active {
++    background-color: #59f59c;
++    color: #000;
++}
++
++.step.icon.active {
++    background-color: #59f59c;
++    color: #000;
++}
++
++.step.icon {
++    width: 40px;
++    height: 40px;
++    background-color: #ffffff44;
++    color: white;
++    border: 2px solid white;
++    border-radius: 500%;
++    text-align: center;
++    line-height: 36px;
++    font-size: 1.2rem;
++    font-weight: bold;
++}
++
++
++.main-content {
++    flex: 1;
++    padding: 40px;
++}
++
++.main-content h1 {
++    font-size: 32px;
++    margin-bottom: 20px;
++}
++
++.main-content h2 {
++    font-size: 18px;
++    color: #444;
++}
++
++.confirmation-box {
++    background-color: #4cf086;
++    padding: 20px;
++    border-radius: 20px;
++    max-width: 500px;
++    margin: 30px 0;
++    color: white;
++}
++
++.confirmation-box .highlight {
++    color: #0050a0;
++    font-weight: bold;
++    font-size: 20px;
++    display: inline-block;
++    margin-top: 10px;
++}
++
++.profile-btn {
++    background-color: #4cf086;
++    border: none;
++    padding: 10px 20px;
++    border-radius: 30px;
++    font-weight: bold;
++    color: white;
++    font-size: 16px;
++    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
++    cursor: pointer;
++    margin-top: 10px;
++}
+Index: src/main/resources/templates/orderSite3.html
+===================================================================
+diff --git a/src/main/resources/templates/orderSite3.html b/src/main/resources/templates/orderSite3.html
+new file mode 100644
+--- /dev/null	(date 1747742088397)
++++ b/src/main/resources/templates/orderSite3.html	(date 1747742088397)
+@@ -0,0 +1,61 @@
++<!DOCTYPE html>
++<html lang="da">
++<head>
++    <meta charset="UTF-8">
++    <title>Carport Formular</title>
++    <link rel="stylesheet" href="../public/css/orderSite.css">
++    <link rel="stylesheet" th:href="@{/css/orderSite.css}">
++</head>
++<body>
++<div class="container">
++    <aside class="sidebar">
++        <div class="logo">Fog<sup>®</sup></div>
++        <div class="steps">
++            <div class="step">1</div>
++            <div class="step">2</div>
++            <div class="step active">3</div>
++            <div class="step icon">🚘</div>
++        </div>
++        <ul class="info-text">
++            <li><strong>Bredde:</strong> </li>
++            <li><strong>Længde:</strong></li>
++            <li><strong>Trapeztag:</strong> </li>
++        </ul>
++    </aside>
++
++    <main class="form-section">
++        <h2>udfyld formularen</h2>
++        <h1>PERSONLIGE OPLYSNINGER</h1>
++
++            <form class="login-form" method="get" action="/orderConfirmation">
++                <label for="navn">Fulde navn:</label>
++                <input type="text" id="navn" name="navn" placeholder="Indtast dit fulde navn" class="input-field" />
++
++                <label for="adresse">Adresse:</label>
++                <input type="text" id="adresse" name="adresse" placeholder="Indtast adresse" class="input-field" />
++
++                <label for="postnummer">Postnummer:</label>
++                <input type="text" id="postnummer" name="postnummer" placeholder="Indtast postnummer" class="input-field" />
++
++                <label for="by">By:</label>
++                <input type="text" id="by" name="by" placeholder="Indtast by" class="input-field" />
++
++                <label for="telefon">Tlf-nummer:</label>
++                <input type="text" id="telefon" name="telefon-nummer" placeholder="Indtast telefonnummer" class="input-field" />
++
++                <label for="email">Email:</label>
++                <input type="email" id="email" name="email" placeholder="Indtast email" class="input-field" />
++
++                <label for="password1">Password:</label>
++                <input type="password" id="password1" name="password1" placeholder="Indtast password" class="input-field" />
++
++                <label for="password2">Bekræft Password:</label>
++                <input type="password" id="password2" name="password2" placeholder="Gentag password" class="input-field" />
++
++
++                <button type="submit">Fortsæt</button>
++        </form>
++    </main>
++</div>
++</body>
++</html>
+Index: src/main/resources/public/css/orderSite3.css
+===================================================================
+diff --git a/src/main/resources/public/css/orderSite3.css b/src/main/resources/public/css/orderSite3.css
+new file mode 100644
+--- /dev/null	(date 1747733084617)
++++ b/src/main/resources/public/css/orderSite3.css	(date 1747733084617)
+@@ -0,0 +1,134 @@
++* {
++    box-sizing: border-box;
++    margin: 0;
++    padding: 0;
++    font-family: Arial, sans-serif;
++}
++
++body {
++    background-color: #f8f8f8;
++}
++
++.container {
++    display: flex;
++    height: 100vh;
++}
++
++.sidebar {
++    width: 20%;
++    background-color: #0f3e7e;
++    color: white;
++    padding: 2rem 1rem;
++    display: flex;
++    flex-direction: column;
++    align-items: center;
++}
++
++.logo {
++    font-size: 2rem;
++    font-weight: bold;
++    margin-bottom: 2rem;
++}
++
++.steps {
++    display: flex;
++    flex-direction: column;
++    align-items: center;
++    gap: 1rem;
++    margin-bottom: 2rem;
++}
++
++.step {
++    width: 40px;
++    height: 40px;
++    background-color: #ffffff44;
++    color: white;
++    border: 2px solid white;
++    border-radius: 500%;
++    text-align: center;
++    line-height: 36px;
++    font-size: 1.2rem;
++    font-weight: bold;
++
++}
++
++.step.active {
++    background-color: #59f59c;
++    color: #000;
++}
++.step.icon {
++    width: 40px;
++    height: 40px;
++    background-color: #ffffff44;
++    color: white;
++    border: 2px solid white;
++    border-radius: 500%;
++    text-align: center;
++    line-height: 36px;
++    font-size: 1.2rem;
++    font-weight: bold;
++}
++
++.info-text {
++    list-style: none;
++    margin-top: auto;
++    padding-left: 0;
++    font-size: 0.85rem;
++    text-align: left;
++}
++
++.form-section {
++    width: 80%;
++    padding: 4rem;
++    background-color: white;
++    justify-content: center;
++}
++
++.form-section h1 {
++    font-size: 2.5rem;
++    margin-bottom: 2rem;
++    font-weight: bold;
++}
++
++.form-section h2 {
++    font-size: 1.2rem;
++    font-weight: normal;
++    color: #555;
++}
++
++form {
++    display: flex;
++    flex-direction: column;
++    gap: 1rem;
++    max-width: 400px;
++    justify-content:center;
++}
++
++label {
++    font-weight: bold;
++}
++
++select, textarea {
++    padding: 0.7rem;
++    border: 1px solid #ccc;
++    border-radius: 4px;
++    font-size: 1rem;
++}
++
++button {
++    margin-top: 1.5rem;
++    padding: 0.8rem;
++    background-color: #59f59c;
++    border: none;
++    border-radius: 20px;
++    font-size: 1.2rem;
++    font-weight: bold;
++    color: white;
++    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
++    cursor: pointer;
++    transition: background-color 0.2s ease;
++}
++
++button:hover {
++    background-color: #4dd78c;
++}
+Index: src/main/resources/templates/login.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><!DOCTYPE html>\n<html lang=\"da\" xmlns:th=\"http://www.thymeleaf.org\" xmlns=\"http://www.w3.org/1999/html\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>Opret Bruger - Carport </title>\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <link rel=\"stylesheet\" href=\"../public/css/loginStyles.css\">\n\n</head>\n<body>\n<header class=\"header\">\n  <div class=\"logo\">\n    <img src=\"../public/images/fogLogo.png\" th:src=\"@{../public/images/fogLogo.png}\" alt=\"Fog Logo\">\n  </div>\n</header>\n\n<div class=\"container\">\n  <form class=\"login-form\">\n    <label for=\"email\">Email adress:</label>\n    <input type=\"email\" id=\"email\" class=\"input-field\" placeholder=\"Indtast din email\">\n\n    <label for=\"password\">Password:</label>\n    <input type=\"password\" id=\"password\" class=\"input-field\" placeholder=\"Indtast dit password\">\n\n    <button type=\"submit\" class=\"login-btn\">Login</button>\n  </form>\n\n  <a href=\"#\" class=\"createuser-link\">Opret bruger</a>\n</div>\n    <div>\n      <p th:text=\"${message}\" class=\"error-message\"></p>\n    </div>\n\n</div>\n</body>\n</html>\n
+===================================================================
+diff --git a/src/main/resources/templates/login.html b/src/main/resources/templates/login.html
+--- a/src/main/resources/templates/login.html	(revision 4e80d0d5b386dcec999aaed7768eac840cf637f9)
++++ b/src/main/resources/templates/login.html	(date 1747302347360)
+@@ -5,12 +5,12 @@
+   <title>Opret Bruger - Carport </title>
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <link rel="stylesheet" href="../public/css/loginStyles.css">
+-
++  <link rel="stylesheet" th:href="@{/css/loginStyles.css}">
+ </head>
+ <body>
+ <header class="header">
+   <div class="logo">
+-    <img src="../public/images/fogLogo.png" th:src="@{../public/images/fogLogo.png}" alt="Fog Logo">
++    <img src="../public/images/fogLogo.png" th:src="@{/images/fogLogo.png}" alt="Fog Logo">
+   </div>
+ </header>
+ 
+Index: target/classes/templates/createuser.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><!DOCTYPE html>\n\n<html lang=\"da\" xmlns:th=\"http://www.thymeleaf.org\">\n\n<head>\n  <meta charset=\"UTF-8\">\n  <title>Opret Bruger - Carport</title>\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n\n  <link rel=\"stylesheet\" th:href=\"@{/css/styles.css}\">\n\n</head>\n<body>\n<header class=\"header\">\n  <div class=\"logo\">\n    <img src=\"/public/images/fogLogo.png\" th:src=\"@{/images/fogLogo.png}\" alt=\"Fog Logo\">\n  </div>\n</header>\n\n<div class=\"container\">\n  <div class=\"login-box\">\n\n    <form class=\"login-form\" method=\"get\" th:action=\"@{/createuser}\">\n      <label for=\"navn\">Fulde navn:</label>\n      <input type=\"text\" id=\"navn\" name=\"navn\" placeholder=\"Indtast dit fulde navn\" class=\"input-field\" />\n\n      <label for=\"adresse\">Adresse:</label>\n      <input type=\"text\" id=\"adresse\" name=\"adresse\" placeholder=\"Indtast adresse\" class=\"input-field\" />\n\n      <label for=\"postnummer\">Postnummer:</label>\n      <input type=\"text\" id=\"postnummer\" name=\"postnummer\" placeholder=\"Indtast postnummer\" class=\"input-field\" />\n\n      <label for=\"by\">By:</label>\n      <input type=\"text\" id=\"by\" name=\"by\" placeholder=\"Indtast by\" class=\"input-field\" />\n\n      <label for=\"telefon\">Tlf-nummer:</label>\n      <input type=\"text\" id=\"telefon\" name=\"telefon-nummer\" placeholder=\"Indtast telefonnummer\" class=\"input-field\" />\n\n      <label for=\"email\">Email:</label>\n      <input type=\"email\" id=\"email\" name=\"email\" placeholder=\"Indtast email\" class=\"input-field\" />\n\n      <label for=\"password1\">Password:</label>\n      <input type=\"password\" id=\"password1\" name=\"password1\" placeholder=\"Indtast password\" class=\"input-field\" />\n\n      <label for=\"password2\">Bekræft Password:</label>\n      <input type=\"password\" id=\"password2\" name=\"password2\" placeholder=\"Gentag password\" class=\"input-field\" />\n\n      <button type=\"submit\" class=\"createuser-btn\">Opret bruger</button>\n    </form>\n\n\n    <div>\n      <p th:text=\"${message}\" class=\"error-message\"></p>\n    </div>\n\n  </div>\n</div>\n</body>\n</html>\n
+===================================================================
+diff --git a/target/classes/templates/createuser.html b/target/classes/templates/createuser.html
+--- a/target/classes/templates/createuser.html	(revision 4e80d0d5b386dcec999aaed7768eac840cf637f9)
++++ b/target/classes/templates/createuser.html	(date 1747640046985)
+@@ -1,26 +1,24 @@
+ <!DOCTYPE html>
+-
+ <html lang="da" xmlns:th="http://www.thymeleaf.org">
+-
+ <head>
+   <meta charset="UTF-8">
+-  <title>Opret Bruger - Carport</title>
++  <title>Opret Bruger - Carport </title>
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+-
++  <link rel="stylesheet" href="/public/css/styles.css">
+   <link rel="stylesheet" th:href="@{/css/styles.css}">
+ 
+ </head>
+ <body>
+ <header class="header">
+   <div class="logo">
+-    <img src="/public/images/fogLogo.png" th:src="@{/images/fogLogo.png}" alt="Fog Logo">
++    <img src="../public/images/fogLogo.png" th:src="@{/images/fogLogo.png}" alt="Fog Logo">
+   </div>
+ </header>
+ 
+ <div class="container">
+   <div class="login-box">
+ 
+-    <form class="login-form" method="get" th:action="@{/createuser}">
++    <form class="login-form" method="post" th:action="@{/createuser}">
+       <label for="navn">Fulde navn:</label>
+       <input type="text" id="navn" name="navn" placeholder="Indtast dit fulde navn" class="input-field" />
+ 
+@@ -45,9 +43,17 @@
+       <label for="password2">Bekræft Password:</label>
+       <input type="password" id="password2" name="password2" placeholder="Gentag password" class="input-field" />
+ 
++
++
+       <button type="submit" class="createuser-btn">Opret bruger</button>
++
+     </form>
+-
++    <div class ="checkbox">
++      <label>
++        <input type="checkbox" name="tilladelse" value="yes">
++        Fog må benytte de afgivne oplysninger til at sende nyhedsbrev og salgstilbud.
++      </label>
++    </div>
+ 
+     <div>
+       <p th:text="${message}" class="error-message"></p>
+Index: target/classes/public/css/styles.css
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>\n/* Global styles */\nbody {\n    font-family: Arial, sans-serif;\n    background-color: #f9f9f9;\n    margin: 0;\n    padding: 0;\n    display: flex;\n    flex-direction: column;\n    align-items: center;\n}\n\n/* Logo styling */\n.logo {\n    margin: 20px 0;\n    display: flex;\n    justify-content: center;\n}\n\n.logo img {\n    width: 85px;\n    height: auto;\n}\n\n/* Container for centering form */\n\n\n.header {\n    position: relative;\n    width: 100%;\n    height: 200px;\n    overflow: hidden;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n.header img {\n    position: absolute;\n    height: 100%;\n    object-fit: cover;\n}\n.logo {\n    position: relative;\n    z-index: 2;\n    max-width: 200px;\n    border-radius: 20px; /* Justér tallet for mere/mindre afrunding */\n}\n/* Login container */\n\n.container {\n    display: flex;\n    justify-content: center;\n    align-items: center;\n\n    width: 100%;\n}\n\n/* Box around form */\n\n\n/* Form heading */\n.login-box h2 {\n    text-align: center;\n    margin-bottom: 10px;\n}\n\n.login-box p {\n    text-align: center;\n    margin-bottom: 20px;\n}\n\n/* Form layout */\n.login-form {\n    display: flex;\n    flex-direction: column;\n}\n\n/* Labels */\n.login-form label {\n    margin-bottom: 4px;\n    font-weight: bold;\n    font-size: 14px;\n    color: #333;\n\n    height: 80vh;\n}\n\n/* Login box styling */\n.login-box {\n    background: white;\n    padding: 30px;\n    border-radius: 50px;\n    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);\n    text-align: center;\n    max-width: 400px;\n    width: 100%;\n\n}\n\n/* Input fields */\n.input-field {\n\n    padding: 10px;\n    margin-bottom: 20px;\n    border-radius: 1px;\n    border: 1px solid #ccc;\n    font-size: 14px;\n    width: 300px;\n    height: 10px;\n    box-shadow: 0px 0px 2px 1px lightgrey;\n\n\n}\n\n/* Button */\n.createuser-btn {\n    background-color: #7BE890;\n    color: white;\n    font-size: 20px;\n    font-weight: bold;\n    padding: 15px 30px;\n    border: none;\n    border-radius: 30px;\n    cursor: pointer;\n    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);\n    display: block;\n    margin: 0 auto;\n}\n\n.login-btn:hover {\n    background-color: #6ad57f;\n\n    width: 100%;\n    padding: 12px;\n    margin-top: 10px;\n    border-radius: 25px;\n    border: 1px solid #CCC;\n    font-size: 16px;\n}\n\n/* Login button */\n.login-btn {\n    width: 100%;\n    padding: 12px;\n    margin-top: 15px;\n    border-radius: 50px;\n    background: #4BFAB0;\n    color: white;\n    font-weight: bold;\n    border: none;\n    cursor: pointer;\n\n}\n\n/* Error message */\n.error-message {\n    color: red;\n\n    text-align: center;\n    margin-top: 10px;\n\n    font-size: 14px;\n}\n\n/* Create user link */\n.create-user-link {\n    text-decoration: none;\n    color: #6410F5;\n    font-weight: bold;\n}\n.create-user-link:hover {\n    text-decoration: underline;\n\n}\n
+===================================================================
+diff --git a/target/classes/public/css/styles.css b/target/classes/public/css/styles.css
+--- a/target/classes/public/css/styles.css	(revision 4e80d0d5b386dcec999aaed7768eac840cf637f9)
++++ b/target/classes/public/css/styles.css	(date 1747640046979)
+@@ -1,174 +1,87 @@
+-
+-/* Global styles */
+ body {
+     font-family: Arial, sans-serif;
+     background-color: #f9f9f9;
+     margin: 0;
+-    padding: 0;
++    padding: 20px;
+     display: flex;
+     flex-direction: column;
+     align-items: center;
+ }
+ 
+-/* Logo styling */
+-.logo {
+-    margin: 20px 0;
+-    display: flex;
+-    justify-content: center;
+-}
+-
+-.logo img {
+-    width: 85px;
+-    height: auto;
+-}
+-
+-/* Container for centering form */
+-
+-
+ .header {
+-    position: relative;
+     width: 100%;
+-    height: 200px;
+-    overflow: hidden;
++    height: 100px;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+ }
+-.header img {
+-    position: absolute;
+-    height: 100%;
+-    object-fit: cover;
+-}
++
+ .logo {
+-    position: relative;
++    margin: 20px 0;
++
++    display: flex;
++    justify-content: center;
+     z-index: 2;
+     max-width: 200px;
+-    border-radius: 20px; /* Justér tallet for mere/mindre afrunding */
++    border-radius: 20px;
+ }
+-/* Login container */
++
++.logo img {
++    width: 85px;
++    height: auto;
++}
+ 
+ .container {
+     display: flex;
+     justify-content: center;
+     align-items: center;
+-
+     width: 100%;
+-}
+-
+-/* Box around form */
+-
+ 
+-/* Form heading */
+-.login-box h2 {
+-    text-align: center;
+-    margin-bottom: 10px;
+ }
+ 
+-.login-box p {
+-    text-align: center;
+-    margin-bottom: 20px;
+-}
+ 
+-/* Form layout */
+ .login-form {
++
+     display: flex;
+     flex-direction: column;
+ }
+ 
+-/* Labels */
+ .login-form label {
+-    margin-bottom: 4px;
++    margin-top: 15px;
++
+     font-weight: bold;
+-    font-size: 14px;
++    font-size: 15px;
+     color: #333;
+-
+-    height: 80vh;
+ }
+-
+-/* Login box styling */
+-.login-box {
+-    background: white;
+-    padding: 30px;
+-    border-radius: 50px;
+-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+-    text-align: center;
+-    max-width: 400px;
+-    width: 100%;
+-
++.checkbox{
++  position: relative;
++    bottom:100px;
++    font-size: 15px;
++    color: #213215;
+ }
+-
+-/* Input fields */
+ .input-field {
+-
+-    padding: 10px;
+-    margin-bottom: 20px;
++    padding: 5px 15px 5px 5px;
++    margin-bottom: 10px;
+     border-radius: 1px;
+     border: 1px solid #ccc;
+     font-size: 14px;
+-    width: 300px;
+-    height: 10px;
+     box-shadow: 0px 0px 2px 1px lightgrey;
+-
+-
+ }
+ 
+-/* Button */
+ .createuser-btn {
+     background-color: #7BE890;
+     color: white;
+     font-size: 20px;
+     font-weight: bold;
+-    padding: 15px 30px;
++    padding: 20px 1px;
+     border: none;
+-    border-radius: 30px;
++    border-radius: 10px;
+     cursor: pointer;
+     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+-    display: block;
+-    margin: 0 auto;
+-}
+-
+-.login-btn:hover {
+-    background-color: #6ad57f;
+-
+-    width: 100%;
+-    padding: 12px;
+-    margin-top: 10px;
+-    border-radius: 25px;
+-    border: 1px solid #CCC;
+-    font-size: 16px;
+-}
+-
+-/* Login button */
+-.login-btn {
++    margin-top: 60px;
+     width: 100%;
+-    padding: 12px;
+-    margin-top: 15px;
+-    border-radius: 50px;
+-    background: #4BFAB0;
+-    color: white;
+-    font-weight: bold;
+-    border: none;
+-    cursor: pointer;
+-
+-}
+-
+-/* Error message */
+-.error-message {
+-    color: red;
+-
+-    text-align: center;
+-    margin-top: 10px;
++    max-width: 160px;
++    align-self: center;
+ 
+-    font-size: 14px;
+-}
+-
+-/* Create user link */
+-.create-user-link {
+-    text-decoration: none;
+-    color: #6410F5;
+-    font-weight: bold;
+-}
+-.create-user-link:hover {
+-    text-decoration: underline;
+ 
+ }

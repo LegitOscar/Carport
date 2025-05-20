@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <title>Carport Formular</title>
+  <link rel="stylesheet" href="/css/orderSite2.css">
+  <link rel="stylesheet" th:href="@{/css/orderSite2.css}">
+</head>
+<body>
+<div class="container-sidebar">
+  <aside class="sidebar">
+    <div class="logo">Fog<sup>®</sup></div>
+    <div class="steps">
+      <div class="step ">1</div>
+      <div class="step active">2</div>
+      <div class="step">3</div>
+      <div class="step icon">🚘</div>
+    </div>
+    <ul class="info-text">
+      <li><strong>Bredde:</strong> </li>
+      <li><strong>Længde:</strong></li>
+      <li><strong>Højde:</strong> </li>
+      <li><strong>Trapeztag:</strong> </li>
+    </ul>
+  </aside>
+
+  <main class="form-section">
+    <h2>udfyld formularen</h2>
+    <h1>REDSKABSRUM</h1>
+
+    <form method ="get" action = "/orderSite3">
+      <div class="toggle-group">
+        <label>Tilføj redskabsrum?:</label>
+        <div class="toggle">
+          <input type="radio" id="ja" name="redskabsrum" value="ja" checked>
+          <label for="ja" class="yes">JA</label>
+
+          <input type="radio" id="nej" name="redskabsrum" value="nej">
+          <label for="nej" class="no">NEJ</label>
+        </div>
+      </div>
+
+      <label for="bredde">Redskabsrum Bredde:</label>
+        <input type="text" id="bredde" name="navn" placeholder="Indtast bredde" class="input-field" />
+
+
+      <label for="Længde">Redskabsrum Længde:</label>
+      <input type="text" id="Længde" name="navn" placeholder="Indtast Længde" class="input-field" />
+
+
+
+      <button type="submit">Fortsæt</button>
+    </form>
+  </main>
+</div>
+</body>
+</html>

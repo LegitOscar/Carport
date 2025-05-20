@@ -1,0 +1,57 @@
+Index: src/main/java/app/controllers/OrderController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>\npackage app.controllers;\n\nimport app.entities.Order;\nimport app.entities.User;\nimport app.exceptions.DatabaseException;\nimport app.persistence.ConnectionPool;\nimport app.persistence.OrderMapper;\nimport io.javalin.Javalin;\nimport io.javalin.http.Context;\n\nimport java.sql.Date;\nimport java.sql.SQLException;\nimport java.util.List;\n\npublic class OrderController {\n\n    public static void addRoutes(Javalin app, ConnectionPool connectionPool) {\n        app.post(\"addorder\", ctx -> addOrder(ctx, connectionPool));\n        app.post(\"deleteorder\", ctx -> deleteOrder(ctx, connectionPool));\n        app.post(\"editorder\", ctx -> editOrder(ctx, connectionPool));\n        app.post(\"updateorder\", ctx -> updateOrder(ctx, connectionPool));\n        app.get(\"getorders\", ctx -> getOrdersForUser(ctx, connectionPool));\n        app.get(\"allorders\", ctx -> getAllOrders(ctx, connectionPool));\n    }\n\n    private static void addOrder(Context ctx, ConnectionPool connectionPool) throws DatabaseException, SQLException {\n        User user = ctx.sessionAttribute(\"currentUser\");\n        if (user == null) {\n            ctx.status(401).result(\"Du er ikke logget ind.\");\n            return;\n        }\n\n        Order order = OrderMapper.createOrder(user, connectionPool);\n        ctx.status(201).result(\"Ordre oprettet med ID: \" + order.getOrderId());\n    }\n\n    private static void deleteOrder(Context ctx, ConnectionPool connectionPool) {\n        try {\n            int orderId = Integer.parseInt(ctx.formParam(\"orderId\"));\n            OrderMapper.deleteOrder(orderId, connectionPool);\n            ctx.status(200).result(\"Ordre slettet med ID: \" + orderId);\n        } catch (NumberFormatException e) {\n            ctx.status(400).result(\"Ugyldigt order ID\");\n        } catch (DatabaseException e) {\n            ctx.status(500).result(\"Fejl ved sletning af ordre: \" + e.getMessage());\n        }\n    }\n\n    private static void editOrder(Context ctx, ConnectionPool connectionPool) {\n        try {\n            int orderId = Integer.parseInt(ctx.formParam(\"orderId\"));\n            Order order = OrderMapper.getOrderById(orderId, connectionPool);\n            if (order != null) {\n                ctx.attribute(\"order\", order);\n                ctx.render(\"editorder.html\"); // todo skal ændres til rigtigt html\n            } else {\n                ctx.status(404).result(\"Ordre ikke fundet\");\n            }\n        } catch (Exception e) {\n            ctx.status(500).result(\"Fejl ved hentning af ordre: \" + e.getMessage());\n        }\n    }\n\n    public static Order createOrder(User user, ConnectionPool connectionPool) throws DatabaseException, SQLException {\n        Order newOrder = OrderMapper.createOrder(user, connectionPool);\n\n        if (newOrder != null) {\n            System.out.println(\"Order created successfully with ID: \" + newOrder.getOrderId());\n        } else {\n            throw new RuntimeException(\"Order creation failed.\");\n        }\n\n        return newOrder;\n    }\n\n\n    private static void updateOrder(Context ctx, ConnectionPool connectionPool) {\n        try {\n            int orderId = Integer.parseInt(ctx.formParam(\"orderId\"));\n            Date orderDate = Date.valueOf(ctx.formParam(\"orderDate\"));\n            double totalPrice = Double.parseDouble(ctx.formParam(\"totalPrice\"));\n            String orderStatus = ctx.formParam(\"orderStatus\");\n\n            Order order = new Order(orderId, orderDate, totalPrice, orderStatus);\n            OrderMapper.updateOrder(order, connectionPool);\n\n            ctx.status(200).result(\"Ordre opdateret\");\n        } catch (Exception e) {\n            ctx.status(400).result(\"Fejl ved opdatering af ordre: \" + e.getMessage());\n        }\n    }\n\n\n    private static void getOrdersForUser(Context ctx, ConnectionPool connectionPool) {\n        User user = ctx.sessionAttribute(\"currentUser\");\n        if (user == null) {\n            ctx.status(401).result(\"Du er ikke logget ind.\");\n            return;\n        }\n\n        try {\n            List<Order> orders = OrderMapper.getAllOrdersPerUser(user.getUserId(), connectionPool);\n            ctx.attribute(\"orders\", orders);\n            ctx.render(\"orders.html\"); //todo ændre muligvis HTML\n        } catch (DatabaseException e) {\n            ctx.status(500).result(\"Fejl ved hentning af ordrer: \" + e.getMessage());\n        }\n    }\n\n    private static void getAllOrders(Context ctx, ConnectionPool connectionPool) {\n        try {\n            List<Order> orders = OrderMapper.getAllOrders(connectionPool);\n            ctx.attribute(\"orders\", orders);\n            ctx.render(\"allorders.html\"); // todo: opret/tilpas HTML-side\n        } catch (DatabaseException e) {\n            ctx.status(500).result(\"Fejl ved hentning af alle ordrer: \" + e.getMessage());\n        }\n    }\n}\n\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/app/controllers/OrderController.java b/src/main/java/app/controllers/OrderController.java
+--- a/src/main/java/app/controllers/OrderController.java	(revision 4e80d0d5b386dcec999aaed7768eac840cf637f9)
++++ b/src/main/java/app/controllers/OrderController.java	(date 1747742215205)
+@@ -6,12 +6,14 @@
+ import app.exceptions.DatabaseException;
+ import app.persistence.ConnectionPool;
+ import app.persistence.OrderMapper;
++//import app.services.Svg;
+ import io.javalin.Javalin;
+ import io.javalin.http.Context;
+ 
+ import java.sql.Date;
+ import java.sql.SQLException;
+ import java.util.List;
++import java.util.Locale;
+ 
+ public class OrderController {
+ 
+@@ -22,8 +24,31 @@
+         app.post("updateorder", ctx -> updateOrder(ctx, connectionPool));
+         app.get("getorders", ctx -> getOrdersForUser(ctx, connectionPool));
+         app.get("allorders", ctx -> getAllOrders(ctx, connectionPool));
++        app.get("orderSite2", ctx -> ctx.render ("orderSite2.html"));
++        app.get("orderSite3", ctx -> ctx.render ("orderSite3.html"));
++        app.get("orderConfirmation", ctx -> ctx.render ("orderConfirmation.html"));
+     }
+ 
++
++    public static void showOrder(Context ctx) {
++       String svgText ="<svg width=\"255\" height=210>\n" +
++               "   <rect x=\"0\" y=\"0\" height=\"90\" width=\"90\"\n" +
++               "        style=\"stroke:#000000; fill: #ff0000\"/>\n" +
++               "   <rect x=\"120\" y=\"0\" height=\"90\" width=\"135\"\n" +
++               "        style=\"stroke:#000000; fill: #ff0000\"/>\n" +
++               "   <rect x=\"0\" y=\"120\" height=\"90\" width=\"90\"\n" +
++               "        style=\"stroke:#000000; fill: #ff0000\"/>\n" +
++               "   <rect x=\"120\" y=\"120\" height=\"90\" width=\"135\"\n" +
++               "        style=\"stroke:#000000; fill: #ff0000\"/>\n" +
++               "</svg>";
++
++        //Locale.setDefault(new Locale ("US"));
++       // Svg carportSvg = new Svg(0,0,"0 0 855 690", "100%", "auto");
++        //carportSvg.addRectangle(0,0,600,780,"stoke-width:15px; stroke:#000000; fill; #ffffff");
++        ctx.attribute("Svg", svgText);
++        ctx.render("showOrder.html");
++
++    }
+     private static void addOrder(Context ctx, ConnectionPool connectionPool) throws DatabaseException, SQLException {
+         User user = ctx.sessionAttribute("currentUser");
+         if (user == null) {
