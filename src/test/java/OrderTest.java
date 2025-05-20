@@ -1,5 +1,5 @@
 import app.controllers.OrderController;
-import app.entities.Order;
+import app.entities.Orders;
 import app.entities.User;
 import app.persistence.ConnectionPool;
 import app.persistence.OrderMapper;
@@ -32,7 +32,7 @@ public class OrderTest {
         User user = new User(1, "123", "123", "customer");
 
         assertDoesNotThrow(() -> {
-            Order order = OrderController.createOrder(user, connectionPool);
+            Orders order = OrderController.createOrder(user, connectionPool);
             assertNotNull(order);
             assertTrue(order.getOrderId() > 0);
         });
@@ -43,12 +43,12 @@ public class OrderTest {
         User user = new User(2, "123", "123", "customer");
 
         assertDoesNotThrow(() -> {
-            Order order = OrderController.createOrder(user, connectionPool);
+            Orders order = OrderController.createOrder(user, connectionPool);
             int orderId = order.getOrderId();
 
             OrderMapper.deleteOrder(orderId, connectionPool);
 
-            Order deleteOrder = OrderMapper.getOrderById(orderId, connectionPool);
+            Orders deleteOrder = OrderMapper.getOrderById(orderId, connectionPool);
             assertNull(deleteOrder, "Order should be null after deletion");
         });
     }

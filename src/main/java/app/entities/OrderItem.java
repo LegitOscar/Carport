@@ -1,19 +1,25 @@
 package app.entities;
 
 public class OrderItem {
-    private int orderItemId;     // Optional - hvis du vil bruge den
-    private int woodVariantId;
+    private Orders order;
+    private WoodVariant woodVariant;
     private int quantity;
     private double unitPrice;
 
-    public OrderItem(int woodVariantId, int quantity, double unitPrice) {
-        this.woodVariantId = woodVariantId;
+    // (uden ID endnu)
+    public OrderItem(Orders order, WoodVariant woodVariant, int quantity, double unitPrice) {
+        this.order = order;
+        this.woodVariant = woodVariant;
         this.quantity = quantity;
         this.unitPrice = unitPrice;
     }
 
-    public int getWoodVariantId() {
-        return woodVariantId;
+    public Orders getOrder() {
+        return order;
+    }
+
+    public WoodVariant getWoodVariant() {
+        return woodVariant;
     }
 
     public int getQuantity() {
@@ -26,5 +32,20 @@ public class OrderItem {
 
     public double getTotalPrice() {
         return quantity * unitPrice;
+    }
+
+    public void setOrder(Orders order) {
+        this.order = order;
+    }
+
+    @Override
+    public String toString() {
+        return "OrderItem{" +
+                ", orderId=" + (order != null ? order.getOrderId() : "null") +
+                ", woodVariantId=" + (woodVariant != null ? woodVariant.getWoodVariantId() : "null") +
+                ", quantity=" + quantity +
+                ", unitPrice=" + unitPrice +
+                ", totalPrice=" + getTotalPrice() +
+                '}';
     }
 }
