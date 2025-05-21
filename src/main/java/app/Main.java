@@ -4,10 +4,15 @@ import app.config.SessionConfig;
 import app.config.ThymeleafConfig;
 import app.controllers.OrderController;
 import app.controllers.UserController;
+import app.entities.Order;
+import app.exceptions.DatabaseException;
 import app.persistence.ConnectionPool;
+import app.persistence.OrderMapper;
 import io.javalin.Javalin;
 import io.javalin.rendering.template.JavalinThymeleaf;
 import io.javalin.http.staticfiles.Location;
+
+import java.util.List;
 
 
 public class Main {
@@ -22,8 +27,7 @@ public class Main {
 
     private static final ConnectionPool connectionPool = ConnectionPool.getInstance(USER, PASSWORD, URL, DB);
 
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) throws DatabaseException {
         // Initializing Javalin and Jetty webserver
 
         Javalin app = Javalin.create(config -> {
@@ -43,7 +47,6 @@ public class Main {
         UserController.addRoutes(app,connectionPool);
         OrderController.addRoutes(app, connectionPool);
 
-
-
+        }
     }
-}
+
