@@ -12,13 +12,13 @@ public class Order {
     private int carportId;
 
     public Order (int orderId, LocalDate orderDate, double totalPrice, String orderStatus, int customerId, int workerId, int carportId){
-       this.orderId = orderId;
-       this.orderDate = orderDate;
-       this.totalPrice = totalPrice;
-       this.orderStatus = orderStatus;
-       this.customerId = customerId;
-       this.workerId = workerId;
-       this.carportId = carportId;
+        this.orderId = orderId;
+        this.orderDate = orderDate;
+        this.totalPrice = totalPrice;
+        this.orderStatus = orderStatus;
+        this.customerId = customerId;
+        this.workerId = workerId;
+        this.carportId = carportId;
     }
 
     public int getOrderId(){
