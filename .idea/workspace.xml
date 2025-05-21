@@ -4,7 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="24c281b8-f515-42aa-aabd-1ff073604b67" name="Changes" comment="Updated functionality to createuser.html&#10;&#10;works with db now" />
+    <list default="true" id="24c281b8-f515-42aa-aabd-1ff073604b67" name="Changes" comment="Updated functionality to createuser.html&#10;&#10;works with db now">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/app/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/app/controllers/CustomerProfileController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/controllers/CustomerProfileController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/app/controllers/OrderController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/controllers/OrderController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/app/controllers/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/controllers/UserController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/app/entities/CustomerProfile.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/entities/CustomerProfile.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/app/entities/Order.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/entities/Order.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/app/entities/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/entities/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/app/persistence/OrderMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/persistence/OrderMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/app/entities/CustomerProfile.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/app/entities/CustomerProfile.class" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -23,10 +34,11 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="main" />
+        <entry key="$PROJECT_DIR$" value="Order-Status" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="UPDATE_TYPE" value="REBASE" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
   &quot;lastFilter&quot;: {
@@ -34,12 +46,12 @@
     &quot;assignee&quot;: &quot;KhuongNDang&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/LegitOscar/Carport.git&quot;,
-    &quot;accountId&quot;: &quot;ce5b9cec-6726-4d33-90fc-1b18021aec65&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/LegitOscar/Carport.git",
+    "accountId": "bd76a3fa-2dd7-49b3-87ba-a7f563b0c22b"
   }
-}</component>
+}]]></component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 5
 }</component>
@@ -68,6 +80,7 @@
     "JUnit.UserTest.testPasswordMatch.executor": "Run",
     "Maven.Carport [package].executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
     "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary": "JUnit5",
     "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5": "",
     "git-widget-placeholder": "main",
@@ -273,8 +286,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-28b599e66164-intellij.indexing.shared.core-IU-242.24807.4" />
-        <option value="bundled-js-predefined-d6986cc7102b-5c90d61e3bab-JavaScript-IU-242.24807.4" />
+        <option value="bundled-jdk-9823dce3aa75-a94e463ab2e7-intellij.indexing.shared.core-IU-243.26053.27" />
+        <option value="bundled-js-predefined-d6986cc7102b-1632447f56bf-JavaScript-IU-243.26053.27" />
       </set>
     </attachedChunks>
   </component>
@@ -304,6 +317,7 @@
       <workItem from="1747755344107" duration="15679000" />
       <workItem from="1747774132560" duration="1021000" />
       <workItem from="1747814759146" duration="915000" />
+      <workItem from="1747816375880" duration="2234000" />
     </task>
     <task id="LOCAL-00001" summary="push">
       <option name="closed" value="true" />
@@ -341,22 +355,6 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="push" />
     <MESSAGE value="Second push - UserController and User" />
-    <MESSAGE value="Updated functionality to createuser.html&#10;&#10;works with db now" />
-    <option name="LAST_COMMIT_MESSAGE" value="Updated functionality to createuser.html&#10;&#10;works with db now" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" log-message="true" suspend="NONE" type="java-method">
-          <url>file://$PROJECT_DIR$/src/main/java/app/persistence/UserMapper.java</url>
-          <line>60</line>
-          <properties class="app.persistence.UserMapper" method="createUser">
-            <option name="EMULATED" value="true" />
-            <option name="WATCH_EXIT" value="false" />
-          </properties>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
+    <option name="LAST_COMMIT_MESSAGE" value="Second push - UserController and User" />
   </component>
 </project>
