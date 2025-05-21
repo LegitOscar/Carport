@@ -64,7 +64,6 @@
 
         private static void updateOrder(Context ctx, ConnectionPool connectionPool) {
             try {
-
                 User currentUser = ctx.sessionAttribute("currentUser");
 
                 if (currentUser == null) {
@@ -73,19 +72,21 @@
                 }
 
                 int customerId = currentUser.getId();
-
-
                 int orderId = Integer.parseInt(ctx.formParam("orderId"));
                 LocalDate orderDate = LocalDate.parse(ctx.formParam("orderDate"));
                 double totalPrice = Double.parseDouble(ctx.formParam("totalPrice"));
-                String orderStatus = ctx.formParam("orderStatus");
-
-
+                String newStatus = ctx.formParam("orderStatus");
+                String originalStatus = ctx.formParam("originalStatus");
                 int workerId = 0;
-                int carportId = Integer.parseInt(ctx.formParam("carportId")); // Adjust based on your form
+                int carportId = Integer.parseInt(ctx.formParam("carportId"));
 
+                // If no change, skip updating
+                if (newStatus.equals(originalStatus)) {
+                    ctx.status(200).result("Ingen ændring i ordrestatus.");
+                    return;
+                }
 
-                Order order = new Order(orderId, orderDate, totalPrice, orderStatus, customerId, workerId, carportId);
+                Order order = new Order(orderId, orderDate, totalPrice, newStatus, customerId, workerId, carportId);
                 OrderMapper.updateOrder(order, connectionPool);
 
                 ctx.status(200).result("Ordre opdateret");
@@ -94,6 +95,7 @@
                 ctx.status(400).result("Fejl ved opdatering af ordre: " + e.getMessage());
             }
         }
+
 
 
 
@@ -118,24 +120,22 @@
 
             try {
                 int workerId = currentUser.getId();
-                System.out.println("Logged-in workerId: " + workerId);
 
+                // Orders assigned to this worker
                 List<Order> orders = OrderMapper.getAllOrdersPerWorker(workerId, connectionPool);
 
-                System.out.println("Orders to render: " + orders.size());
-                orders.forEach(System.out::println);
+                // Orders NOT assigned to this worker
+                List<Order> otherOrders = OrderMapper.getOrdersNotAssignedToWorker(workerId, connectionPool);
 
-                if (orders == null) {
-                    System.out.println("Orders is null!");
-                } else {
-                    System.out.println("Orders count: " + orders.size());
-                }
                 ctx.attribute("orders", orders);
+                ctx.attribute("otherOrders", otherOrders);
+
                 ctx.render("sellerdashboard.html");
             } catch (DatabaseException e) {
                 ctx.status(500).result("Fejl ved hentning af ordrer for medarbejder: " + e.getMessage());
             }
         }
+
 
 
         public static List<Order> getAllOrders(ConnectionPool connectionPool) throws DatabaseException {

@@ -2,31 +2,120 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Worker Dashboard</title>
+    <title>Sellerdashboard</title>
+    <style>
+        .container {
+            display: flex;
+            justify-content: space-between;
+        }
+        .table-wrapper {
+            width: 48%;
+        }
+    </style>
 </head>
 <body>
-<h1>Ordrer tildelt til dig</h1>
-<table border="1">
-    <thead>
-    <tr>
-        <th>Ordre ID</th>
-        <th>Dato</th>
-        <th>Pris</th>
-        <th>Status</th>
-        <th>Kunde ID</th>
-        <th>Carport ID</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="order : ${orders}">
-        <td th:text="${order.orderId}"></td>
-        <td th:text="${order.orderDate}"></td>
-        <td th:text="${order.totalPrice}"></td>
-        <td th:text="${order.orderStatus}"></td>
-        <td th:text="${order.customerId}"></td>
-        <td th:text="${order.carportId}"></td>
-    </tr>
-    </tbody>
-</table>
+<h1>Sellerdashboard</h1>
+
+<div class="container">
+    <!-- Orders assigned to current worker -->
+    <div class="table-wrapper">
+        <h2>Dine ordrer</h2>
+        <table border="1">
+            <thead>
+            <tr>
+                <th>Ordre ID</th>
+                <th>Dato</th>
+                <th>Pris</th>
+                <th>Status</th>
+                <th>Kunde ID</th>
+                <th>Carport ID</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="order : ${orders}">
+                <td th:text="${order.orderId}"></td>
+                <td th:text="${order.orderDate}"></td>
+                <td th:text="${order.totalPrice}"></td>
+                <td>
+                    <form th:action="@{/updateorder}" method="post" th:id="'form-' + ${order.orderId}">
+                        <input type="hidden" name="orderId" th:value="${order.orderId}"/>
+                        <input type="hidden" name="originalStatus" th:value="${order.orderStatus}"/>
+                        <input type="hidden" name="orderDate" th:value="${order.orderDate}" />
+                        <input type="hidden" name="totalPrice" th:value="${order.totalPrice}" />
+                        <input type="hidden" name="carportId" th:value="${order.carportId}" />
+
+                        <select
+                                name="orderStatus"
+                                th:id="'status-select-' + ${order.orderId}"
+                                th:attr="data-original=${order.orderStatus}"
+                                onchange="autoSubmitForm(this)">
+                            <option value="pending" th:selected="${order.orderStatus == 'pending'}">pending</option>
+                            <option value="active" th:selected="${order.orderStatus == 'active'}">active</option>
+                            <option value="complete" th:selected="${order.orderStatus == 'complete'}">complete</option>
+                        </select>
+                    </form>
+                </td>
+                <td th:text="${order.customerId}"></td>
+                <td th:text="${order.carportId}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- All other orders -->
+    <div class="table-wrapper">
+        <h2>Andre ordrer</h2>
+        <table border="1">
+            <thead>
+            <tr>
+                <th>Ordre ID</th>
+                <th>Dato</th>
+                <th>Pris</th>
+                <th>Status</th>
+                <th>Kunde ID</th>
+                <th>Worker ID</th>
+                <th>Carport ID</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="order : ${otherOrders}">
+                <td th:text="${order.orderId}"></td>
+                <td th:text="${order.orderDate}"></td>
+                <td th:text="${order.totalPrice}"></td>
+                <td th:text="${order.orderStatus}"></td>
+                <td th:text="${order.customerId}"></td>
+                <td th:text="${order.workerId}"></td>
+                <td th:text="${order.carportId}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function autoSubmitForm(selectElement) {
+        const originalStatus = selectElement.getAttribute('data-original');
+        const currentStatus = selectElement.value;
+
+        if (originalStatus !== currentStatus) {
+            const orderId = selectElement.id.split('-').pop();
+            const form = document.getElementById('form-' + orderId);
+
+            fetch(form.action, {
+                method: 'POST',
+                body: new FormData(form)
+            }).then(response => {
+                if (response.ok) {
+                    console.log("Opdateret!");
+                    // Optionally, update data-original to reflect new value
+                    selectElement.setAttribute('data-original', currentStatus);
+                } else {
+                    console.error("Fejl ved opdatering");
+                }
+            });
+        }
+    }
+</script>
+
 </body>
 </html>

@@ -110,6 +110,34 @@ public class OrderMapper {
         return orders;
     }
 
+    public static List<Order> getOrdersNotAssignedToWorker(int workerId, ConnectionPool connectionPool) throws DatabaseException {
+        List<Order> orderList = new ArrayList<>();
+        String sql = "SELECT * FROM orders WHERE worker_id != ? OR worker_id IS NULL";
+
+        try (Connection connection = connectionPool.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, workerId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    int orderId = rs.getInt("order_id");
+                    Date orderDate = rs.getDate("order_date");
+                    double totalPrice = rs.getDouble("total_price");
+                    String orderStatus = rs.getString("order_status");
+                    int customerId = rs.getInt("customer_id");
+                    int worker = rs.getInt("worker_id");
+                    int carportId = rs.getInt("carport_id");
+
+                    LocalDate localOrderDate = orderDate.toLocalDate();
+                    orderList.add(new Order(orderId, localOrderDate, totalPrice, orderStatus, customerId, worker, carportId));
+                }
+            }
+        } catch (SQLException e) {
+            throw new DatabaseException("Error fetching unassigned orders", e.getMessage());
+        }
+
+        return orderList;
+    }
+
 
     public static List<Order> getAllOrders(ConnectionPool connectionPool) throws DatabaseException {
         List<Order> orderList = new ArrayList<>();
