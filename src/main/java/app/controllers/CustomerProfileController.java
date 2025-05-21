@@ -1,10 +1,14 @@
 package app.controllers;
 
+import app.entities.Order;
 import app.entities.User;
 import app.exceptions.DatabaseException;
 import app.persistence.ConnectionPool;
+import app.persistence.OrderMapper;
 import app.persistence.UserMapper;
 import io.javalin.http.Context;
+
+import java.util.List;
 
 public class CustomerProfileController {
 
@@ -19,7 +23,14 @@ public class CustomerProfileController {
         try {
             User profile = UserMapper.getCustomerProfileById(user.getId(), connectionPool);
             ctx.attribute("profile", profile);
+
+            List<Order> orders = OrderMapper.getAllOrdersPerUser(user.getId(), connectionPool);
+            ctx.attribute("orders", orders);
+
+
             ctx.render("customerprofile.html");
+
+
         } catch (Exception e) {
             e.printStackTrace();
             ctx.status(500).result("Server error ved hentning af kundeprofil: " + e.getMessage());
