@@ -31,9 +31,11 @@ public class User {
     }
 
     // Getters
-    public int getUserId() {
+    public int getId() {
         return id;
     }
+
+    public void setId(int id) { this.id = id; }
 
     public String getName() {
         return name;
@@ -47,9 +49,13 @@ public class User {
         return postcode;
     }
 
+    public void setPostcode(int postcode){ this.postcode = this.postcode;}
+
     public String getCity() {
         return city;
     }
+
+    public void setCity(String city) { this.city = city; }
 
     public int getPhone() {
         return phone;
@@ -62,7 +68,6 @@ public class User {
     public String getPassword() {
         return password;
     }
-
     public Integer getRoleId() {
         return roleId;
     }

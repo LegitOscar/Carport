@@ -37,7 +37,7 @@
       <input type="text" id="postnummer" name="postnummer" placeholder="Indtast postnummer" class="input-field" />
 
       <label for="by">By:</label>
-      <input type="text" id="by" name="by" placeholder="Indtast by" class="input-field" />
+      <input type="text" id="by" name="by" placeholder="Bliver automatisk udfyldt" class="input-field" readonly />
 
       <label for="telefon">Tlf-nummer:</label>
       <input type="text" id="telefon" name="telefon" placeholder="Indtast telefonnummer" class="input-field" />
@@ -70,5 +70,27 @@
     </div>
   </div>
 </div>
+<script>
+
+  document.getElementById("postnummer").addEventListener("blur", function () {
+    const postcode = this.value;
+    if (postcode.length === 4) {
+      fetch(`/getcity?postcode=${postcode}`)
+              .then(response => response.text().then(text => {
+                if (!response.ok) throw new Error(text);
+                return text;
+              }))
+              .then(city => {
+                document.getElementById("by").value = city;
+              })
+              .catch(error => {
+                document.getElementById("by").value = error.message;
+                console.error(error);
+              });
+    }
+  });
+
+</script>
+
 </body>
 </html>
