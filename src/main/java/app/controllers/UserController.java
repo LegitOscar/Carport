@@ -38,12 +38,16 @@ public class UserController {
         app.get("logout", ctx -> logout(ctx));
         app.get("/login", ctx -> ctx.render("login.html"));
         app.get("createuser", ctx -> ctx.render("createuser.html"));
-        app.get("/design", ctx -> ctx.render("design.html"));
+        app.get("/orderSite", ctx -> ctx.render("orderSite.html"));
+        app.get("/orderSite2", ctx -> ctx.render("orderSite2.html"));
+        app.get("/orderSite3", ctx -> ctx.render("orderSite3.html"));
+        app.get("/orderConfirmation", ctx -> ctx.render("orderConfirmation.html"));
         app.get("/customerprofile", ctx -> CustomerProfileController.showProfile(ctx, connectionPool));
-        app.post("createuser", ctx -> UserController.createUser(ctx, connectionPool));
+        app.post("/createuser", ctx -> UserController.createUser(ctx, connectionPool));
         app.post("/profile/edit", ctx -> CustomerProfileController.editProfile(ctx, connectionPool));
         app.post("/profile/update", ctx -> CustomerProfileController.updateProfile(ctx, connectionPool));
         app.get("/getcity", ctx -> UserController.getCityByPostcode(ctx, connectionPool));
+        app.post("/createuserorder", ctx -> UserController.createUserOrder(ctx, connectionPool));
 
 
     }
@@ -77,7 +81,34 @@ public class UserController {
 
         ctx.render("login.html");
     }
+    public static void createUserOrder(Context ctx, ConnectionPool connectionPool) {
+        String navn = ctx.formParam("navn");
+        String adresse = ctx.formParam("adresse");
+        int postnummer = Integer.parseInt(ctx.formParam("postnummer"));
+        String by = ctx.formParam("by");
+        int telefon = Integer.parseInt(ctx.formParam("telefon"));
+        String email = ctx.formParam("email");
+        String password1 = ctx.formParam("password1");
+        String password2 = ctx.formParam("password2");
 
+        if (!password1.equals(password2)) {
+            ctx.attribute("message", "Passwords do not match.");
+            ctx.render("orderSite3.html");
+            return;
+        }
+
+        User user = new User(navn, adresse, postnummer, by, telefon, email, password1);
+        UserMapper userMapper = new UserMapper(connectionPool);
+
+        try {
+            userMapper.createUser(user);
+            ctx.attribute("message", "Bruger oprettet!");
+        } catch (Exception e) {
+            ctx.attribute("message", "Fejl under oprettelse af bruger: " + e.getMessage());
+        }
+
+        ctx.render("orderConfirmation.html");
+    }
 
 
     private static void logout(Context ctx) {
