@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <title>Carport Formular</title>
+    <link rel="stylesheet" href="../public/css/orderSite.css">
+    <link rel="stylesheet" th:href="@{/css/orderSite.css}">
+</head>
+<body>
+<div class="container">
+    <aside class="sidebar">
+        <div class="logo">Fog<sup>®</sup></div>
+        <div class="steps">
+            <div class="step">1</div>
+            <div class="step">2</div>
+            <div class="step active">3</div>
+            <div class="step icon">🚘</div>
+        </div>
+        <ul class="info-text">
+            <li><strong>Bredde:</strong> </li>
+            <li><strong>Længde:</strong></li>
+            <li><strong>Trapeztag:</strong> </li>
+        </ul>
+    </aside>
+
+    <main class="form-section">
+        <h2>udfyld formularen</h2>
+        <h1>PERSONLIGE OPLYSNINGER</h1>
+
+            <form class="login-form" method="get" action="/orderConfirmation">
+                <label for="navn">Fulde navn:</label>
+                <input type="text" id="navn" name="navn" placeholder="Indtast dit fulde navn" class="input-field" />
+
+                <label for="adresse">Adresse:</label>
+                <input type="text" id="adresse" name="adresse" placeholder="Indtast adresse" class="input-field" />
+
+                <label for="postnummer">Postnummer:</label>
+                <input type="text" id="postnummer" name="postnummer" placeholder="Indtast postnummer" class="input-field" />
+
+                <label for="by">By:</label>
+                <input type="text" id="by" name="by" placeholder="Indtast by" class="input-field" />
+
+                <label for="telefon">Tlf-nummer:</label>
+                <input type="text" id="telefon" name="telefon-nummer" placeholder="Indtast telefonnummer" class="input-field" />
+
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" placeholder="Indtast email" class="input-field" />
+
+                <label for="password1">Password:</label>
+                <input type="password" id="password1" name="password1" placeholder="Indtast password" class="input-field" />
+
+                <label for="password2">Bekræft Password:</label>
+                <input type="password" id="password2" name="password2" placeholder="Gentag password" class="input-field" />
+
+
+                <button type="submit">Fortsæt</button>
+        </form>
+    </main>
+</div>
+</body>
+</html>
