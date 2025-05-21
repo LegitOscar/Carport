@@ -5,16 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="24c281b8-f515-42aa-aabd-1ff073604b67" name="Changes" comment="Updated functionality to createuser.html&#10;&#10;works with db now">
+      <change afterPath="$PROJECT_DIR$/src/main/resources/public/css/loginStyles.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/public/css/orderConfirmation.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/public/css/orderSite.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/public/css/orderSite2.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/templates/orderConfirmation.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/templates/orderSite.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/templates/orderSite2.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/templates/orderSite3.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/templates/showOrder.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/app/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/app/controllers/CustomerProfileController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/controllers/CustomerProfileController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/app/controllers/OrderController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/controllers/OrderController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/app/controllers/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/controllers/UserController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/app/entities/CustomerProfile.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/entities/CustomerProfile.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/app/entities/Order.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/entities/Order.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/app/entities/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/entities/User.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/app/persistence/OrderMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/persistence/OrderMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/app/entities/CustomerProfile.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/app/entities/CustomerProfile.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,12 +46,12 @@
     &quot;assignee&quot;: &quot;KhuongNDang&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/LegitOscar/Carport.git",
-    "accountId": "bd76a3fa-2dd7-49b3-87ba-a7f563b0c22b"
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/LegitOscar/Carport.git&quot;,
+    &quot;accountId&quot;: &quot;bd76a3fa-2dd7-49b3-87ba-a7f563b0c22b&quot;
   }
-}]]></component>
+}</component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 5
 }</component>
@@ -83,9 +83,10 @@
     "RunOnceActivity.git.unshallow": "true",
     "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary": "JUnit5",
     "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5": "",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "Ayman-push",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/drunk/IdeaProjects/Carport/src/main/resources/public/css",
     "list.type.of.created.stylesheet": "CSS",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -335,7 +336,15 @@
       <option name="project" value="LOCAL" />
       <updated>1747307019743</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="customerprofile">
+      <option name="closed" value="true" />
+      <created>1747824281838</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1747824281839</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -355,6 +364,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="push" />
     <MESSAGE value="Second push - UserController and User" />
-    <option name="LAST_COMMIT_MESSAGE" value="Second push - UserController and User" />
+    <MESSAGE value="customerprofile" />
+    <option name="LAST_COMMIT_MESSAGE" value="customerprofile" />
   </component>
 </project>
