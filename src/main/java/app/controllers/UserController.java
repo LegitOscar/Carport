@@ -47,16 +47,13 @@ public class UserController {
         app.post("/profile/edit", ctx -> CustomerProfileController.editProfile(ctx, connectionPool));
         app.post("/profile/update", ctx -> CustomerProfileController.updateProfile(ctx, connectionPool));
         app.get("/getcity", ctx -> UserController.getCityByPostcode(ctx, connectionPool));
-
         app.get("/admin", ctx -> UserController.showAdminPage(ctx, connectionPool));
         app.post("/admin/update-role", ctx -> UserController.updateUserRole(ctx, connectionPool));
-
         app.post("/createuserorder", ctx -> UserController.createUserOrder(ctx, connectionPool));
-
-
-
+        app.get("/admin/create-worker", ctx -> ctx.render("createworker.html"));
+        app.post("/admin/create-worker", ctx -> createWorkerFromAdmin(ctx, connectionPool));
+        app.post("/admin/delete-worker", ctx -> UserController.deleteWorkerFromAdmin(ctx, connectionPool));
     }
-
 
     public static void createUser(Context ctx, ConnectionPool connectionPool) {
         String navn = ctx.formParam("navn");
@@ -86,6 +83,8 @@ public class UserController {
 
         ctx.render("login.html");
     }
+
+
     public static void createUserOrder(Context ctx, ConnectionPool connectionPool) {
         String navn = ctx.formParam("navn");
         String adresse = ctx.formParam("adresse");
@@ -258,6 +257,41 @@ public class UserController {
             ctx.status(500).result("Fejl ved opdatering af rolle: " + e.getMessage());
         }
     }
+    public static void createWorkerFromAdmin(Context ctx, ConnectionPool connectionPool) {
+        String name = ctx.formParam("name");
+        String email = ctx.formParam("email");
+        String password1 = ctx.formParam("password1");
+        String password2 = ctx.formParam("password2");
+        int phone = Integer.parseInt(ctx.formParam("phone"));
+        int roleId = 2;
 
+        if (!password1.equals(password2)) {
+            ctx.attribute("message", "Passwords do not match.");
+            ctx.render("createworker.html");
+            return;
+        }
+
+        User user = new User(name, email, password1, phone, roleId);
+        UserMapper userMapper = new UserMapper(connectionPool);
+
+        try {
+            userMapper.createWorker(user);
+            ctx.redirect("/admin");
+        } catch (SQLException e) {
+            ctx.status(500).result("Fejl ved oprettelse af medarbejder: " + e.getMessage());
+        }
+    }
+
+    public static void deleteWorkerFromAdmin(Context ctx, ConnectionPool connectionPool) {
+        int workerId = Integer.parseInt(ctx.formParam("workerId"));
+        UserMapper userMapper = new UserMapper(connectionPool);
+
+        try {
+            userMapper.deleteWorker(workerId);
+            ctx.redirect("/admin");
+        } catch (SQLException e) {
+            ctx.status(500).result("Fejl ved sletning af medarbejder: " + e.getMessage());
+        }
+    }
 
 }

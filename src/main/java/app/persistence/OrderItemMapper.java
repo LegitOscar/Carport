@@ -39,7 +39,7 @@ public class OrderItemMapper {
 
         String sql = "SELECT b.quantity, b.unit_price,\n" +
                 "w.wood_variant_id, w.material_id, w.length_cm, w.size, w.price,\n" +
-                "o.order_id, o.order_date, o.total_price, o.order_status, o.customer_id, o.worker_id, o.carport_id\n" +
+                "o.order_id, o.order_date, o.total_price, o.order_status, o.customer_id, o.worker_id\n" +
                 "FROM billofmaterials b\n" +
                 "JOIN wood_variant w ON b.wood_variant_id = w.wood_variant_id\n" +
                 "JOIN material m ON w.material_id = m.material_id" +
@@ -67,8 +67,7 @@ public class OrderItemMapper {
                         rs.getDouble("total_price"),
                         rs.getString("order_status"),
                         rs.getInt("customer_id"),
-                        rs.getInt("worker_id"),
-                        rs.getInt("carport_id")
+                        rs.getInt("worker_id")
                 );
 
                 OrderItem item = new OrderItem(

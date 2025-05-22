@@ -1,12 +1,28 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Worker Dashboard</title>
+    <title>Seller Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2rem; }
+        h2 { margin-top: 2rem; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 2rem; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        form.inline-form { display: inline; }
+        .edit-row input, .edit-row select { width: 100%; padding: 6px; }
+        .btn { padding: 6px 12px; margin: 2px; }
+        .btn-edit { background-color: #4CAF50; color: white; }
+        .btn-delete { background-color: #f44336; color: white; }
+        .btn-save { background-color: #008CBA; color: white; }
+        .btn-cancel { background-color: #bbb; color: white; }
+    </style>
 </head>
 <body>
-<h1>Ordrer tildelt til dig</h1>
-<table border="1">
+<h1>Seller Dashboard</h1>
+
+<!-- Orders Assigned to Current Worker -->
+<h2>Dine Tildelte Ordrer</h2>
+<table>
     <thead>
     <tr>
         <th>Ordre ID</th>
@@ -14,19 +30,92 @@
         <th>Pris</th>
         <th>Status</th>
         <th>Kunde ID</th>
-        <th>Carport ID</th>
+        <th>Handlinger</th>
     </tr>
     </thead>
     <tbody>
-    <tr th:each="order : ${orders}">
+    <th:block th:each="order : ${orders}">
+        <tr th:if="${editOrderId} != ${order.orderId}">
+            <td th:text="${order.orderId}"></td>
+            <td th:text="${order.orderDate}"></td>
+            <td th:text="${order.totalPrice}"></td>
+            <td th:text="${order.orderStatus}"></td>
+            <td th:text="${order.customerId}"></td>
+            <td>
+                <!-- Edit button -->
+                <form method="get" th:action="@{/sellerdashboard}" class="inline-form">
+                    <input type="hidden" name="editOrderId" th:value="${order.orderId}" />
+                    <button class="btn btn-edit" type="submit">Rediger</button>
+                </form>
+
+                <!-- Delete button -->
+                <form method="post" th:action="@{/deleteorder}" class="inline-form">
+                    <input type="hidden" name="orderId" th:value="${order.orderId}" />
+                    <button class="btn btn-delete" type="submit">Slet</button>
+                </form>
+            </td>
+        </tr>
+
+        <!-- Edit Form Row -->
+        <tr th:if="${editOrderId} == ${order.orderId}" class="edit-row">
+            <form method="post" th:action="@{/updateorder}">
+                <td><input type="hidden" name="orderId" th:value="${order.orderId}" />
+                    <span th:text="${order.orderId}"></span></td>
+                <td th:text="${order.orderDate}"></td>
+                <td><input type="text" name="totalPrice" th:value="${order.totalPrice}" /></td>
+                <td>
+                    <select name="orderStatus">
+                        <option th:selected="${order.orderStatus == 'Pending'}">Pending</option>
+                        <option th:selected="${order.orderStatus == 'Confirmed'}">Confirmed</option>
+                        <option th:selected="${order.orderStatus == 'Shipped'}">Shipped</option>
+                        <option th:selected="${order.orderStatus == 'Completed'}">Completed</option>
+                        <option th:selected="${order.orderStatus == 'Cancelled'}">Cancelled</option>
+                    </select>
+                </td>
+                <td th:text="${order.customerId}"></td>
+                <td>
+                    <button class="btn btn-save" type="submit">Gem</button>
+                    <a th:href="@{/sellerdashboard}" class="btn btn-cancel">Annuller</a>
+                </td>
+            </form>
+        </tr>
+    </th:block>
+    </tbody>
+</table>
+
+<!-- Orders NOT Assigned to Current Worker -->
+<h2>Andre Ordrer</h2>
+<!-- Orders NOT Assigned to Current Worker -->
+<h2>Andre Ordrer</h2>
+<table>
+    <thead>
+    <tr>
+        <th>Ordre ID</th>
+        <th>Dato</th>
+        <th>Pris</th>
+        <th>Status</th>
+        <th>Kunde ID</th>
+        <th>Handlinger</th> <!-- New column added -->
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="order : ${otherOrders}">
         <td th:text="${order.orderId}"></td>
         <td th:text="${order.orderDate}"></td>
         <td th:text="${order.totalPrice}"></td>
         <td th:text="${order.orderStatus}"></td>
         <td th:text="${order.customerId}"></td>
-        <td th:text="${order.carportId}"></td>
+        <td th:text="${order.workerId}"></td>
+        <td>
+            <!-- Button "Vælg" -->
+            <form method="post" th:action="@{/selectorder}" class="inline-form">
+                <input type="hidden" name="orderId" th:value="${order.orderId}" />
+                <button class="btn btn-edit" type="submit">Vælg</button>
+            </form>
+        </td>
     </tr>
     </tbody>
 </table>
+
 </body>
 </html>
