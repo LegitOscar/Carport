@@ -30,6 +30,14 @@ public class User {
         this.password = password;
     }
 
+    public User(String name, String email, String password, int phone, int roleId) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.phone = phone;
+        this.roleId = roleId;
+    }
+
     // Getters
     public int getId() {
         return id;

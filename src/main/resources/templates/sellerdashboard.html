@@ -30,7 +30,6 @@
         <th>Pris</th>
         <th>Status</th>
         <th>Kunde ID</th>
-        <th>Carport ID</th>
         <th>Handlinger</th>
     </tr>
     </thead>
@@ -42,7 +41,6 @@
             <td th:text="${order.totalPrice}"></td>
             <td th:text="${order.orderStatus}"></td>
             <td th:text="${order.customerId}"></td>
-            <td th:text="${order.workerId}"></td>
             <td>
                 <!-- Edit button -->
                 <form method="get" th:action="@{/sellerdashboard}" class="inline-form">
@@ -75,7 +73,6 @@
                     </select>
                 </td>
                 <td th:text="${order.customerId}"></td>
-                <td th:text="${order.workerId}"></td>
                 <td>
                     <button class="btn btn-save" type="submit">Gem</button>
                     <a th:href="@{/sellerdashboard}" class="btn btn-cancel">Annuller</a>
@@ -98,7 +95,6 @@
         <th>Pris</th>
         <th>Status</th>
         <th>Kunde ID</th>
-        <th>Carport ID</th>
         <th>Handlinger</th> <!-- New column added -->
     </tr>
     </thead>

@@ -171,7 +171,7 @@ public class Calculator {
 
 
     public List<OrderItem> generateBillOfMaterials(Carport carport) {
-        Order dummyOrder = new Order(0, LocalDate.now(), 0, null, 0, 0, carport.getCarportId());
+        Order dummyOrder = new Order(0, LocalDate.now(), 0, null, 0, 0);
         return calculateMaterials(carport, dummyOrder);
     }
 
