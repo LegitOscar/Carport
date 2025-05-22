@@ -4,46 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="24c281b8-f515-42aa-aabd-1ff073604b67" name="Changes" comment="Updated functionality to createuser.html&#10;&#10;works with db now">
+    <list default="true" id="24c281b8-f515-42aa-aabd-1ff073604b67" name="Changes" comment="Updated_sellerdashboard">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/app/controllers/OrderController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/controllers/OrderController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/app/entities/Order.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/entities/Order.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/app/persistence/OrderMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/persistence/OrderMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/app/persistence/UserMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/persistence/UserMapper.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/templates/sellerdashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/sellerdashboard.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/Carport-1.0-SNAPSHOT-shaded.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/app.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/app/Main.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/app/config/SessionConfig.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/app/config/ThymeleafConfig.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/app/controllers/OrderController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/app/controllers/UserController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/app/entities/CustomerProfile.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/app/entities/Order.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/app/entities/User.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/app/exceptions/DatabaseException.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/app/persistence/ConnectionPool.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/app/persistence/OrderMapper.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/app/persistence/UserMapper.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/public/css/index.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/public/css/login.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/public/css/styles.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/public/images/fogLogo.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/templates/createuser.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/templates/customerprofile.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/templates/design.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/templates/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/templates/login.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/templates/sellerdashboard.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-archiver/pom.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/createdFiles.lst" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/inputFiles.lst" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/original-app.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/surefire-reports/OrderTest.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/surefire-reports/TEST-OrderTest.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/surefire-reports/TEST-UserTest.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/surefire-reports/UserTest.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/test-classes/OrderTest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/OrderTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/OrderTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -345,6 +313,8 @@
       <workItem from="1747755344107" duration="15679000" />
       <workItem from="1747774132560" duration="1021000" />
       <workItem from="1747814759146" duration="915000" />
+      <workItem from="1747898177380" duration="2665000" />
+      <workItem from="1747901774962" duration="10641000" />
     </task>
     <task id="LOCAL-00001" summary="push">
       <option name="closed" value="true" />
@@ -362,7 +332,15 @@
       <option name="project" value="LOCAL" />
       <updated>1747307019743</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Updated_sellerdashboard">
+      <option name="closed" value="true" />
+      <created>1747827435696</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1747827435696</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -382,7 +360,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="push" />
     <MESSAGE value="Second push - UserController and User" />
-    <option name="LAST_COMMIT_MESSAGE" value="Second push - UserController and User" />
+    <MESSAGE value="Updated_sellerdashboard" />
+    <option name="LAST_COMMIT_MESSAGE" value="Updated_sellerdashboard" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
