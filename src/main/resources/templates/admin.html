@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="da" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Panel</title>
+    <style>
+        body { font-family: Arial; margin: 40px; }
+        h2 { margin-top: 40px; }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+        th { background-color: #f2f2f2; }
+        .action-buttons a {
+            margin-right: 10px;
+            color: blue;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Admin Panel</h1>
+
+<!-- Customers -->
+<h2>Kunder</h2>
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Navn</th>
+        <th>Email</th>
+        <th>Telefon</th>
+        <th>Adresse</th>
+        <th>Postnummer</th>
+        <th>Handling</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="customer : ${customers}">
+        <td th:text="${customer.id}"></td>
+        <td th:text="${customer.name}"></td>
+        <td th:text="${customer.email}"></td>
+        <td th:text="${customer.phone}"></td>
+        <td th:text="${customer.address}"></td>
+        <td th:text="${customer.postcode}"></td>
+        <td class="action-buttons">
+            <a th:href="@{'/admin/user/edit/' + ${customer.id}}">Rediger</a>
+            <a th:href="@{'/admin/user/delete/' + ${customer.id}}">Slet</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<!-- Workers -->
+<h2>Medarbejdere</h2>
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Navn</th>
+        <th>Email</th>
+        <th>Telefon</th>
+        <th>Rolle</th>
+        <th>Handling</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="worker : ${workers}">
+        <td th:text="${worker.id}"></td>
+        <td th:text="${worker.name}"></td>
+        <td th:text="${worker.email}"></td>
+        <td th:text="${worker.phone}"></td>
+        <td th:text="${worker.roleId == 3 ? 'Admin' : (worker.roleId == 2 ? 'Worker' : 'Unknown')}"></td>
+
+        <td class="action-buttons">
+            <form th:action="@{/admin/update-role}" method="post" style="display:inline;">
+                <input type="hidden" name="workerId" th:value="${worker.id}"/>
+
+                <select name="newRoleId">
+                    <option value="2" th:selected="${worker.roleId == 2}">Worker</option>
+                    <option value="3" th:selected="${worker.roleId == 3}">Admin</option>
+                </select>
+
+                <button type="submit">Opdater rolle</button>
+            </form>
+        </td>
+
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>

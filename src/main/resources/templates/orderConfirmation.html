@@ -1,0 +1,46 @@
+
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <title>Carport Formular</title>
+  <link rel="stylesheet" href="../public/css/orderConfirmation.css">
+  <link rel="stylesheet" th:href="@{/css/orderConfirmation.css}">
+</head>
+<body>
+<div class="container">
+  <aside class="sidebar">
+    <div class="logo">Fog<sup>®</sup></div>
+    <div class="steps">
+      <div class="step ">1</div>
+      <div class="step">2</div>
+      <div class="step">3</div>
+      <div class="step icon active">🚘</div>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <h1>ORDRE BEKRÆFTELSE</h1>
+<form method="get" action = "/customerprofile">
+    <div class="confirmation-box">
+      <p class="thank-you"><strong>Tak for din bestilling:</strong></p>
+      <p>
+        Tak for din bestilling af carport.<br>
+        Du vil blive kontaktet af en Fog medarbejder inden for
+        <span class="highlight">1-3 arbejdsdage.</span>
+      </p>
+      <p>
+        Skulle du have eventuelle spørgsmål til din bestilling kan du kontakte vores kundeservice på:<br>
+        • Tlf: +45 47160800<br>
+        • Email: fogkundeservice@fog.dk
+      </p>
+    </div>
+
+    <h3>Følg din ordrestatus på “Min profil”</h3>
+    <button class="profile-btn">Min profil</button>
+</form>
+  </main>
+</div>
+</body>
+</html>
+

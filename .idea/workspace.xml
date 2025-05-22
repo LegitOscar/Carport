@@ -4,35 +4,56 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="24c281b8-f515-42aa-aabd-1ff073604b67" name="Changes" comment="Updated functionality to createuser.html&#10;&#10;works with db now">
-      <change afterPath="$PROJECT_DIR$/src/main/resources/public/css/customerprofile.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/app/persistence/UserMapperTest.java" afterDir="false" />
+
+    <list default="true" id="24c281b8-f515-42aa-aabd-1ff073604b67" name="Changes" comment="Updated_sellerdashboard">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/app/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/app/controllers/CustomerProfileController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/controllers/CustomerProfileController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/app/controllers/OrderController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/controllers/OrderController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/app/controllers/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/controllers/UserController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/app/entities/Order.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/entities/Order.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/app/entities/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/entities/User.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/app/persistence/ConnectionPool.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/persistence/ConnectionPool.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/app/persistence/OrderMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/persistence/OrderMapper.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/app/persistence/UserMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/persistence/UserMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/createuser.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/createuser.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/customerprofile.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/customerprofile.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/templates/sellerdashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/sellerdashboard.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/app/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/app/Main.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/app/controllers/OrderController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/app/controllers/OrderController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/app/controllers/UserController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/app/controllers/UserController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/app/entities/Order.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/app/entities/Order.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/app/entities/User.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/app/entities/User.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/app/persistence/ConnectionPool.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/app/persistence/ConnectionPool.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/app/persistence/OrderMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/app/persistence/OrderMapper.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/app/persistence/UserMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/app/persistence/UserMapper.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/templates/createuser.html" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/templates/createuser.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/templates/customerprofile.html" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/templates/customerprofile.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/templates/sellerdashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/templates/sellerdashboard.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/test-classes/UserTest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/OrderTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/OrderTest.java" afterDir="false" />
+
+
+    <list default="true" id="0b27a193-abca-4897-adbe-34a8e509c3c3" name="Changes" comment="customerprofile">
+      <change afterPath="$PROJECT_DIR$/src/main/java/app/controllers/CarportController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/app/entities/Carport.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/app/entities/FittingsAndScrews.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/app/entities/Material.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/app/entities/OrderItem.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/app/entities/Product.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/app/entities/ProductVariant.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/app/entities/WoodVariant.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/app/persistence/CarportMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/app/persistence/OrderItemMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/app/persistence/ProductMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/app/persistence/WoodVariantMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/app/services/Calculator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/templates/admin.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/app/controllers/OrderController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/controllers/OrderController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/app/controllers/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/controllers/UserController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/app/entities/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/entities/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/app/persistence/OrderMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/persistence/OrderMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/app/persistence/UserMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/persistence/UserMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/OrderTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/OrderTest.java" afterDir="false" />
+
+    <list default="true" id="24c281b8-f515-42aa-aabd-1ff073604b67" name="Changes" comment="Updated functionality to createuser.html&#10;&#10;works with db now">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+
+      <change beforePath="$PROJECT_DIR$/src/main/java/app/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/app/controllers/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/controllers/UserController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/orderConfirmation.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/orderConfirmation.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/orderSite.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/orderSite.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/orderSite2.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/orderSite2.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/orderSite3.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/orderSite3.html" afterDir="false" />
+
+
+      <change beforePath="$PROJECT_DIR$/src/main/java/app/controllers/CustomerProfileController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/controllers/CustomerProfileController.java" afterDir="false" />
+
+
+
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,86 +64,132 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="HTML File" />
-        <option value="JUnit5 Test Class" />
-        <option value="CSS File" />
-        <option value="Class" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
+
+        <entry key="$PROJECT_DIR$" value="Alex-Calculator" />
+
+
         <entry key="$PROJECT_DIR$" value="main" />
+
+        <entry key="$PROJECT_DIR$" value="Ayman-push" />
+
+
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+
   <component name="GitHubPullRequestSearchHistory">{
   &quot;lastFilter&quot;: {
     &quot;state&quot;: &quot;OPEN&quot;,
     &quot;assignee&quot;: &quot;KhuongNDang&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/LegitOscar/Carport.git&quot;,
-    &quot;accountId&quot;: &quot;ce5b9cec-6726-4d33-90fc-1b18021aec65&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/LegitOscar/Carport.git",
+    "accountId": "39abae34-0acc-48b6-b124-8dbe646aefd4"
   }
-}</component>
+}]]></component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 5
 }</component>
   <component name="ProjectId" id="2x0fZrcZJUnewxvLeTvXCRysoiI" />
+
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+
   <component name="ProjectViewState">
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.Main.executor&quot;: &quot;Run&quot;,
-    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
-    &quot;JUnit.OrderMapperTest.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.OrderMapperTest.getAllOrders.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.OrderTest.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.OrderTest.testCreateOrder.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.OrderTest.testDeleteOrder.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.OrderTest.testDeleteOrder2.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.UserMapperTest.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.UserMapperTest.testCreateUser.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.UserMapperTest.testCreateUserWithZipCode.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.UserTest.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.UserTest.testCreateUser.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.UserTest.testDuplicateUsername.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.UserTest.testLogin.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.UserTest.testPasswordMatch.executor&quot;: &quot;Run&quot;,
-    &quot;Maven.Carport [package].executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary&quot;: &quot;JUnit5&quot;,
-    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5&quot;: &quot;&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;ShowAllOrders__Khuong&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Artifacts&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.Main.executor": "Run",
+    "DefaultHtmlFileTemplate": "HTML File",
+
+
+    "JavaScript Debug.admin.html.executor": "Run",
+    "git-widget-placeholder": "Admin-Oscar",
+    "last_opened_file_path": "C:/Users/drunk/IdeaProjects/Carport/src/main/java/app/controllers",
+    "node.js.selected.package.tslint": "(autodetect)"
+
+
+    "JUnit.OrderMapperTest.executor": "Run",
+    "JUnit.OrderMapperTest.getAllOrders.executor": "Run",
+    "JUnit.OrderTest.executor": "Run",
+    "JUnit.OrderTest.testCreateOrder.executor": "Run",
+    "JUnit.OrderTest.testDeleteOrder.executor": "Run",
+    "JUnit.OrderTest.testDeleteOrder2.executor": "Run",
+    "JUnit.UserMapperTest.executor": "Run",
+    "JUnit.UserMapperTest.testCreateUser.executor": "Run",
+    "JUnit.UserMapperTest.testCreateUserWithZipCode.executor": "Run",
+    "JUnit.UserTest.executor": "Run",
+    "JUnit.UserTest.testCreateUser.executor": "Run",
+    "JUnit.UserTest.testDuplicateUsername.executor": "Run",
+    "JUnit.UserTest.testLogin.executor": "Run",
+    "JUnit.UserTest.testPasswordMatch.executor": "Run",
+    "Maven.Carport [package].executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+
+    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary": "JUnit5",
+    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5": "",
+    "git-widget-placeholder": "sellerdashboard__khuong",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+
+    "RunOnceActivity.git.unshallow": "true",
+    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary": "JUnit5",
+    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5": "",
+    "git-widget-placeholder": "controller-routes-ayman",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/drunk/IdeaProjects/Carport/src/main/resources/public/css",
+
+    "list.type.of.created.stylesheet": "CSS",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Artifacts",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "vue.rearranger.settings.migration": "true"
+
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
-    <key name="CreateTestDialog.Recents.Supers">
-      <recent name="" />
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\drunk\IdeaProjects\Carport\src\main\java\app\controllers" />
+      <recent name="C:\Users\drunk\IdeaProjects\Carport\src\main\java\app\entities" />
+      <recent name="C:\Users\drunk\IdeaProjects\Carport\src\main\java\app\persistence" />
+      <recent name="C:\Users\drunk\IdeaProjects\Carport\src\main\java\app\services" />
     </key>
+
+
     <key name="CreateTestDialog.RecentsKey">
       <recent name="app.persistence" />
     </key>
   </component>
-  <component name="RunManager" selected="JUnit.UserMapperTest.testCreateUserWithZipCode">
+  <component name="RunManager" selected="Application.Main">
+    <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="app.Main" />
+      <module name="Carport" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="app.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration default="true" type="JBossConfiguration" factoryName="Remote" ALTERNATIVE_JRE_ENABLED="false">
       <option name="LOCAL" value="false" />
       <deployment />
@@ -135,21 +202,6 @@
         </data>
       </server-settings>
       <predefined_log_file enabled="true" id="JBoss" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="OrderMapperTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="Carport" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="app.persistence.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="app.persistence" />
-      <option name="MAIN_CLASS_NAME" value="app.persistence.OrderMapperTest" />
-      <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -294,24 +346,26 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.Main" />
         <item itemvalue="JUnit.UserMapperTest.testCreateUserWithZipCode" />
         <item itemvalue="JUnit.UserMapperTest.testCreateUser" />
         <item itemvalue="JUnit.UserMapperTest" />
         <item itemvalue="JUnit.OrderMapperTest.getAllOrders" />
-        <item itemvalue="JUnit.OrderMapperTest" />
       </list>
     </recent_temporary>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-28b599e66164-intellij.indexing.shared.core-IU-242.24807.4" />
-        <option value="bundled-js-predefined-d6986cc7102b-5c90d61e3bab-JavaScript-IU-242.24807.4" />
+        <option value="bundled-jdk-9823dce3aa75-125ca727e0f0-intellij.indexing.shared.core-IU-243.23654.189" />
+        <option value="bundled-js-predefined-d6986cc7102b-822845ee3bb5-JavaScript-IU-243.23654.189" />
       </set>
     </attachedChunks>
+
   </component>
-  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
+
+
     <task active="true" id="Default" summary="Default task">
       <changelist id="24c281b8-f515-42aa-aabd-1ff073604b67" name="Changes" comment="" />
       <created>1747079970860</created>
@@ -336,6 +390,13 @@
       <workItem from="1747755344107" duration="15679000" />
       <workItem from="1747774132560" duration="1021000" />
       <workItem from="1747814759146" duration="915000" />
+
+      <workItem from="1747898177380" duration="2665000" />
+      <workItem from="1747901774962" duration="10641000" />
+
+      <workItem from="1747816375880" duration="2234000" />
+      <workItem from="1747824848106" duration="4227000" />
+
     </task>
     <task id="LOCAL-00001" summary="push">
       <option name="closed" value="true" />
@@ -353,35 +414,44 @@
       <option name="project" value="LOCAL" />
       <updated>1747307019743</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+
+    <task id="LOCAL-00003" summary="Updated_sellerdashboard">
+      <option name="closed" value="true" />
+      <created>1747827435696</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1747827435696</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
+
+    <task id="LOCAL-00003" summary="customerprofile">
+      <option name="closed" value="true" />
+      <created>1747824281838</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1747824281839</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
+
+
     <servers />
   </component>
-  <component name="TypeScriptGeneratedFilesManager">
-    <option name="version" value="3" />
-  </component>
-  <component name="Vcs.Log.Tabs.Properties">
-    <option name="TAB_STATES">
-      <map>
-        <entry key="MAIN">
-          <value>
-            <State />
-          </value>
-        </entry>
-      </map>
-    </option>
-  </component>
   <component name="VcsManagerConfiguration">
+
     <MESSAGE value="push" />
     <MESSAGE value="Second push - UserController and User" />
-    <option name="LAST_COMMIT_MESSAGE" value="Second push - UserController and User" />
+    <MESSAGE value="Updated_sellerdashboard" />
+    <option name="LAST_COMMIT_MESSAGE" value="Updated_sellerdashboard" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
-        <line-breakpoint enabled="true" log-message="true" suspend="NONE" type="java-method">
-          <url>file://$PROJECT_DIR$/src/main/java/app/persistence/UserMapper.java</url>
-          <line>60</line>
-          <properties class="app.persistence.UserMapper" method="createUser">
+        <line-breakpoint enabled="true" type="java-method">
+          <url>file://$PROJECT_DIR$/src/test/java/app/persistence/UserMapperTest.java</url>
+          <line>68</line>
+          <properties class="app.persistence.UserMapperTest">
             <option name="EMULATED" value="true" />
             <option name="WATCH_EXIT" value="false" />
           </properties>
@@ -389,5 +459,9 @@
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
+
+    <MESSAGE value="customerprofile" />
+    <option name="LAST_COMMIT_MESSAGE" value="customerprofile" />
+
   </component>
 </project>

@@ -17,18 +17,18 @@ import java.util.List;
 
 public class Main {
 
-    // private static final Logger LOGGER = Logger.getLogger(Main.class.getName()); // POTENTIELT FORKERT
+
 
     private static final String USER = "postgres";
     private static final String PASSWORD = "postgres";
-    private static final String URL = "jdbc:postgresql://164.90.223.15:5432/%s?currentSchema=public";
+    private static final String URL = "jdbc:postgresql://164.90.223.15:5432/%s?currentSchema=test";
     private static final String DB = "carport";
 
 
     private static final ConnectionPool connectionPool = ConnectionPool.getInstance(USER, PASSWORD, URL, DB);
 
     public static void main(String[] args) throws DatabaseException {
-        // Initializing Javalin and Jetty webserver
+
 
         Javalin app = Javalin.create(config -> {
             config.staticFiles.add(staticFiles -> {

@@ -61,6 +61,10 @@ public class User {
         return phone;
     }
 
+    public void setName(String name){ this.name = name; }
+
+    public void setPhone(int phone){ this.phone = phone; }
+
     public String getEmail() {
         return email;
     }
@@ -70,5 +74,9 @@ public class User {
     }
     public Integer getRoleId() {
         return roleId;
+    }
+
+    public void setRoleId(Integer roleId){
+        this.roleId = roleId;
     }
 }

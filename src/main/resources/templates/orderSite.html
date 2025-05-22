@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <title>Carport Formular</title>
+  <link rel="stylesheet" href="../public/css/orderSite.css">
+  <link rel="stylesheet" th:href="@{/css/orderSite.css}">
+</head>
+<body>
+<div class="container">
+  <aside class="sidebar">
+    <div class="logo">Fog<sup>®</sup></div>
+    <div class="steps">
+      <div class="step active">1</div>
+      <div class="step">2</div>
+      <div class="step">3</div>
+      <div class="step icon">🚘</div>
+    </div>
+    <ul class="info-text">
+      <li><strong>Bredde:</strong> <span th:text="${session.bredde}"></span></li>
+      <li><strong>Længde:</strong> <span th:text="${session.længde}"></span></li>
+      <li><strong>Trapeztag:</strong> <span th:text="${session.tag}"></span></li>
+    </ul>
+  </aside>
+
+  <main class="form-section">
+    <h2>udfyld formularen</h2>
+    <h1>CARPORT MÅL</h1>
+
+    <form method ="get" action="/orderSite2">
+      <label for="bredde">Carport Bredde:</label>
+      <select id="bredde">
+        <option disabled selected>Vælg bredde</option>
+        <option value="210">210 cm</option>
+        <option value="240">240 cm</option>
+        <option value="270">270 cm</option>
+        <option value="300">300 cm</option>
+        <option value="330">330 cm</option>
+        <option value="360">360 cm</option>
+        <option value="390">390 cm</option>
+        <option value="420">420 cm</option>
+        <option value="450">450 cm</option>
+        <option value="480">480 cm</option>
+        <option value="510">510 cm</option>
+        <option value="540">540 cm</option>
+        <option value="570">570 cm</option>
+        <option value="600">600 cm</option>
+      </select>
+
+      <label for="laengde">Carport Længde:</label>
+      <select id="laengde">
+        <option disabled selected>Vælg længde</option>
+        <option value="210">210 cm</option>
+        <option value="240">240 cm</option>
+        <option value="270">270 cm</option>
+        <option value="300">300 cm</option>
+        <option value="330">330 cm</option>
+        <option value="360">360 cm</option>
+        <option value="390">390 cm</option>
+        <option value="420">420 cm</option>
+        <option value="450">450 cm</option>
+        <option value="480">480 cm</option>
+        <option value="510">510 cm</option>
+        <option value="540">540 cm</option>
+        <option value="570">570 cm</option>
+        <option value="600">600 cm</option>
+        <option value="630">630 cm</option>
+        <option value="660">660 cm</option>
+        <option value="690">690 cm</option>
+        <option value="720">720 cm</option>
+        <option value="750">750 cm</option>
+        <option value="780">780 cm</option>
+      </select>
+
+      <label for="tag">Carport trapeztag:</label>
+      <select id="tag">
+        <option disabled selected>Vælg trapeztag</option>
+        <option>ja</option>
+        <option>nej</option>
+      </select>
+
+      <label for="bemærkning">Evt. bemærkninger/ særlige ønsker:</label>
+      <textarea id="bemærkning" rows="3"></textarea>
+
+      <button class="btn">fortsæt</button>
+
+    </form>
+  </main>
+</div>
+</body>
+</html>

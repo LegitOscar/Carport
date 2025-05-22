@@ -1,0 +1,601 @@
+Index: src/main/java/app/Main.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package app;\r\n\r\nimport app.persistence.ConnectionPool;\r\nimport app.persistence.OrderMapper;\r\nimport app.entities.Order;\r\nimport app.entities.User;\r\n\r\nimport java.time.LocalDate;\r\n\r\n\r\npublic class Main {\r\n    public static void main(String[] args) {\r\n        ConnectionPool connectionPool = ConnectionPool.getInstance(\r\n                \"postgres\", \"datdat2025!\", \"jdbc:postgresql://164.90.223.15:5432/%s\", \"carport\");\r\n\r\n        try {\r\n            // Simulate a logged-in user\r\n            User currentUser = new User(1, \"joe\", \"123\", \"customer\");\r\n            int customerId = currentUser.getUserId();\r\n\r\n            // Provide test values for the order\r\n            int orderId = 6; // existing order ID\r\n            LocalDate orderDate = LocalDate.now();\r\n            double totalPrice = 4999.95;\r\n            String orderStatus = \"bekræftet\";\r\n            int workerId = 0; // or actual worker ID\r\n            int carportId = 1; // make sure this exists\r\n\r\n            // Create the Order\r\n            Order order = new Order(orderId, orderDate, totalPrice, orderStatus, customerId, workerId, carportId);\r\n\r\n            // Call the update method\r\n            OrderMapper.updateOrder(order, connectionPool);\r\n\r\n            System.out.println(\"Ordre opdateret!\");\r\n\r\n        } catch (Exception e) {\r\n            System.err.println(\"Fejl ved opdatering af ordre: \" + e.getMessage());\r\n            e.printStackTrace();\r\n        } finally {\r\n            connectionPool.close();\r\n        }\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/app/Main.java b/src/main/java/app/Main.java
+--- a/src/main/java/app/Main.java	(revision 4045da0e4417872595001d86416796f08b86cd49)
++++ b/src/main/java/app/Main.java	(date 1747665543877)
+@@ -1,44 +1,34 @@
+ package app;
+ 
++import app.controllers.OrderController;
++import app.controllers.UserController;
+ import app.persistence.ConnectionPool;
+-import app.persistence.OrderMapper;
+-import app.entities.Order;
+-import app.entities.User;
+-
+-import java.time.LocalDate;
++import io.javalin.Javalin;
+ 
+ 
+ public class Main {
++
+     public static void main(String[] args) {
+-        ConnectionPool connectionPool = ConnectionPool.getInstance(
+-                "postgres", "datdat2025!", "jdbc:postgresql://164.90.223.15:5432/%s", "carport");
+-
+-        try {
+-            // Simulate a logged-in user
+-            User currentUser = new User(1, "joe", "123", "customer");
+-            int customerId = currentUser.getUserId();
++        // Create connection pool (adjust parameters as needed)
++        ConnectionPool connectionPool = new ConnectionPool(
++                "jdbc:mysql://localhost:8080/carport2",
++                "postgres",
++                "postgres"
++        );
+ 
+-            // Provide test values for the order
+-            int orderId = 6; // existing order ID
+-            LocalDate orderDate = LocalDate.now();
+-            double totalPrice = 4999.95;
+-            String orderStatus = "bekræftet";
+-            int workerId = 0; // or actual worker ID
+-            int carportId = 1; // make sure this exists
++        // Start Javalin server
++        Javalin app = Javalin.create(config -> {
++            config.enableDevLogging(); // Optional: enable dev logging for debugging
++            config.addStaticFiles("/public"); // Serve static files from /public folder (if you have one)
++        }).start(7000);
+ 
+-            // Create the Order
+-            Order order = new Order(orderId, orderDate, totalPrice, orderStatus, customerId, workerId, carportId);
++        // Register routes from your controllers
++        UserController.addRoutes(app, connectionPool);
++        OrderController.addRoutes(app, connectionPool);
+ 
+-            // Call the update method
+-            OrderMapper.updateOrder(order, connectionPool);
+-
+-            System.out.println("Ordre opdateret!");
+-
+-        } catch (Exception e) {
+-            System.err.println("Fejl ved opdatering af ordre: " + e.getMessage());
+-            e.printStackTrace();
+-        } finally {
+-            connectionPool.close();
+-        }
++        // Optionally, add a root endpoint
++        app.get("/", ctx -> {
++            ctx.result("Welcome to the app! Please log in.");
++        });
+     }
+ }
+Index: src/main/java/app/controllers/OrderController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>\r\npackage app.controllers;\r\n\r\nimport app.entities.Order;\r\nimport app.entities.User;\r\nimport app.exceptions.DatabaseException;\r\nimport app.persistence.ConnectionPool;\r\nimport app.persistence.OrderMapper;\r\nimport io.javalin.Javalin;\r\nimport io.javalin.http.Context;\r\n\r\nimport java.sql.Date;\r\nimport java.sql.SQLException;\r\nimport java.time.LocalDate;\r\nimport java.util.List;\r\n\r\npublic class OrderController {\r\n\r\n    public static void addRoutes(Javalin app, ConnectionPool connectionPool) {\r\n        app.post(\"addorder\", ctx -> addOrder(ctx, connectionPool));\r\n        app.post(\"deleteorder\", ctx -> deleteOrder(ctx, connectionPool));\r\n        app.post(\"editorder\", ctx -> editOrder(ctx, connectionPool));\r\n        app.post(\"updateorder\", ctx -> updateOrder(ctx, connectionPool));\r\n        app.get(\"getorders\", ctx -> getOrdersForUser(ctx, connectionPool));\r\n        app.get(\"allorders\", ctx -> getAllOrders(ctx, connectionPool));\r\n    }\r\n\r\n    private static void addOrder(Context ctx, ConnectionPool connectionPool) throws DatabaseException, SQLException {\r\n        User user = ctx.sessionAttribute(\"currentUser\");\r\n        if (user == null) {\r\n            ctx.status(401).result(\"Du er ikke logget ind.\");\r\n            return;\r\n        }\r\n\r\n        Order order = OrderMapper.createOrder(user, connectionPool);\r\n        ctx.status(201).result(\"Ordre oprettet med ID: \" + order.getOrderId());\r\n    }\r\n\r\n    private static void deleteOrder(Context ctx, ConnectionPool connectionPool) {\r\n        try {\r\n            int orderId = Integer.parseInt(ctx.formParam(\"orderId\"));\r\n            OrderMapper.deleteOrder(orderId, connectionPool);\r\n            ctx.status(200).result(\"Ordre slettet med ID: \" + orderId);\r\n        } catch (NumberFormatException e) {\r\n            ctx.status(400).result(\"Ugyldigt order ID\");\r\n        } catch (DatabaseException e) {\r\n            ctx.status(500).result(\"Fejl ved sletning af ordre: \" + e.getMessage());\r\n        }\r\n    }\r\n\r\n    private static void editOrder(Context ctx, ConnectionPool connectionPool) {\r\n        try {\r\n            int orderId = Integer.parseInt(ctx.formParam(\"orderId\"));\r\n            Order order = OrderMapper.getOrderById(orderId, connectionPool);\r\n            if (order != null) {\r\n                ctx.attribute(\"order\", order);\r\n                ctx.render(\"editorder.html\"); // todo skal ændres til rigtigt html\r\n            } else {\r\n                ctx.status(404).result(\"Ordre ikke fundet\");\r\n            }\r\n        } catch (Exception e) {\r\n            ctx.status(500).result(\"Fejl ved hentning af ordre: \" + e.getMessage());\r\n        }\r\n    }\r\n\r\n    public static Order createOrder(User user, ConnectionPool connectionPool) throws DatabaseException, SQLException {\r\n        Order newOrder = OrderMapper.createOrder(user, connectionPool);\r\n\r\n        if (newOrder != null) {\r\n            System.out.println(\"Order created successfully with ID: \" + newOrder.getOrderId());\r\n        } else {\r\n            throw new RuntimeException(\"Order creation failed.\");\r\n        }\r\n\r\n        return newOrder;\r\n    }\r\n\r\n    private static void updateOrder(Context ctx, ConnectionPool connectionPool) {\r\n        try {\r\n\r\n            User currentUser = ctx.sessionAttribute(\"currentUser\");\r\n\r\n            if (currentUser == null) {\r\n                ctx.status(401).result(\"Ingen bruger er logget ind.\");\r\n                return;\r\n            }\r\n\r\n            int customerId = currentUser.getUserId();\r\n\r\n\r\n            int orderId = Integer.parseInt(ctx.formParam(\"orderId\"));\r\n            LocalDate orderDate = LocalDate.parse(ctx.formParam(\"orderDate\"));\r\n            double totalPrice = Double.parseDouble(ctx.formParam(\"totalPrice\"));\r\n            String orderStatus = ctx.formParam(\"orderStatus\");\r\n\r\n\r\n            int workerId = 0;\r\n            int carportId = Integer.parseInt(ctx.formParam(\"carportId\")); // Adjust based on your form\r\n\r\n\r\n            Order order = new Order(orderId, orderDate, totalPrice, orderStatus, customerId, workerId, carportId);\r\n            OrderMapper.updateOrder(order, connectionPool);\r\n\r\n            ctx.status(200).result(\"Ordre opdateret\");\r\n\r\n        } catch (Exception e) {\r\n            ctx.status(400).result(\"Fejl ved opdatering af ordre: \" + e.getMessage());\r\n        }\r\n    }\r\n\r\n\r\n\r\n    private static void getOrdersForUser(Context ctx, ConnectionPool connectionPool) {\r\n        User user = ctx.sessionAttribute(\"currentUser\");\r\n        if (user == null) {\r\n            ctx.status(401).result(\"Du er ikke logget ind.\");\r\n            return;\r\n        }\r\n\r\n        try {\r\n            List<Order> orders = OrderMapper.getAllOrdersPerUser(user.getUserId(), connectionPool);\r\n            ctx.attribute(\"orders\", orders);\r\n            ctx.render(\"orders.html\"); //todo ændre muligvis HTML\r\n        } catch (DatabaseException e) {\r\n            ctx.status(500).result(\"Fejl ved hentning af ordrer: \" + e.getMessage());\r\n        }\r\n    }\r\n\r\n    private static void getAllOrders(Context ctx, ConnectionPool connectionPool) {\r\n        try {\r\n            List<Order> orders = OrderMapper.getAllOrders(connectionPool);\r\n            ctx.attribute(\"orders\", orders);\r\n            ctx.render(\"allorders.html\"); // todo: opret/tilpas HTML-side\r\n        } catch (DatabaseException e) {\r\n            ctx.status(500).result(\"Fejl ved hentning af alle ordrer: \" + e.getMessage());\r\n        }\r\n    }\r\n}\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/app/controllers/OrderController.java b/src/main/java/app/controllers/OrderController.java
+--- a/src/main/java/app/controllers/OrderController.java	(revision 4045da0e4417872595001d86416796f08b86cd49)
++++ b/src/main/java/app/controllers/OrderController.java	(date 1747663246191)
+@@ -23,6 +23,28 @@
+         app.post("updateorder", ctx -> updateOrder(ctx, connectionPool));
+         app.get("getorders", ctx -> getOrdersForUser(ctx, connectionPool));
+         app.get("allorders", ctx -> getAllOrders(ctx, connectionPool));
++        app.get("sellerdashboard", ctx -> {
++            User currentUser = ctx.sessionAttribute("currentUser");
++
++            if (currentUser == null) {
++                ctx.status(401).result("Du er ikke logget ind.");
++                return;
++            }
++
++            if (!currentUser.getRole().equals("seller")) {
++                ctx.status(403).result("Du har ikke adgang til denne side.");
++                return;
++            }
++
++            try {
++                List<Order> orders = OrderMapper.getAllOrdersForWorker(currentUser.getUserId(), connectionPool);
++                ctx.attribute("orders", orders);
++                ctx.render("sellerdashboard.html");
++            } catch (DatabaseException e) {
++                ctx.status(500).result("Fejl ved hentning af ordrer: " + e.getMessage());
++            }
++        });
++
+     }
+ 
+     private static void addOrder(Context ctx, ConnectionPool connectionPool) throws DatabaseException, SQLException {
+@@ -84,6 +106,11 @@
+                 ctx.status(401).result("Ingen bruger er logget ind.");
+                 return;
+             }
++
++            if (!currentUser.getRole().equals("seller") && !currentUser.getRole().equals("admin")) {
++                ctx.status(403).result("Du har ikke tilladelse til at ændre prisen.");
++                return;
++            }
+ 
+             int customerId = currentUser.getUserId();
+ 
+Index: target/classes/templates/sellerdashboard.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><!DOCTYPE html>\r\n<html lang=\"en\" xmlns:th=\"http://www.thymeleaf.org\">\r\n<head>\r\n    <meta charset=\"UTF-8\">\r\n    <title>Seller Dashboard - All Orders</title>\r\n    <style>\r\n        body {\r\n            font-family: Arial, sans-serif;\r\n            padding: 2rem;\r\n            background-color: #f4f4f4;\r\n        }\r\n\r\n        h1 {\r\n            text-align: center;\r\n        }\r\n\r\n        table {\r\n            width: 100%;\r\n            border-collapse: collapse;\r\n            background-color: #fff;\r\n            box-shadow: 0 0 10px rgba(0,0,0,0.1);\r\n        }\r\n\r\n        th, td {\r\n            padding: 0.75rem;\r\n            border: 1px solid #ddd;\r\n            text-align: center;\r\n        }\r\n\r\n        th {\r\n            background-color: #333;\r\n            color: #fff;\r\n        }\r\n\r\n        tr:nth-child(even) {\r\n            background-color: #f9f9f9;\r\n        }\r\n\r\n        .status {\r\n            font-weight: bold;\r\n        }\r\n    </style>\r\n</head>\r\n<body>\r\n\r\n<h1>All Customer Orders</h1>\r\n\r\n<table>\r\n    <thead>\r\n    <tr>\r\n        <th>Order ID</th>\r\n        <th>Order Date</th>\r\n        <th>Total Price</th>\r\n        <th>Status</th>\r\n        <th>Customer ID</th>\r\n        <th>Worker ID</th>\r\n        <th>Carport ID</th>\r\n    </tr>\r\n    </thead>\r\n    <tbody>\r\n    <tr th:each=\"order : ${orders}\">\r\n        <td th:text=\"${order.orderId}\">Order ID</td>\r\n        <td th:text=\"${order.orderDate}\">Date</td>\r\n        <td th:text=\"${order.totalPrice}\">0.00</td>\r\n        <td th:text=\"${order.orderStatus}\" class=\"status\">Status</td>\r\n        <td th:text=\"${order.customerId}\">Customer</td>\r\n        <td th:text=\"${order.workerId}\">Worker</td>\r\n        <td th:text=\"${order.carportId}\">Carport</td>\r\n    </tr>\r\n    </tbody>\r\n</table>\r\n\r\n</body>\r\n</html>\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/target/classes/templates/sellerdashboard.html b/target/classes/templates/sellerdashboard.html
+--- a/target/classes/templates/sellerdashboard.html	(revision 4045da0e4417872595001d86416796f08b86cd49)
++++ b/target/classes/templates/sellerdashboard.html	(date 1747663355234)
+@@ -36,8 +36,22 @@
+             background-color: #f9f9f9;
+         }
+ 
+-        .status {
+-            font-weight: bold;
++        .update-btn {
++            padding: 0.3rem 0.6rem;
++            background-color: #28a745;
++            color: white;
++            border: none;
++            border-radius: 4px;
++            cursor: pointer;
++        }
++
++        .update-btn:hover {
++            background-color: #218838;
++        }
++
++        input[type="text"],
++        input[type="number"] {
++            width: 100px;
+         }
+     </style>
+ </head>
+@@ -55,17 +69,47 @@
+         <th>Customer ID</th>
+         <th>Worker ID</th>
+         <th>Carport ID</th>
++        <th>Action</th>
+     </tr>
+     </thead>
+     <tbody>
+     <tr th:each="order : ${orders}">
+-        <td th:text="${order.orderId}">Order ID</td>
+-        <td th:text="${order.orderDate}">Date</td>
+-        <td th:text="${order.totalPrice}">0.00</td>
+-        <td th:text="${order.orderStatus}" class="status">Status</td>
+-        <td th:text="${order.customerId}">Customer</td>
+-        <td th:text="${order.workerId}">Worker</td>
+-        <td th:text="${order.carportId}">Carport</td>
++        <form th:action="@{/updateorder}" method="post">
++            <td>
++                <span th:text="${order.orderId}"></span>
++                <input type="hidden" name="orderId" th:value="${order.orderId}" />
++            </td>
++            <td>
++                <span th:text="${order.orderDate}"></span>
++                <input type="hidden" name="orderDate" th:value="${order.orderDate}" />
++            </td>
++            <td>
++                <input type="number" name="totalPrice" th:value="${order.totalPrice}" step="0.01" required />
++            </td>
++            <td>
++                <select name="orderStatus" required>
++                    <option value="Pending" th:selected="${order.orderStatus == 'Pending'}">Pending</option>
++                    <option value="In Progress" th:selected="${order.orderStatus == 'In Progress'}">In Progress</option>
++                    <option value="Completed" th:selected="${order.orderStatus == 'Completed'}">Completed</option>
++                    <option value="Cancelled" th:selected="${order.orderStatus == 'Cancelled'}">Cancelled</option>
++                </select>
++            </td>
++            <td>
++                <span th:text="${order.customerId}"></span>
++                <input type="hidden" name="customerId" th:value="${order.customerId}" />
++            </td>
++            <td>
++                <span th:text="${order.workerId}"></span>
++                <input type="hidden" name="workerId" th:value="${order.workerId}" />
++            </td>
++            <td>
++                <span th:text="${order.carportId}"></span>
++                <input type="hidden" name="carportId" th:value="${order.carportId}" />
++            </td>
++            <td>
++                <button type="submit" class="update-btn">Update</button>
++            </td>
++        </form>
+     </tr>
+     </tbody>
+ </table>
+Index: target/classes/templates/index.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><!DOCTYPE html>\r\n<html lang=\"en\" xmlns:th=\"http://www.thymeleaf.org\">\r\n<head>\r\n    <meta charset=\"UTF-8\">\r\n    <title>Login - Cupcake</title>\r\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n    <link rel=\"stylesheet\" href=\"/public/css/indexStyle.css\" th:href=\"@{/public/css/styles.css}\">\r\n</head>\r\n<body>\r\n<header class=\"header\">\r\n    <img src=\"/public/images/cupckaebanner2.png\" th:src=\"@{/images/cupckaebanner2.png}\" alt=\"Cupcakes\" class=\"background-img\">\r\n    <img src=\"/images/olskerlogo.png\" th:src=\"@{/images/olskerlogo.png}\" alt=\"Olsker Cupcakes\" class=\"logo\">\r\n</header>\r\n\r\n<div class=\"container\">\r\n    <div class=\"login-box\">\r\n        <h2>Velkommen til Cupcake</h2>\r\n        <p>Please login:</p>\r\n\r\n\r\n        <form method =\"post\">\r\n            <input type = \"text\" name = \"username\" placeholder=\"Enter your Username\" class=\"input-field\"/>\r\n            <input  type = \"password\" name = \"password\" placeholder=\"Enter your Password\" class=\"input-field\"/>\r\n            <button type = \"submit\" formaction=\"/login\" class=\"login-btn\">Log på</button>\r\n        </form>\r\n        <div><p th:text=\"${message}\" class=\"error-message\"></p></div>\r\n        <p><a href=\"createuser.html\" th:href=\"@{/createuser}\" class=\"create-user-link\">Create user</a></p>\r\n    </div>\r\n</div>\r\n</body>\r\n</html>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/target/classes/templates/index.html b/target/classes/templates/index.html
+--- a/target/classes/templates/index.html	(revision 4045da0e4417872595001d86416796f08b86cd49)
++++ b/target/classes/templates/index.html	(date 1747310019131)
+@@ -2,30 +2,22 @@
+ <html lang="en" xmlns:th="http://www.thymeleaf.org">
+ <head>
+     <meta charset="UTF-8">
+-    <title>Login - Cupcake</title>
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+-    <link rel="stylesheet" href="/public/css/indexStyle.css" th:href="@{/public/css/styles.css}">
++    <title>Simple Logo and Buttons</title>
++    <link rel="stylesheet" href="../public/css/index.css"/>
+ </head>
+ <body>
+-<header class="header">
+-    <img src="/public/images/cupckaebanner2.png" th:src="@{/images/cupckaebanner2.png}" alt="Cupcakes" class="background-img">
+-    <img src="/images/olskerlogo.png" th:src="@{/images/olskerlogo.png}" alt="Olsker Cupcakes" class="logo">
+-</header>
++
+ 
+ <div class="container">
+-    <div class="login-box">
+-        <h2>Velkommen til Cupcake</h2>
+-        <p>Please login:</p>
++<img src="../public/images/fogLogo.png" th:src="@{../public/images/fogLogo.png}" alt="Fog Logo"/>
+ 
+-
+-        <form method ="post">
+-            <input type = "text" name = "username" placeholder="Enter your Username" class="input-field"/>
+-            <input  type = "password" name = "password" placeholder="Enter your Password" class="input-field"/>
+-            <button type = "submit" formaction="/login" class="login-btn">Log på</button>
+-        </form>
+-        <div><p th:text="${message}" class="error-message"></p></div>
+-        <p><a href="createuser.html" th:href="@{/createuser}" class="create-user-link">Create user</a></p>
+-    </div>
++<div class="button-container">
++<a href="login.html" class="btn">LOGIN</a>
++<a href="design.html" class="btn">DESIGN</a>
++</div>
+ </div>
++
+ </body>
+-</html>
+\ No newline at end of file
++</html>
++
+Index: src/main/java/app/persistence/OrderMapper.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>\r\npackage app.persistence;\r\n\r\nimport app.entities.Order;\r\nimport app.entities.User;\r\nimport app.exceptions.DatabaseException;\r\n\r\n\r\nimport java.sql.*;\r\nimport java.util.ArrayList;\r\nimport java.util.List;\r\n\r\npublic class OrderMapper {\r\n\r\n\r\n    public static Order createOrder(User user, ConnectionPool connectionPool) throws DatabaseException, SQLException {\r\n        if (user == null) {\r\n            throw new IllegalArgumentException(\"User cannot be null\");\r\n        }\r\n\r\n        String sql = \"INSERT INTO orders (order_date, total_price, customer_id, order_status) VALUES (?, ?, ?, ?)\";\r\n\r\n        try (\r\n                Connection connection = connectionPool.getConnection();\r\n                PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)\r\n        ) {\r\n            Date currentDate = new Date(System.currentTimeMillis());\r\n\r\n            ps.setDate(1, currentDate); // order_date\r\n            ps.setDouble(2, 0); // default price\r\n            ps.setInt(3, user.getUserId()); // customer_id (ensure this user exists in the users table)\r\n            ps.setString(4, \"Pending\"); // order_status\r\n\r\n            int rowsAffected = ps.executeUpdate();\r\n\r\n            if (rowsAffected == 1) {\r\n                ResultSet keys = ps.getGeneratedKeys();\r\n                if (keys.next()) {\r\n                    int orderId = keys.getInt(1);\r\n                    return new Order(orderId, currentDate.toLocalDate(), 0, \"Pending\", user.getUserId(), 5, 5);\r\n                } else {\r\n                    throw new DatabaseException(\"No ID returned when creating order\");\r\n                }\r\n            } else {\r\n                throw new DatabaseException(\"Order creation failed, no rows affected\");\r\n            }\r\n        }\r\n    }\r\n\r\n\r\n    public static List<Order> getAllOrdersPerUser(int customerId, ConnectionPool connectionPool) throws DatabaseException {\r\n        List<Order> orderList = new ArrayList<>();\r\n        String sql = \"SELECT * FROM orders WHERE customer_id = ? ORDER BY order_date DESC\";\r\n\r\n        try (\r\n                Connection connection = connectionPool.getConnection();\r\n                PreparedStatement ps = connection.prepareStatement(sql)\r\n        ) {\r\n            ps.setInt(1, customerId);\r\n            ResultSet rs = ps.executeQuery();\r\n\r\n            while (rs.next()) {\r\n                int id = rs.getInt(\"order_id\");\r\n                Date date = rs.getDate(\"order_date\");\r\n                double price = rs.getDouble(\"total_price\");\r\n                String status = rs.getString(\"order_status\");\r\n                int workerId = rs.getInt(\"worker_id\");\r\n                int carportId = rs.getInt(\"carport_id\");\r\n\r\n                orderList.add(new Order(id, date.toLocalDate(), price, status, customerId, workerId, carportId));\r\n            }\r\n        } catch (SQLException e) {\r\n            throw new DatabaseException(\"Error retrieving orders from customer \" + customerId, e.getMessage());\r\n        }\r\n\r\n        return orderList;\r\n    }\r\n\r\n    public static List<Order> getAllOrders(ConnectionPool connectionPool) throws DatabaseException {\r\n        List<Order> orderList = new ArrayList<>();\r\n        String sql = \"SELECT * FROM orders ORDER BY order_date DESC\";\r\n\r\n        try (\r\n                Connection connection = connectionPool.getConnection();\r\n                PreparedStatement ps = connection.prepareStatement(sql)\r\n        ) {\r\n            ResultSet rs = ps.executeQuery();\r\n\r\n            while (rs.next()) {\r\n                int id = rs.getInt(\"order_id\");\r\n                Date date = rs.getDate(\"order_date\");\r\n                double price = rs.getDouble(\"total_price\");\r\n                String status = rs.getString(\"order_status\");\r\n                int customerId = rs.getInt(\"customer_id\");\r\n                int workerId = rs.getInt(\"worker_id\");\r\n                int carportId = rs.getInt(\"carport_id\");\r\n\r\n                orderList.add(new Order(id, date.toLocalDate(), price, status, customerId, workerId, carportId));\r\n            }\r\n        } catch (SQLException e) {\r\n            throw new DatabaseException(\"Error getting all orders\", e.getMessage());\r\n        }\r\n\r\n        return orderList;\r\n    }\r\n\r\n\r\n    public static void deleteOrder(int orderId, ConnectionPool connectionPool) throws DatabaseException {\r\n        String sql = \"delete from orders where order_id = ?\";\r\n\r\n        try (\r\n                Connection connection = connectionPool.getConnection();\r\n                PreparedStatement ps = connection.prepareStatement(sql)\r\n        ) {\r\n            ps.setInt(1, orderId);\r\n            int rowsAffected = ps.executeUpdate();\r\n            if (rowsAffected != 1) {\r\n                throw new DatabaseException(\"Fejl i opdatering af en task\");\r\n            }\r\n        } catch (SQLException e) {\r\n            throw new DatabaseException(\"Fejl ved sletning af en task\", e.getMessage());\r\n        }\r\n    }\r\n\r\n    public static Order getOrderById(int orderId, ConnectionPool connectionPool) throws DatabaseException {\r\n        Order order = null;\r\n\r\n        String sql = \"SELECT * FROM orders WHERE order_id = ?\";\r\n\r\n        try (\r\n                Connection connection = connectionPool.getConnection();\r\n                PreparedStatement ps = connection.prepareStatement(sql)\r\n        ) {\r\n            ps.setInt(1, orderId);\r\n            ResultSet rs = ps.executeQuery();\r\n\r\n            if (rs.next()) {\r\n                int id = rs.getInt(\"order_id\");\r\n                Date date = rs.getDate(\"order_date\");\r\n                double totalPrice = rs.getDouble(\"total_price\");\r\n                String orderStatus = rs.getString(\"order_status\");\r\n                int customerId = rs.getInt(\"customer_id\");\r\n                int workerId = rs.getInt(\"worker_id\");\r\n                int carportId = rs.getInt(\"carport_id\");\r\n\r\n                order = new Order(id, date.toLocalDate(), totalPrice, orderStatus, customerId, workerId, carportId);\r\n            }\r\n        } catch (SQLException e) {\r\n            throw new DatabaseException(\"Error getting order by id = \" + orderId, e.getMessage());\r\n        }\r\n\r\n        return order;\r\n    }\r\n\r\n    public static void updateOrder(Order order, ConnectionPool connectionPool) throws DatabaseException {\r\n        String sql = \"UPDATE orders SET order_status = ?, total_price = ? WHERE order_id = ?\";\r\n\r\n        try (\r\n                Connection connection = connectionPool.getConnection();\r\n                PreparedStatement ps = connection.prepareStatement(sql)\r\n        ) {\r\n            ps.setString(1, order.getOrderStatus());\r\n            ps.setDouble(2, order.getTotalPrice());\r\n            ps.setInt(3, order.getOrderId());\r\n\r\n            int rowsAffected = ps.executeUpdate();\r\n            if (rowsAffected != 1) {\r\n                throw new DatabaseException(\"Fejl under opdatering af ordre med id = \" + order.getOrderId());\r\n            }\r\n        } catch (SQLException e) {\r\n            throw new DatabaseException(\"Fejl i DB connection\", e.getMessage());\r\n        }\r\n    }\r\n\r\n    public static List<Order> getAllOrdersForWorker(int workerId, ConnectionPool connectionPool) throws DatabaseException {\r\n        List<Order> orderList = new ArrayList<>();\r\n        String sql = \"SELECT * FROM orders WHERE worker_id = ? ORDER BY order_date DESC\";\r\n\r\n        try (\r\n                Connection connection = connectionPool.getConnection();\r\n                PreparedStatement ps = connection.prepareStatement(sql)\r\n\r\n        ) {\r\n            ps.setInt(1, workerId);\r\n            ResultSet rs = ps.executeQuery();\r\n\r\n            while (rs.next()) {\r\n                int id = rs.getInt(\"order_id\");\r\n                Date date = rs.getDate(\"order_date\");\r\n                double price = rs.getDouble(\"total_price\");\r\n                String status = rs.getString(\"order_status\");\r\n                int customerId = rs.getInt(\"customer_id\");\r\n                int carportId = rs.getInt(\"carport_id\");\r\n\r\n                orderList.add(new Order(id, date.toLocalDate(), price, status, customerId, workerId, carportId));\r\n            }\r\n\r\n        } catch (SQLException e) {\r\n            throw new DatabaseException(\"Error getting orders for seller\", e.getMessage());\r\n        }\r\n\r\n        return orderList;\r\n\r\n\r\n    }\r\n}\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/app/persistence/OrderMapper.java b/src/main/java/app/persistence/OrderMapper.java
+--- a/src/main/java/app/persistence/OrderMapper.java	(revision 4045da0e4417872595001d86416796f08b86cd49)
++++ b/src/main/java/app/persistence/OrderMapper.java	(date 1747664092996)
+@@ -18,7 +18,7 @@
+             throw new IllegalArgumentException("User cannot be null");
+         }
+ 
+-        String sql = "INSERT INTO orders (order_date, total_price, customer_id, order_status) VALUES (?, ?, ?, ?)";
++        String sql = "INSERT INTO orders (order_date, total_price, customer_id, worker_id, order_status) VALUES (?, ?, ?, ?, ?)";
+ 
+         try (
+                 Connection connection = connectionPool.getConnection();
+@@ -28,8 +28,9 @@
+ 
+             ps.setDate(1, currentDate); // order_date
+             ps.setDouble(2, 0); // default price
+-            ps.setInt(3, user.getUserId()); // customer_id (ensure this user exists in the users table)
+-            ps.setString(4, "Pending"); // order_status
++            ps.setInt(3, user.getUserId());
++            ps.setInt(4,1);
++            ps.setString(5, "pending"); // order_status
+ 
+             int rowsAffected = ps.executeUpdate();
+ 
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"AutoImportSettings\">\r\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\r\n  </component>\r\n  <component name=\"ChangeListManager\">\r\n    <list default=\"true\" id=\"24c281b8-f515-42aa-aabd-1ff073604b67\" name=\"Changes\" comment=\"Second push - UserController and User\">\r\n      <change afterPath=\"$PROJECT_DIR$/src/main/resources/public/css/index.css\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/src/main/resources/templates/design.html\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/src/main/resources/templates/index.html\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/main/resources/templates/index.html\" afterDir=\"false\" />\r\n    </list>\r\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\r\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\r\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\r\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\r\n  </component>\r\n  <component name=\"FileTemplateManagerImpl\">\r\n    <option name=\"RECENT_TEMPLATES\">\r\n      <list>\r\n        <option value=\"CSS File\" />\r\n        <option value=\"HTML File\" />\r\n      </list>\r\n    </option>\r\n  </component>\r\n  <component name=\"Git.Settings\">\r\n    <option name=\"RECENT_BRANCH_BY_REPOSITORY\">\r\n      <map>\r\n        <entry key=\"$PROJECT_DIR$\" value=\"main\" />\r\n      </map>\r\n    </option>\r\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\r\n  </component>\r\n  <component name=\"GitHubPullRequestSearchHistory\">{\r\n  &quot;lastFilter&quot;: {\r\n    &quot;state&quot;: &quot;OPEN&quot;,\r\n    &quot;assignee&quot;: &quot;KhuongNDang&quot;\r\n  }\r\n}</component>\r\n  <component name=\"GithubPullRequestsUISettings\">{\r\n  &quot;selectedUrlAndAccountId&quot;: {\r\n    &quot;url&quot;: &quot;https://github.com/LegitOscar/Carport.git&quot;,\r\n    &quot;accountId&quot;: &quot;ce5b9cec-6726-4d33-90fc-1b18021aec65&quot;\r\n  }\r\n}</component>\r\n  <component name=\"ProjectColorInfo\">{\r\n  &quot;associatedIndex&quot;: 5\r\n}</component>\r\n  <component name=\"ProjectId\" id=\"2x0fZrcZJUnewxvLeTvXCRysoiI\" />\r\n  <component name=\"ProjectLevelVcsManager\" settingsEditedManually=\"true\" />\r\n  <component name=\"ProjectViewState\">\r\n    <option name=\"showLibraryContents\" value=\"true\" />\r\n  </component>\r\n  <component name=\"PropertiesComponent\"><![CDATA[{\r\n  \"keyToString\": {\r\n    \"Application.Main.executor\": \"Run\",\r\n    \"DefaultHtmlFileTemplate\": \"HTML File\",\r\n    \"JUnit.OrderTest.executor\": \"Run\",\r\n    \"JUnit.OrderTest.testCreateOrder.executor\": \"Run\",\r\n    \"JUnit.OrderTest.testDeleteOrder.executor\": \"Run\",\r\n    \"JUnit.OrderTest.testDeleteOrder2.executor\": \"Run\",\r\n    \"JUnit.UserTest.executor\": \"Run\",\r\n    \"JUnit.UserTest.testCreateUser.executor\": \"Run\",\r\n    \"JUnit.UserTest.testDuplicateUsername.executor\": \"Run\",\r\n    \"JUnit.UserTest.testLogin.executor\": \"Run\",\r\n    \"JUnit.UserTest.testPasswordMatch.executor\": \"Run\",\r\n    \"Maven.Carport [package].executor\": \"Run\",\r\n    \"RunOnceActivity.ShowReadmeOnStart\": \"true\",\r\n    \"git-widget-placeholder\": \"main\",\r\n    \"ignore.virus.scanning.warn.message\": \"true\",\r\n    \"kotlin-language-version-configured\": \"true\",\r\n    \"list.type.of.created.stylesheet\": \"CSS\",\r\n    \"node.js.detected.package.eslint\": \"true\",\r\n    \"node.js.detected.package.tslint\": \"true\",\r\n    \"node.js.selected.package.eslint\": \"(autodetect)\",\r\n    \"node.js.selected.package.tslint\": \"(autodetect)\",\r\n    \"nodejs_package_manager_path\": \"npm\",\r\n    \"vue.rearranger.settings.migration\": \"true\"\r\n  }\r\n}]]></component>\r\n  <component name=\"RunManager\" selected=\"Application.Main\">\r\n    <configuration name=\"Main\" type=\"Application\" factoryName=\"Application\" temporary=\"true\" nameIsGenerated=\"true\">\r\n      <option name=\"MAIN_CLASS_NAME\" value=\"app.Main\" />\r\n      <module name=\"Carport\" />\r\n      <extension name=\"coverage\">\r\n        <pattern>\r\n          <option name=\"PATTERN\" value=\"app.*\" />\r\n          <option name=\"ENABLED\" value=\"true\" />\r\n        </pattern>\r\n      </extension>\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration name=\"UserTest\" type=\"JUnit\" factoryName=\"JUnit\" temporary=\"true\" nameIsGenerated=\"true\">\r\n      <module name=\"Carport\" />\r\n      <option name=\"PACKAGE_NAME\" value=\"\" />\r\n      <option name=\"MAIN_CLASS_NAME\" value=\"UserTest\" />\r\n      <option name=\"TEST_OBJECT\" value=\"class\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration name=\"UserTest.testCreateUser\" type=\"JUnit\" factoryName=\"JUnit\" temporary=\"true\" nameIsGenerated=\"true\">\r\n      <module name=\"Carport\" />\r\n      <option name=\"PACKAGE_NAME\" value=\"\" />\r\n      <option name=\"MAIN_CLASS_NAME\" value=\"UserTest\" />\r\n      <option name=\"METHOD_NAME\" value=\"testCreateUser\" />\r\n      <option name=\"TEST_OBJECT\" value=\"method\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration name=\"UserTest.testDuplicateUsername\" type=\"JUnit\" factoryName=\"JUnit\" temporary=\"true\" nameIsGenerated=\"true\">\r\n      <module name=\"Carport\" />\r\n      <option name=\"PACKAGE_NAME\" value=\"\" />\r\n      <option name=\"MAIN_CLASS_NAME\" value=\"UserTest\" />\r\n      <option name=\"METHOD_NAME\" value=\"testDuplicateUsername\" />\r\n      <option name=\"TEST_OBJECT\" value=\"method\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration name=\"UserTest.testLogin\" type=\"JUnit\" factoryName=\"JUnit\" temporary=\"true\" nameIsGenerated=\"true\">\r\n      <module name=\"Carport\" />\r\n      <option name=\"PACKAGE_NAME\" value=\"\" />\r\n      <option name=\"MAIN_CLASS_NAME\" value=\"UserTest\" />\r\n      <option name=\"METHOD_NAME\" value=\"testLogin\" />\r\n      <option name=\"TEST_OBJECT\" value=\"method\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <recent_temporary>\r\n      <list>\r\n        <item itemvalue=\"Application.Main\" />\r\n        <item itemvalue=\"JUnit.UserTest.testLogin\" />\r\n        <item itemvalue=\"JUnit.UserTest.testDuplicateUsername\" />\r\n        <item itemvalue=\"JUnit.UserTest.testCreateUser\" />\r\n        <item itemvalue=\"JUnit.UserTest\" />\r\n      </list>\r\n    </recent_temporary>\r\n  </component>\r\n  <component name=\"SharedIndexes\">\r\n    <attachedChunks>\r\n      <set>\r\n        <option value=\"bundled-jdk-9823dce3aa75-28b599e66164-intellij.indexing.shared.core-IU-242.24807.4\" />\r\n        <option value=\"bundled-js-predefined-d6986cc7102b-5c90d61e3bab-JavaScript-IU-242.24807.4\" />\r\n      </set>\r\n    </attachedChunks>\r\n  </component>\r\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\r\n  <component name=\"TaskManager\">\r\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\r\n      <changelist id=\"24c281b8-f515-42aa-aabd-1ff073604b67\" name=\"Changes\" comment=\"\" />\r\n      <created>1747079970860</created>\r\n      <option name=\"number\" value=\"Default\" />\r\n      <option name=\"presentableId\" value=\"Default\" />\r\n      <updated>1747079970860</updated>\r\n      <workItem from=\"1747079972304\" duration=\"51000\" />\r\n      <workItem from=\"1747080030128\" duration=\"4121000\" />\r\n      <workItem from=\"1747130157493\" duration=\"1684000\" />\r\n      <workItem from=\"1747209380259\" duration=\"5319000\" />\r\n      <workItem from=\"1747297157437\" duration=\"7976000\" />\r\n    </task>\r\n    <task id=\"LOCAL-00001\" summary=\"push\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1747302114121</created>\r\n      <option name=\"number\" value=\"00001\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1747302114121</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00002\" summary=\"push\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1747307019743</created>\r\n      <option name=\"number\" value=\"00002\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00002\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1747307019743</updated>\r\n    </task>\r\n    <option name=\"localTasksCounter\" value=\"3\" />\r\n    <servers />\r\n  </component>\r\n  <component name=\"TypeScriptGeneratedFilesManager\">\r\n    <option name=\"version\" value=\"3\" />\r\n  </component>\r\n  <component name=\"Vcs.Log.Tabs.Properties\">\r\n    <option name=\"TAB_STATES\">\r\n      <map>\r\n        <entry key=\"MAIN\">\r\n          <value>\r\n            <State />\r\n          </value>\r\n        </entry>\r\n      </map>\r\n    </option>\r\n  </component>\r\n  <component name=\"VcsManagerConfiguration\">\r\n    <MESSAGE value=\"push\" />\r\n    <MESSAGE value=\"Second push - UserController and User\" />\r\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"Second push - UserController and User\" />\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision 4045da0e4417872595001d86416796f08b86cd49)
++++ b/.idea/workspace.xml	(date 1747727970168)
+@@ -4,11 +4,19 @@
+     <option name="autoReloadType" value="SELECTIVE" />
+   </component>
+   <component name="ChangeListManager">
+-    <list default="true" id="24c281b8-f515-42aa-aabd-1ff073604b67" name="Changes" comment="Second push - UserController and User">
+-      <change afterPath="$PROJECT_DIR$/src/main/resources/public/css/index.css" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/src/main/resources/templates/design.html" afterDir="false" />
++    <list default="true" id="24c281b8-f515-42aa-aabd-1ff073604b67" name="Changes" comment="index.html">
+       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/index.html" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/app/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/Main.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/app/controllers/OrderController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/controllers/OrderController.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/app/entities/Order.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/entities/Order.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/app/persistence/OrderMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/persistence/OrderMapper.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/sellerdashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/sellerdashboard.html" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/target/classes/app/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/app/Main.class" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/target/classes/app/controllers/OrderController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/app/controllers/OrderController.class" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/target/classes/app/entities/Order.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/app/entities/Order.class" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/target/classes/app/persistence/OrderMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/app/persistence/OrderMapper.class" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/target/classes/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/templates/index.html" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/target/classes/templates/sellerdashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/templates/sellerdashboard.html" afterDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+@@ -18,7 +26,6 @@
+   <component name="FileTemplateManagerImpl">
+     <option name="RECENT_TEMPLATES">
+       <list>
+-        <option value="CSS File" />
+         <option value="HTML File" />
+       </list>
+     </option>
+@@ -30,6 +37,7 @@
+       </map>
+     </option>
+     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
++    <option name="UPDATE_TYPE" value="REBASE" />
+   </component>
+   <component name="GitHubPullRequestSearchHistory">{
+   &quot;lastFilter&quot;: {
+@@ -40,7 +48,17 @@
+   <component name="GithubPullRequestsUISettings">{
+   &quot;selectedUrlAndAccountId&quot;: {
+     &quot;url&quot;: &quot;https://github.com/LegitOscar/Carport.git&quot;,
+-    &quot;accountId&quot;: &quot;ce5b9cec-6726-4d33-90fc-1b18021aec65&quot;
++    &quot;accountId&quot;: &quot;bd76a3fa-2dd7-49b3-87ba-a7f563b0c22b&quot;
++  },
++  &quot;recentNewPullRequestHead&quot;: {
++    &quot;server&quot;: {
++      &quot;useHttp&quot;: false,
++      &quot;host&quot;: &quot;github.com&quot;,
++      &quot;port&quot;: null,
++      &quot;suffix&quot;: null
++    },
++    &quot;owner&quot;: &quot;LegitOscar&quot;,
++    &quot;repository&quot;: &quot;Carport&quot;
+   }
+ }</component>
+   <component name="ProjectColorInfo">{
+@@ -51,33 +69,33 @@
+   <component name="ProjectViewState">
+     <option name="showLibraryContents" value="true" />
+   </component>
+-  <component name="PropertiesComponent"><![CDATA[{
+-  "keyToString": {
+-    "Application.Main.executor": "Run",
+-    "DefaultHtmlFileTemplate": "HTML File",
+-    "JUnit.OrderTest.executor": "Run",
+-    "JUnit.OrderTest.testCreateOrder.executor": "Run",
+-    "JUnit.OrderTest.testDeleteOrder.executor": "Run",
+-    "JUnit.OrderTest.testDeleteOrder2.executor": "Run",
+-    "JUnit.UserTest.executor": "Run",
+-    "JUnit.UserTest.testCreateUser.executor": "Run",
+-    "JUnit.UserTest.testDuplicateUsername.executor": "Run",
+-    "JUnit.UserTest.testLogin.executor": "Run",
+-    "JUnit.UserTest.testPasswordMatch.executor": "Run",
+-    "Maven.Carport [package].executor": "Run",
+-    "RunOnceActivity.ShowReadmeOnStart": "true",
+-    "git-widget-placeholder": "main",
+-    "ignore.virus.scanning.warn.message": "true",
+-    "kotlin-language-version-configured": "true",
+-    "list.type.of.created.stylesheet": "CSS",
+-    "node.js.detected.package.eslint": "true",
+-    "node.js.detected.package.tslint": "true",
+-    "node.js.selected.package.eslint": "(autodetect)",
+-    "node.js.selected.package.tslint": "(autodetect)",
+-    "nodejs_package_manager_path": "npm",
+-    "vue.rearranger.settings.migration": "true"
++  <component name="PropertiesComponent">{
++  &quot;keyToString&quot;: {
++    &quot;Application.Main.executor&quot;: &quot;Run&quot;,
++    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
++    &quot;JUnit.OrderTest.executor&quot;: &quot;Run&quot;,
++    &quot;JUnit.OrderTest.testCreateOrder.executor&quot;: &quot;Run&quot;,
++    &quot;JUnit.OrderTest.testDeleteOrder.executor&quot;: &quot;Run&quot;,
++    &quot;JUnit.OrderTest.testDeleteOrder2.executor&quot;: &quot;Run&quot;,
++    &quot;JUnit.UserTest.executor&quot;: &quot;Run&quot;,
++    &quot;JUnit.UserTest.testCreateUser.executor&quot;: &quot;Run&quot;,
++    &quot;JUnit.UserTest.testDuplicateUsername.executor&quot;: &quot;Run&quot;,
++    &quot;JUnit.UserTest.testLogin.executor&quot;: &quot;Run&quot;,
++    &quot;JUnit.UserTest.testPasswordMatch.executor&quot;: &quot;Run&quot;,
++    &quot;Maven.Carport [package].executor&quot;: &quot;Run&quot;,
++    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
++    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
++    &quot;git-widget-placeholder&quot;: &quot;Order-status&quot;,
++    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
++    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
++    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
++    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
++    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
++    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
++    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
++    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+   }
+-}]]></component>
++}</component>
+   <component name="RunManager" selected="Application.Main">
+     <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+       <option name="MAIN_CLASS_NAME" value="app.Main" />
+@@ -133,19 +151,19 @@
+     </configuration>
+     <recent_temporary>
+       <list>
+-        <item itemvalue="Application.Main" />
+         <item itemvalue="JUnit.UserTest.testLogin" />
+         <item itemvalue="JUnit.UserTest.testDuplicateUsername" />
+         <item itemvalue="JUnit.UserTest.testCreateUser" />
+         <item itemvalue="JUnit.UserTest" />
++        <item itemvalue="Application.Main" />
+       </list>
+     </recent_temporary>
+   </component>
+   <component name="SharedIndexes">
+     <attachedChunks>
+       <set>
+-        <option value="bundled-jdk-9823dce3aa75-28b599e66164-intellij.indexing.shared.core-IU-242.24807.4" />
+-        <option value="bundled-js-predefined-d6986cc7102b-5c90d61e3bab-JavaScript-IU-242.24807.4" />
++        <option value="bundled-jdk-9823dce3aa75-a94e463ab2e7-intellij.indexing.shared.core-IU-243.26053.27" />
++        <option value="bundled-js-predefined-d6986cc7102b-1632447f56bf-JavaScript-IU-243.26053.27" />
+       </set>
+     </attachedChunks>
+   </component>
+@@ -162,6 +180,8 @@
+       <workItem from="1747130157493" duration="1684000" />
+       <workItem from="1747209380259" duration="5319000" />
+       <workItem from="1747297157437" duration="7976000" />
++      <workItem from="1747382943176" duration="3984000" />
++      <workItem from="1747649477180" duration="6811000" />
+     </task>
+     <task id="LOCAL-00001" summary="push">
+       <option name="closed" value="true" />
+@@ -179,7 +199,15 @@
+       <option name="project" value="LOCAL" />
+       <updated>1747307019743</updated>
+     </task>
+-    <option name="localTasksCounter" value="3" />
++    <task id="LOCAL-00003" summary="index.html">
++      <option name="closed" value="true" />
++      <created>1747309950419</created>
++      <option name="number" value="00003" />
++      <option name="presentableId" value="LOCAL-00003" />
++      <option name="project" value="LOCAL" />
++      <updated>1747309950419</updated>
++    </task>
++    <option name="localTasksCounter" value="4" />
+     <servers />
+   </component>
+   <component name="TypeScriptGeneratedFilesManager">
+@@ -198,7 +226,6 @@
+   </component>
+   <component name="VcsManagerConfiguration">
+     <MESSAGE value="push" />
+-    <MESSAGE value="Second push - UserController and User" />
+-    <option name="LAST_COMMIT_MESSAGE" value="Second push - UserController and User" />
++    <option name="LAST_COMMIT_MESSAGE" value="push" />
+   </component>
+ </project>
+\ No newline at end of file
+Index: src/main/resources/templates/sellerdashboard.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><!DOCTYPE html>\r\n<html lang=\"en\" xmlns:th=\"http://www.thymeleaf.org\">\r\n<head>\r\n    <meta charset=\"UTF-8\">\r\n    <title>Seller Dashboard - All Orders</title>\r\n    <style>\r\n        body {\r\n            font-family: Arial, sans-serif;\r\n            padding: 2rem;\r\n            background-color: #f4f4f4;\r\n        }\r\n\r\n        h1 {\r\n            text-align: center;\r\n        }\r\n\r\n        table {\r\n            width: 100%;\r\n            border-collapse: collapse;\r\n            background-color: #fff;\r\n            box-shadow: 0 0 10px rgba(0,0,0,0.1);\r\n        }\r\n\r\n        th, td {\r\n            padding: 0.75rem;\r\n            border: 1px solid #ddd;\r\n            text-align: center;\r\n        }\r\n\r\n        th {\r\n            background-color: #333;\r\n            color: #fff;\r\n        }\r\n\r\n        tr:nth-child(even) {\r\n            background-color: #f9f9f9;\r\n        }\r\n\r\n        .status {\r\n            font-weight: bold;\r\n        }\r\n    </style>\r\n</head>\r\n<body>\r\n\r\n<h1>All Customer Orders</h1>\r\n\r\n<table>\r\n    <thead>\r\n    <tr>\r\n        <th>Order ID</th>\r\n        <th>Order Date</th>\r\n        <th>Total Price</th>\r\n        <th>Status</th>\r\n        <th>Customer ID</th>\r\n        <th>Worker ID</th>\r\n        <th>Carport ID</th>\r\n    </tr>\r\n    </thead>\r\n    <tbody>\r\n    <tr th:each=\"order : ${orders}\">\r\n        <td th:text=\"${order.orderId}\">Order ID</td>\r\n        <td th:text=\"${order.orderDate}\">Date</td>\r\n        <td th:text=\"${order.totalPrice}\">0.00</td>\r\n        <td th:text=\"${order.orderStatus}\" class=\"status\">Status</td>\r\n        <td th:text=\"${order.customerId}\">Customer</td>\r\n        <td th:text=\"${order.workerId}\">Worker</td>\r\n        <td th:text=\"${order.carportId}\">Carport</td>\r\n    </tr>\r\n    </tbody>\r\n</table>\r\n\r\n</body>\r\n</html>\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/resources/templates/sellerdashboard.html b/src/main/resources/templates/sellerdashboard.html
+--- a/src/main/resources/templates/sellerdashboard.html	(revision 4045da0e4417872595001d86416796f08b86cd49)
++++ b/src/main/resources/templates/sellerdashboard.html	(date 1747663355234)
+@@ -36,8 +36,22 @@
+             background-color: #f9f9f9;
+         }
+ 
+-        .status {
+-            font-weight: bold;
++        .update-btn {
++            padding: 0.3rem 0.6rem;
++            background-color: #28a745;
++            color: white;
++            border: none;
++            border-radius: 4px;
++            cursor: pointer;
++        }
++
++        .update-btn:hover {
++            background-color: #218838;
++        }
++
++        input[type="text"],
++        input[type="number"] {
++            width: 100px;
+         }
+     </style>
+ </head>
+@@ -55,17 +69,47 @@
+         <th>Customer ID</th>
+         <th>Worker ID</th>
+         <th>Carport ID</th>
++        <th>Action</th>
+     </tr>
+     </thead>
+     <tbody>
+     <tr th:each="order : ${orders}">
+-        <td th:text="${order.orderId}">Order ID</td>
+-        <td th:text="${order.orderDate}">Date</td>
+-        <td th:text="${order.totalPrice}">0.00</td>
+-        <td th:text="${order.orderStatus}" class="status">Status</td>
+-        <td th:text="${order.customerId}">Customer</td>
+-        <td th:text="${order.workerId}">Worker</td>
+-        <td th:text="${order.carportId}">Carport</td>
++        <form th:action="@{/updateorder}" method="post">
++            <td>
++                <span th:text="${order.orderId}"></span>
++                <input type="hidden" name="orderId" th:value="${order.orderId}" />
++            </td>
++            <td>
++                <span th:text="${order.orderDate}"></span>
++                <input type="hidden" name="orderDate" th:value="${order.orderDate}" />
++            </td>
++            <td>
++                <input type="number" name="totalPrice" th:value="${order.totalPrice}" step="0.01" required />
++            </td>
++            <td>
++                <select name="orderStatus" required>
++                    <option value="Pending" th:selected="${order.orderStatus == 'Pending'}">Pending</option>
++                    <option value="In Progress" th:selected="${order.orderStatus == 'In Progress'}">In Progress</option>
++                    <option value="Completed" th:selected="${order.orderStatus == 'Completed'}">Completed</option>
++                    <option value="Cancelled" th:selected="${order.orderStatus == 'Cancelled'}">Cancelled</option>
++                </select>
++            </td>
++            <td>
++                <span th:text="${order.customerId}"></span>
++                <input type="hidden" name="customerId" th:value="${order.customerId}" />
++            </td>
++            <td>
++                <span th:text="${order.workerId}"></span>
++                <input type="hidden" name="workerId" th:value="${order.workerId}" />
++            </td>
++            <td>
++                <span th:text="${order.carportId}"></span>
++                <input type="hidden" name="carportId" th:value="${order.carportId}" />
++            </td>
++            <td>
++                <button type="submit" class="update-btn">Update</button>
++            </td>
++        </form>
+     </tr>
+     </tbody>
+ </table>
+Index: src/main/java/app/entities/Order.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package app.entities;\r\n\r\nimport java.time.LocalDate;\r\n\r\npublic class Order {\r\n    private int orderId;\r\n    private LocalDate orderDate;\r\n    private double totalPrice;\r\n    private String orderStatus;\r\n    private int customerId;\r\n    private int workerId;\r\n    private int carportId;\r\n\r\n    public Order (int orderId, LocalDate orderDate, double totalPrice, String orderStatus, int customerId, int workerId, int carportId){\r\n       this.orderId = orderId;\r\n       this.orderDate = orderDate;\r\n       this.totalPrice = totalPrice;\r\n       this.orderStatus = orderStatus;\r\n       this.customerId = customerId;\r\n       this.workerId = 0;\r\n       this.carportId = 0;\r\n    }\r\n\r\n    public int getOrderId(){\r\n        return orderId;\r\n    }\r\n\r\n    public void setOrderId(int orderId){\r\n        this.orderId = orderId;\r\n    }\r\n\r\n    public LocalDate getOrderDate(){\r\n        return orderDate;\r\n    }\r\n\r\n    public void setOrderDate(LocalDate orderDate){\r\n        this.orderDate = orderDate;\r\n    }\r\n\r\n    public double getTotalPrice(){\r\n        return totalPrice;\r\n    }\r\n\r\n    public void setTotalPrice(double totalPrice){\r\n        this.totalPrice = totalPrice;\r\n    }\r\n\r\n    public String getOrderStatus(){\r\n        return orderStatus;\r\n    }\r\n\r\n    public void setOrderStatus(String orderStatus){\r\n        this.orderStatus = orderStatus;\r\n    }\r\n\r\n    public int getCustomerId(){\r\n        return customerId;\r\n    }\r\n\r\n    public void setCustomerId(int customerId){\r\n        this.customerId = customerId;\r\n    }\r\n\r\n    public int getWorkerId(){\r\n        return workerId;\r\n    }\r\n\r\n    public void setWorkerId(int workerId){\r\n        this.workerId = workerId;\r\n    }\r\n\r\n    public int getCarportId(){\r\n        return carportId;\r\n    }\r\n\r\n    public void setCarportId(int carportId){\r\n        this.carportId = carportId;\r\n    }\r\n\r\n    @Override\r\n    public String toString() {\r\n        return \"Order{\" +\r\n                \"orderID=\" + orderId +\r\n                \", orderDate=\" + orderDate +\r\n                \", totalPrice=\" + totalPrice +\r\n                \", orderStatus='\" + orderStatus + '\\'' +\r\n                \", customerId=\" + customerId +\r\n                \", workerId=\" + workerId +\r\n                \". carportId=\" + carportId +\r\n                '}';\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/app/entities/Order.java b/src/main/java/app/entities/Order.java
+--- a/src/main/java/app/entities/Order.java	(revision 4045da0e4417872595001d86416796f08b86cd49)
++++ b/src/main/java/app/entities/Order.java	(date 1747661411159)
+@@ -17,8 +17,8 @@
+        this.totalPrice = totalPrice;
+        this.orderStatus = orderStatus;
+        this.customerId = customerId;
+-       this.workerId = 0;
+-       this.carportId = 0;
++       this.workerId = workerId;
++       this.carportId = carportId;
+     }
+ 
+     public int getOrderId(){

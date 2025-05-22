@@ -13,6 +13,15 @@ public class CustomerProfile {
     private String password;
     private String role;
 
+    public CustomerProfile(int customerId, String name, String email, int phone, String address, int postcode) {
+        this.customerId = customerId;
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+        this.address = address;
+        this.postcode = postcode;
+    }
+
     public int getCustomerId(){
         return customerId;
     }

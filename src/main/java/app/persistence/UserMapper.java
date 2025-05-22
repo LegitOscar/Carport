@@ -6,6 +6,8 @@ import app.entities.User;
 import app.exceptions.DatabaseException;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserMapper
 {
@@ -32,7 +34,7 @@ public class UserMapper
                 }
             }
 
-            // Check worker
+
             String sqlWorker = "SELECT * FROM workers WHERE worker_email=? AND worker_password=?";
             try (PreparedStatement ps = connection.prepareStatement(sqlWorker)) {
                 ps.setString(1, email);
@@ -55,7 +57,6 @@ public class UserMapper
             throw new DatabaseException("DB error during login", e.getMessage());
         }
     }
-
 
 
     public void createUser(User user) {
@@ -209,5 +210,116 @@ public class UserMapper
         }
     }
 
+
+    public static List<User> getAllCustomers(ConnectionPool connectionPool) throws SQLException {
+        List<User> customers = new ArrayList<>();
+        String sql = "SELECT customer_id, customer_name, customer_email, customer_phone, customer_address, postcode, customer_password FROM customer";
+
+        try (Connection conn = connectionPool.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                User customer = new User(
+                        rs.getString("customer_name"),
+                        rs.getString("customer_address"),
+                        rs.getInt("postcode"),
+                        null,  // city not stored in customer, you may join postcode table if needed
+                        rs.getInt("customer_phone"),
+                        rs.getString("customer_email"),
+                        rs.getString("customer_password")
+                );
+                customer.setId(rs.getInt("customer_id"));  // set id separately
+                customers.add(customer);
+            }
+        }
+        return customers;
+    }
+
+
+    public static List<User> getAllWorkers(ConnectionPool connectionPool) throws SQLException {
+        List<User> workers = new ArrayList<>();
+        String sql = "SELECT worker_id, worker_name, worker_email, worker_phone, role_id, worker_password FROM workers";
+
+        try (Connection conn = connectionPool.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                User worker = new User(
+                        rs.getInt("worker_id"),
+                        rs.getString("worker_email"),
+                        rs.getString("worker_password"),
+                        rs.getInt("role_id")
+                );
+                // Set additional info (name, phone)
+                worker.setName(rs.getString("worker_name"));  // you'll need to add setName() method in User class
+                worker.setPhone(rs.getInt("worker_phone"));   // add setPhone() method in User class
+                workers.add(worker);
+            }
+        }
+        return workers;
+    }
+
+
+
+    public static List<User> getUsersByRoleId(int roleId, ConnectionPool connectionPool) throws SQLException {
+        List<User> users = new ArrayList<>();
+        String sql;
+
+        // If role is customer
+        if (roleId == 1) {
+            sql = "SELECT customer_id AS id, customer_name AS name, customer_address AS address, postcode, NULL AS city, customer_phone AS phone, customer_email AS email, customer_password AS password, NULL AS role_id FROM customer";
+        } else {
+            // For workers (role 2 or 3)
+            sql = "SELECT worker_id AS id, worker_name AS name, NULL AS address, NULL AS postcode, NULL AS city, worker_phone AS phone, worker_email AS email, worker_password AS password, role_id FROM workers WHERE role_id = ?";
+        }
+
+        try (Connection conn = connectionPool.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            if (roleId != 1) {
+                ps.setInt(1, roleId);
+            }
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                User user = new User(
+                        rs.getString("name"),
+                        rs.getString("address"),
+                        rs.getInt("postcode"),
+                        rs.getString("city"),
+                        rs.getInt("phone"),
+                        rs.getString("email"),
+                        rs.getString("password")
+                );
+                user.setId(rs.getInt("id"));
+
+                // RoleId can be null for customers, so set carefully
+                int dbRoleId = rs.getInt("role_id");
+                if (!rs.wasNull()) {
+                    user.setRoleId(dbRoleId);
+                } else {
+                    user.setRoleId(1);  // customers are role 1
+                }
+
+                users.add(user);
+            }
+        }
+
+        return users;
+    }
+    public static void updateWorkerRole(int workerId, int newRoleId, ConnectionPool connectionPool) throws SQLException {
+        String sql = "UPDATE workers SET role_id = ? WHERE worker_id = ?";
+
+        try (Connection conn = connectionPool.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, newRoleId);
+            ps.setInt(2, workerId);
+            ps.executeUpdate();
+        }
+    }
 
 }

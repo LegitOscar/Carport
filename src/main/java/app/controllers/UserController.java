@@ -38,12 +38,21 @@ public class UserController {
         app.get("logout", ctx -> logout(ctx));
         app.get("/login", ctx -> ctx.render("login.html"));
         app.get("createuser", ctx -> ctx.render("createuser.html"));
-        app.get("/design", ctx -> ctx.render("design.html"));
+        app.get("/orderSite", ctx -> ctx.render("orderSite.html"));
+        app.get("/orderSite2", ctx -> ctx.render("orderSite2.html"));
+        app.get("/orderSite3", ctx -> ctx.render("orderSite3.html"));
+        app.get("/orderConfirmation", ctx -> ctx.render("orderConfirmation.html"));
         app.get("/customerprofile", ctx -> CustomerProfileController.showProfile(ctx, connectionPool));
-        app.post("createuser", ctx -> UserController.createUser(ctx, connectionPool));
+        app.post("/createuser", ctx -> UserController.createUser(ctx, connectionPool));
         app.post("/profile/edit", ctx -> CustomerProfileController.editProfile(ctx, connectionPool));
         app.post("/profile/update", ctx -> CustomerProfileController.updateProfile(ctx, connectionPool));
         app.get("/getcity", ctx -> UserController.getCityByPostcode(ctx, connectionPool));
+
+        app.get("/admin", ctx -> UserController.showAdminPage(ctx, connectionPool));
+        app.post("/admin/update-role", ctx -> UserController.updateUserRole(ctx, connectionPool));
+
+        app.post("/createuserorder", ctx -> UserController.createUserOrder(ctx, connectionPool));
+
 
 
     }
@@ -77,7 +86,34 @@ public class UserController {
 
         ctx.render("login.html");
     }
+    public static void createUserOrder(Context ctx, ConnectionPool connectionPool) {
+        String navn = ctx.formParam("navn");
+        String adresse = ctx.formParam("adresse");
+        int postnummer = Integer.parseInt(ctx.formParam("postnummer"));
+        String by = ctx.formParam("by");
+        int telefon = Integer.parseInt(ctx.formParam("telefon"));
+        String email = ctx.formParam("email");
+        String password1 = ctx.formParam("password1");
+        String password2 = ctx.formParam("password2");
 
+        if (!password1.equals(password2)) {
+            ctx.attribute("message", "Passwords do not match.");
+            ctx.render("orderSite3.html");
+            return;
+        }
+
+        User user = new User(navn, adresse, postnummer, by, telefon, email, password1);
+        UserMapper userMapper = new UserMapper(connectionPool);
+
+        try {
+            userMapper.createUser(user);
+            ctx.attribute("message", "Bruger oprettet!");
+        } catch (Exception e) {
+            ctx.attribute("message", "Fejl under oprettelse af bruger: " + e.getMessage());
+        }
+
+        ctx.render("orderConfirmation.html");
+    }
 
 
     private static void logout(Context ctx) {
@@ -106,12 +142,26 @@ public class UserController {
 
             if (roleId == null) {
                 ctx.redirect("/customerprofile");
-            } else if (roleId == 1) {
-                ctx.redirect("/admin");
-            } else if (roleId == 2) {
-                ctx.redirect("/sellerdashboard");
+
             } else {
-                ctx.redirect("/customerprofile");  // fallback
+
+                switch (roleId){
+                    case 1:
+                        ctx.redirect("/customerprofile");
+                        break;
+
+                    case 2:
+                        ctx.redirect("/sellerdashboard");
+                        break;
+
+                    case 3:
+                        ctx.redirect("/admin");
+                        break;
+
+                    default:
+                        ctx.redirect("/index");
+                        break;
+                }
             }
 
         } catch (DatabaseException e) {
@@ -154,14 +204,60 @@ public class UserController {
 
         } catch (SQLException e) {
             ctx.status(500).result("Fejl ved opslag af postnummer: " + e.getMessage());
-            e.printStackTrace();  // Log full error stack trace to your server console/log
+            e.printStackTrace();
+        }
+    }
+
+    public static void showAdminPage(Context ctx, ConnectionPool connectionPool) {
+        User currentUser = ctx.sessionAttribute("currentUser");
+
+        if (currentUser == null || currentUser.getRoleId() != 3) {
+            ctx.redirect("/login");
+            return;
+        }
+
+        try {
+            // Use getUsersByRoleId instead of separate getAllCustomers/getAllWorkers methods
+            List<User> customers = UserMapper.getUsersByRoleId(1, connectionPool);
+            List<User> workers = UserMapper.getUsersByRoleId(2, connectionPool);
+            List<User> admins = UserMapper.getUsersByRoleId(3, connectionPool);
+
+            ctx.attribute("customers", customers);
+            ctx.attribute("workers", workers);
+            ctx.attribute("admins", admins);
+            ctx.render("admin.html");
+        } catch (Exception e) {
+            e.printStackTrace();
+            ctx.status(500).result("Fejl ved hentning af brugere: " + e.getMessage());
+        }
+    }
+
+    public static void updateUserRole(Context ctx, ConnectionPool connectionPool) {
+        User currentUser = ctx.sessionAttribute("currentUser");
+
+
+        if (currentUser == null || currentUser.getRoleId() != 3) {
+            ctx.redirect("/login");
+            return;
+        }
+
+        // Get form parameters
+        int workerId = Integer.parseInt(ctx.formParam("workerId"));
+        int newRoleId = Integer.parseInt(ctx.formParam("newRoleId"));
+
+        if (workerId == currentUser.getId() && newRoleId != 3) {
+            ctx.status(400).result("Du kan ikke fjerne din egen admin-rolle.");
+            return;
+        }
+
+        try {
+            UserMapper.updateWorkerRole(workerId, newRoleId, connectionPool);
+            ctx.redirect("/admin");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            ctx.status(500).result("Fejl ved opdatering af rolle: " + e.getMessage());
         }
     }
 
 
-
 }
-
-
-
-

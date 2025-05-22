@@ -85,6 +85,38 @@
 <div th:if="${message}" style="color: red; font-weight: bold; margin-bottom: 10px;">
     <p th:text="${message}"></p>
 </div>
+
+<div class="orders-box">
+    <h2>Dine Ordrer</h2>
+
+    <div th:if="${orders != null and !orders.isEmpty()}">
+        <table>
+            <thead>
+            <tr>
+                <th>Ordre ID</th>
+                <th>Dato</th>
+                <th>Status</th>
+                <th>Pris</th>
+                <th>Carport ID</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="order : ${orders}">
+                <td th:text="${order.orderId}">123</td>
+                <td th:text="${order.orderDate}">2024-05-21</td>
+                <td th:text="${order.orderStatus}">Afventer</td>
+                <td th:text="${order.totalPrice} + ' kr.'">1000 kr.</td>
+                <td th:text="${order.carportId}">1</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div th:if="${orders == null or orders.isEmpty()}">
+        <p>Du har ingen ordrer endnu.</p>
+    </div>
+</div>
+
 <br>
 <a href="/">← Tilbage til forsiden</a>
 
