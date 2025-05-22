@@ -4,6 +4,30 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
+
+    <list default="true" id="0b27a193-abca-4897-adbe-34a8e509c3c3" name="Changes" comment="customerprofile">
+      <change afterPath="$PROJECT_DIR$/src/main/java/app/controllers/CarportController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/app/entities/Carport.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/app/entities/FittingsAndScrews.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/app/entities/Material.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/app/entities/OrderItem.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/app/entities/Product.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/app/entities/ProductVariant.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/app/entities/WoodVariant.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/app/persistence/CarportMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/app/persistence/OrderItemMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/app/persistence/ProductMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/app/persistence/WoodVariantMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/app/services/Calculator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/templates/admin.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/app/controllers/OrderController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/controllers/OrderController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/app/controllers/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/controllers/UserController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/app/entities/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/entities/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/app/persistence/OrderMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/persistence/OrderMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/app/persistence/UserMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/persistence/UserMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/OrderTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/OrderTest.java" afterDir="false" />
+
     <list default="true" id="24c281b8-f515-42aa-aabd-1ff073604b67" name="Changes" comment="Updated functionality to createuser.html&#10;&#10;works with db now">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
 
@@ -19,6 +43,7 @@
       <change beforePath="$PROJECT_DIR$/src/main/java/app/controllers/CustomerProfileController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/controllers/CustomerProfileController.java" afterDir="false" />
 
 
+
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -29,9 +54,6 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="HTML File" />
-        <option value="JUnit5 Test Class" />
-        <option value="CSS File" />
-        <option value="Class" />
       </list>
     </option>
   </component>
@@ -39,15 +61,19 @@
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
 
+        <entry key="$PROJECT_DIR$" value="Alex-Calculator" />
+
+
         <entry key="$PROJECT_DIR$" value="main" />
 
         <entry key="$PROJECT_DIR$" value="Ayman-push" />
 
+
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-    <option name="UPDATE_TYPE" value="REBASE" />
   </component>
+
   <component name="GitHubPullRequestSearchHistory">{
   &quot;lastFilter&quot;: {
     &quot;state&quot;: &quot;OPEN&quot;,
@@ -64,52 +90,18 @@
   &quot;associatedIndex&quot;: 5
 }</component>
   <component name="ProjectId" id="2x0fZrcZJUnewxvLeTvXCRysoiI" />
+
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
-  <component name="ProjectViewState">
-    <option name="showLibraryContents" value="true" />
-  </component>
-
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.Main.executor&quot;: &quot;Run&quot;,
-    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
-    &quot;JUnit.OrderMapperTest.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.OrderMapperTest.getAllOrders.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.OrderTest.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.OrderTest.testCreateOrder.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.OrderTest.testDeleteOrder.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.OrderTest.testDeleteOrder2.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.UserMapperTest.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.UserMapperTest.testCreateUser.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.UserMapperTest.testCreateUserWithZipCode.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.UserTest.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.UserTest.testCreateUser.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.UserTest.testDuplicateUsername.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.UserTest.testLogin.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.UserTest.testPasswordMatch.executor&quot;: &quot;Run&quot;,
-    &quot;Maven.Carport [package].executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary&quot;: &quot;JUnit5&quot;,
-    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5&quot;: &quot;&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;Oscar-CustomerProfile-showOrder&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Artifacts&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
-
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Application.Main.executor": "Run",
     "DefaultHtmlFileTemplate": "HTML File",
+
+    "JavaScript Debug.admin.html.executor": "Run",
+    "git-widget-placeholder": "Admin-Oscar",
+    "last_opened_file_path": "C:/Users/drunk/IdeaProjects/Carport/src/main/java/app/controllers",
+    "node.js.selected.package.tslint": "(autodetect)"
+
     "JUnit.OrderMapperTest.executor": "Run",
     "JUnit.OrderMapperTest.getAllOrders.executor": "Run",
     "JUnit.OrderTest.executor": "Run",
@@ -144,17 +136,18 @@
     "project.structure.side.proportion": "0.2",
     "vue.rearranger.settings.migration": "true"
 
+
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\drunk\IdeaProjects\Carport\src\main\java\app\controllers" />
+      <recent name="C:\Users\drunk\IdeaProjects\Carport\src\main\java\app\entities" />
+      <recent name="C:\Users\drunk\IdeaProjects\Carport\src\main\java\app\persistence" />
       <recent name="C:\Users\drunk\IdeaProjects\Carport\src\main\java\app\services" />
-      <recent name="C:\Users\drunk\IdeaProjects\Carport\src\main\resources\public\css" />
-      <recent name="C:\Users\drunk\IdeaProjects\Carport\src\main\resources\templates" />
     </key>
-    <key name="CreateTestDialog.Recents.Supers">
-      <recent name="" />
-    </key>
+
+
     <key name="CreateTestDialog.RecentsKey">
       <recent name="app.persistence" />
     </key>
@@ -343,9 +336,11 @@
         <option value="bundled-js-predefined-d6986cc7102b-822845ee3bb5-JavaScript-IU-243.23654.189" />
       </set>
     </attachedChunks>
+
   </component>
-  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
+
+
     <task active="true" id="Default" summary="Default task">
       <changelist id="24c281b8-f515-42aa-aabd-1ff073604b67" name="Changes" comment="" />
       <created>1747079970860</created>
@@ -398,25 +393,10 @@
       <updated>1747824281839</updated>
     </task>
     <option name="localTasksCounter" value="4" />
+
     <servers />
   </component>
-  <component name="TypeScriptGeneratedFilesManager">
-    <option name="version" value="3" />
-  </component>
-  <component name="Vcs.Log.Tabs.Properties">
-    <option name="TAB_STATES">
-      <map>
-        <entry key="MAIN">
-          <value>
-            <State />
-          </value>
-        </entry>
-      </map>
-    </option>
-  </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="push" />
-    <MESSAGE value="Second push - UserController and User" />
     <MESSAGE value="customerprofile" />
     <option name="LAST_COMMIT_MESSAGE" value="customerprofile" />
   </component>
