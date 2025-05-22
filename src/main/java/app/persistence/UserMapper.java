@@ -323,4 +323,31 @@ public class UserMapper
         }
     }
 
+    public void createWorker(User user) throws SQLException {
+        String sql = "INSERT INTO workers (worker_name, worker_email, worker_password, worker_phone, role_id) " +
+                "VALUES (?, ?, ?, ?, ?)";
+
+        try (Connection conn = connectionPool.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, user.getName());
+            ps.setString(2, user.getEmail());
+            ps.setString(3, user.getPassword());
+            ps.setInt(4, user.getPhone());
+            ps.setInt(5, user.getRoleId());
+
+            ps.executeUpdate();
+        }
+    }
+
+    public void deleteWorker(int workerId) throws SQLException {
+        String sql = "DELETE FROM workers WHERE worker_id = ?";
+        try (Connection conn = connectionPool.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, workerId);
+            ps.executeUpdate();
+        }
+    }
+
+
 }

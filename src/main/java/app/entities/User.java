@@ -19,6 +19,15 @@ public class User {
         this.roleId = roleId;
     }
 
+    public User(String name, String email, String password, int phone, int roleId) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.phone = phone;
+        this.roleId = roleId;
+    }
+
+
     // Constructor for customer creation
     public User(String name, String address, int postcode, String city, int phone, String email, String password) {
         this.name = name;

@@ -39,7 +39,6 @@
         <th>Telefon</th>
         <th>Adresse</th>
         <th>Postnummer</th>
-        <th>Handling</th>
     </tr>
     </thead>
     <tbody>
@@ -50,16 +49,19 @@
         <td th:text="${customer.phone}"></td>
         <td th:text="${customer.address}"></td>
         <td th:text="${customer.postcode}"></td>
-        <td class="action-buttons">
-            <a th:href="@{'/admin/user/edit/' + ${customer.id}}">Rediger</a>
-            <a th:href="@{'/admin/user/delete/' + ${customer.id}}">Slet</a>
-        </td>
+
     </tr>
     </tbody>
 </table>
 
-<!-- Workers -->
-<h2>Medarbejdere</h2>
+
+
+<div style="display: flex; justify-content: space-between; align-items: center; margin-top: 40px;">
+    <h2 style="margin: 0;">Medarbejdere</h2>
+    <a href="/admin/create-worker" style="padding: 6px 12px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 4px;">
+        Opret ny medarbejder
+    </a>
+</div>
 <table>
     <thead>
     <tr>
@@ -90,10 +92,17 @@
 
                 <button type="submit">Opdater rolle</button>
             </form>
+
+            <form th:action="@{/admin/delete-worker}" method="post" style="display:inline; margin-left:10px;">
+                <input type="hidden" name="workerId" th:value="${worker.id}" />
+                <button type="submit" onclick="return confirm('Er du sikker på, at du vil slette denne medarbejder?')">Slet</button>
+            </form>
+
         </td>
 
     </tr>
     </tbody>
+
 </table>
 
 </body>

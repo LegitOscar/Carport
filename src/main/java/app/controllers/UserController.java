@@ -53,6 +53,10 @@ public class UserController {
 
         app.post("/createuserorder", ctx -> UserController.createUserOrder(ctx, connectionPool));
 
+        app.get("/admin/create-worker", ctx -> ctx.render("createworker.html"));
+        app.post("/admin/create-worker", ctx -> createWorkerFromAdmin(ctx, connectionPool));
+        app.post("/admin/delete-worker", ctx -> UserController.deleteWorkerFromAdmin(ctx, connectionPool));
+
 
 
     }
@@ -217,7 +221,7 @@ public class UserController {
         }
 
         try {
-            // Use getUsersByRoleId instead of separate getAllCustomers/getAllWorkers methods
+
             List<User> customers = UserMapper.getUsersByRoleId(1, connectionPool);
             List<User> workers = UserMapper.getUsersByRoleId(2, connectionPool);
             List<User> admins = UserMapper.getUsersByRoleId(3, connectionPool);
@@ -259,5 +263,43 @@ public class UserController {
         }
     }
 
+    public static void createWorkerFromAdmin(Context ctx, ConnectionPool connectionPool) {
+        String name = ctx.formParam("name");
+        String email = ctx.formParam("email");
+        String password1 = ctx.formParam("password1");
+        String password2 = ctx.formParam("password2");
+        int phone = Integer.parseInt(ctx.formParam("phone"));
+        int roleId = 2;
+
+        if (!password1.equals(password2)) {
+            ctx.attribute("message", "Passwords do not match.");
+            ctx.render("createworker.html");
+            return;
+        }
+
+        User user = new User(name, email, password1, phone, roleId);
+        UserMapper userMapper = new UserMapper(connectionPool);
+
+        try {
+            userMapper.createWorker(user);
+            ctx.redirect("/admin");
+        } catch (SQLException e) {
+            ctx.status(500).result("Fejl ved oprettelse af medarbejder: " + e.getMessage());
+        }
+    }
+
+    public static void deleteWorkerFromAdmin(Context ctx, ConnectionPool connectionPool) {
+        int workerId = Integer.parseInt(ctx.formParam("workerId"));
+        UserMapper userMapper = new UserMapper(connectionPool);
+
+        try {
+            userMapper.deleteWorker(workerId);
+            ctx.redirect("/admin");
+        } catch (SQLException e) {
+            ctx.status(500).result("Fejl ved sletning af medarbejder: " + e.getMessage());
+        }
+    }
+
 
 }
+
