@@ -44,6 +44,8 @@ public class UserController {
         app.post("/profile/edit", ctx -> CustomerProfileController.editProfile(ctx, connectionPool));
         app.post("/profile/update", ctx -> CustomerProfileController.updateProfile(ctx, connectionPool));
         app.get("/getcity", ctx -> UserController.getCityByPostcode(ctx, connectionPool));
+        app.get("/admin", ctx -> UserController.showAdminPage(ctx, connectionPool));
+        app.post("/admin/update-role", ctx -> UserController.updateUserRole(ctx, connectionPool));
 
 
     }
@@ -106,12 +108,26 @@ public class UserController {
 
             if (roleId == null) {
                 ctx.redirect("/customerprofile");
-            } else if (roleId == 1) {
-                ctx.redirect("/admin");
-            } else if (roleId == 2) {
-                ctx.redirect("/sellerdashboard");
+
             } else {
-                ctx.redirect("/customerprofile");  // fallback
+
+                switch (roleId){
+                    case 1:
+                        ctx.redirect("/customerprofile");
+                        break;
+
+                    case 2:
+                        ctx.redirect("/sellerdashboard");
+                        break;
+
+                    case 3:
+                        ctx.redirect("/admin");
+                        break;
+
+                    default:
+                        ctx.redirect("/index");
+                        break;
+                }
             }
 
         } catch (DatabaseException e) {
@@ -154,10 +170,60 @@ public class UserController {
 
         } catch (SQLException e) {
             ctx.status(500).result("Fejl ved opslag af postnummer: " + e.getMessage());
-            e.printStackTrace();  // Log full error stack trace to your server console/log
+            e.printStackTrace();
         }
     }
 
+    public static void showAdminPage(Context ctx, ConnectionPool connectionPool) {
+        User currentUser = ctx.sessionAttribute("currentUser");
+
+        if (currentUser == null || currentUser.getRoleId() != 3) {
+            ctx.redirect("/login");
+            return;
+        }
+
+        try {
+            // Use getUsersByRoleId instead of separate getAllCustomers/getAllWorkers methods
+            List<User> customers = UserMapper.getUsersByRoleId(1, connectionPool);
+            List<User> workers = UserMapper.getUsersByRoleId(2, connectionPool);
+            List<User> admins = UserMapper.getUsersByRoleId(3, connectionPool);
+
+            ctx.attribute("customers", customers);
+            ctx.attribute("workers", workers);
+            ctx.attribute("admins", admins);
+            ctx.render("admin.html");
+        } catch (Exception e) {
+            e.printStackTrace();
+            ctx.status(500).result("Fejl ved hentning af brugere: " + e.getMessage());
+        }
+    }
+
+    public static void updateUserRole(Context ctx, ConnectionPool connectionPool) {
+        User currentUser = ctx.sessionAttribute("currentUser");
+
+
+        if (currentUser == null || currentUser.getRoleId() != 3) {
+            ctx.redirect("/login");
+            return;
+        }
+
+        // Get form parameters
+        int workerId = Integer.parseInt(ctx.formParam("workerId"));
+        int newRoleId = Integer.parseInt(ctx.formParam("newRoleId"));
+
+        if (workerId == currentUser.getId() && newRoleId != 3) {
+            ctx.status(400).result("Du kan ikke fjerne din egen admin-rolle.");
+            return;
+        }
+
+        try {
+            UserMapper.updateWorkerRole(workerId, newRoleId, connectionPool);
+            ctx.redirect("/admin");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            ctx.status(500).result("Fejl ved opdatering af rolle: " + e.getMessage());
+        }
+    }
 
 
 }
