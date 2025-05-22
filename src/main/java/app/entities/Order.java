@@ -9,16 +9,18 @@ public class Order {
     private String orderStatus;
     private int customerId;
     private int workerId;
-    private int carportId;
 
-    public Order (int orderId, LocalDate orderDate, double totalPrice, String orderStatus, int customerId, int workerId, int carportId){
-        this.orderId = orderId;
-        this.orderDate = orderDate;
-        this.totalPrice = totalPrice;
-        this.orderStatus = orderStatus;
-        this.customerId = customerId;
-        this.workerId = workerId;
-        this.carportId = carportId;
+
+
+    public Order (int orderId, LocalDate orderDate, double totalPrice, String orderStatus, int customerId, int workerId){
+       this.orderId = orderId;
+       this.orderDate = orderDate;
+       this.totalPrice = totalPrice;
+       this.orderStatus = orderStatus;
+       this.customerId = customerId;
+       this.workerId = workerId;
+
+
     }
 
     public int getOrderId(){
@@ -69,13 +71,7 @@ public class Order {
         this.workerId = workerId;
     }
 
-    public int getCarportId(){
-        return carportId;
-    }
 
-    public void setCarportId(int carportId){
-        this.carportId = carportId;
-    }
 
     @Override
     public String toString() {
@@ -86,7 +82,6 @@ public class Order {
                 ", orderStatus='" + orderStatus + '\'' +
                 ", customerId=" + customerId +
                 ", workerId=" + workerId +
-                ". carportId=" + carportId +
                 '}';
     }
 }

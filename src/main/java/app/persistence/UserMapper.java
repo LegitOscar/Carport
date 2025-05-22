@@ -59,7 +59,6 @@ public class UserMapper
     }
 
 
-
     public void createUser(User user) {
         String checkPostcodeSql = "SELECT 1 FROM postcode WHERE postcode = ?";
         String insertCustomerSql = """
