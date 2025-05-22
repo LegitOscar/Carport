@@ -17,6 +17,14 @@
       <div class="step">3</div>
       <div class="step icon active">🚘</div>
     </div>
+    <ul class="info-text">
+      <li><strong>Bredde:</strong> <span th:text="${session.bredde}"></span></li>
+      <li><strong>Længde:</strong> <span th:text="${session.længde}"></span></li>
+      <li><strong>Trapeztag:</strong> <span th:text="${session.tag}"></span></li>
+      <li><strong>Redskabsrum bredde:</strong> <span th:text="${session.redskabsrumBredde}"></span></li>
+      <li><strong>Redskabsrum Længde:</strong> <span th:text="${session.redskabsrumLængde}"></span></li>
+
+    </ul>
   </aside>
 
   <main class="main-content">
@@ -38,7 +46,12 @@
 
     <h3>Følg din ordrestatus på “Min profil”</h3>
     <button class="profile-btn">Min profil</button>
+
 </form>
+    <h4>design af carport</h4>
+    <form method="post" action="/generateCarport">
+    <button class="carport-btn">se carport</button>
+    </form>
   </main>
 </div>
 </body>

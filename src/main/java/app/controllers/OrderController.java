@@ -13,10 +13,9 @@
 
 
     import java.sql.*;
+    import java.sql.Date;
     import java.time.LocalDate;
-    import java.util.ArrayList;
-    import java.util.List;
-    import java.util.Locale;
+    import java.util.*;
 
     public class OrderController {
 
@@ -34,8 +33,8 @@
             app.get("sellerdashboard", ctx -> getAllOrdersPerWorker(ctx, connectionPool));
 
             app.post("/orderSite2", ctx -> {
-                String bredde = ctx.formParam("bredde");
-                String længde = ctx.formParam("længde");
+                int bredde = Integer.parseInt(ctx.formParam("bredde"));
+                int længde = Integer.parseInt(ctx.formParam("længde"));
                 String tag = ctx.formParam("tag");
                 String bemærkning = ctx.formParam("bemærkning");
 
@@ -50,28 +49,35 @@
 
                 ctx.redirect("/orderSite2"); // or wherever your next step is
             });
-            app.post("/orderSite3", ctx -> {
-                String redskabsrumBredde = ctx.formParam("redskabsrumBredde");
-                String redskabsrumLængde = ctx.formParam("redskabsrumLængde");;
 
 
-                //gemmer det i sidebar
+            app.post("/skipStep3", ctx -> {
+                User user = ctx.sessionAttribute("currentUser");
+                int redskabsrumBredde = Integer.parseInt(ctx.formParam("redskabsrumBredde"));
+                int redskabsrumLængde = Integer.parseInt(ctx.formParam("redskabsrumLængde"));
                 ctx.sessionAttribute("redskabsrumBredde", redskabsrumBredde);
                 ctx.sessionAttribute("redskabsrumLængde", redskabsrumLængde);
+                if (user != null) {
+                    ctx.render("orderConfirmation.html");
+                } else {
+                    ctx.redirect("orderSite3.html");
+                }
+            });
+            app.post("/generateCarport", ctx -> {
+                Locale.setDefault(new Locale( "US"));
+                int width = Integer.parseInt(ctx.formParam("bredde"));
+                int length = Integer.parseInt(ctx.formParam("længde"));
+                int shedWidth = Integer.parseInt(ctx.formParam("redskabsrumBredde"));
+                int shedLength = Integer.parseInt(ctx.formParam("redskabsrumLængde"));
 
-                // gemmer i session
-                User user = ctx.sessionAttribute("currentUser");
+                CarportSvg carportSvg = new CarportSvg(width, length, shedWidth, shedLength);
+                String svg = carportSvg.toString();
 
-                ctx.redirect("/orderSite3"); // or wherever your next step is
+                ctx.attribute("svg", svg);
+                ctx.render("showOrder.html");
             });
         }
 
-        public static void showOrder(Context ctx) {
-            Locale.setDefault(new Locale( "US"));
-            CarportSvg svg = new CarportSvg(600,780);
-            ctx.attribute("svg", svg.toString());
-            ctx.render("showOrder.html");
-        }
 
         private static void deleteOrder(Context ctx, ConnectionPool connectionPool) {
             try {
