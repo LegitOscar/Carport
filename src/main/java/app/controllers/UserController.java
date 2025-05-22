@@ -8,6 +8,7 @@ import app.exceptions.DatabaseException;
 import app.persistence.ConnectionPool;
 import app.persistence.OrderMapper;
 import app.persistence.UserMapper;
+import app.services.CarportSvg;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import jakarta.servlet.http.HttpSession;
@@ -40,7 +41,6 @@ public class UserController {
         app.get("createuser", ctx -> ctx.render("createuser.html"));
         app.get("/orderSite", ctx -> ctx.render("orderSite.html"));
         app.get("/orderSite2", ctx -> ctx.render("orderSite2.html"));
-        app.get("/orderSite3", ctx -> ctx.render("orderSite3.html"));
         app.get("/orderConfirmation", ctx -> ctx.render("orderConfirmation.html"));
         app.get("/customerprofile", ctx -> CustomerProfileController.showProfile(ctx, connectionPool));
         app.post("/createuser", ctx -> UserController.createUser(ctx, connectionPool));
@@ -106,7 +106,6 @@ public class UserController {
         } catch (Exception e) {
             ctx.attribute("message", "Fejl under oprettelse af bruger: " + e.getMessage());
         }
-
         ctx.render("orderConfirmation.html");
     }
 

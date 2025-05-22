@@ -17,9 +17,9 @@
       <div class="step icon">🚘</div>
     </div>
     <ul class="info-text">
-      <li><strong>Bredde:</strong> <span th:text="${session.bredde}"></span></li>
-      <li><strong>Længde:</strong> <span th:text="${session.længde}"></span></li>
-      <li><strong>Trapeztag:</strong> <span th:text="${session.tag}"></span></li>
+      <li><strong>Bredde:</strong> <span th:text="${session.bredde} cm"></span></li>
+      <li><strong>Længde:</strong> <span th:text="${session.længde} cm"></span></li>
+      <li><strong>Trapeztag:</strong> <span th:text="${session.tag} cm"></span></li>
     </ul>
   </aside>
 
@@ -29,7 +29,7 @@
 
     <form method ="get" action="/orderSite2">
       <label for="bredde">Carport Bredde:</label>
-      <select id="bredde">
+      <select id="bredde" name = "bredde">
         <option disabled selected>Vælg bredde</option>
         <option value="210">210 cm</option>
         <option value="240">240 cm</option>
@@ -47,8 +47,8 @@
         <option value="600">600 cm</option>
       </select>
 
-      <label for="laengde">Carport Længde:</label>
-      <select id="laengde">
+      <label for="længde">Carport Længde:</label>
+      <select id="længde">
         <option disabled selected>Vælg længde</option>
         <option value="210">210 cm</option>
         <option value="240">240 cm</option>
