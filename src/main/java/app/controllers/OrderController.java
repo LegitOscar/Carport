@@ -1,11 +1,11 @@
 
     package app.controllers;
 
-    import app.entities.Order;
-    import app.entities.User;
+    import app.entities.*;
     import app.exceptions.DatabaseException;
-    import app.persistence.ConnectionPool;
-    import app.persistence.OrderMapper;
+    import app.persistence.*;
+   // import app.services.Calculator;
+    import app.services.Calculator;
     import io.javalin.Javalin;
     import io.javalin.http.Context;
 
@@ -45,20 +45,30 @@
             }
         }
 
-        public static Order createOrder(User user, ConnectionPool connectionPool) throws DatabaseException {
-            try {
-                Order newOrder = OrderMapper.createOrder(user, connectionPool);
 
-                if (newOrder == null) {
-                    throw new DatabaseException("Order creation failed. Order is null.");
-                }
-
-                System.out.println("Order created successfully with ID: " + newOrder.getOrderId());
-                return newOrder;
-
-            } catch (SQLException e) {
-                throw new DatabaseException("SQL error during order creation", e.getMessage());
+        private static void createOrder(Context ctx, ConnectionPool connectionPool) throws DatabaseException, SQLException {
+            User user = ctx.sessionAttribute("currentUser");
+            if (user == null) {
+                ctx.status(401).result("Du er ikke logget ind.");
+                return;
             }
+
+            int carportId = Integer.parseInt(ctx.formParam("carportId"));
+            Order order = OrderMapper.createOrder(user, carportId, connectionPool);
+
+            Carport carport = CarportMapper.getCarportById(carportId, connectionPool);
+
+            List<WoodVariant> woodVariants = WoodVariantMapper.getAllWoodVariants(connectionPool);
+            Calculator calculator = new Calculator(woodVariants);
+
+            List<OrderItem> itemList = calculator.generateBillOfMaterials(carport);
+
+            for (OrderItem item : itemList) {
+                item.setOrder(order);
+                OrderItemMapper.insertOrderItem(item, connectionPool);
+            }
+
+            ctx.status(201).result("Ordre og stykliste oprettet. Ordre ID: " + order.getOrderId());
         }
 
 

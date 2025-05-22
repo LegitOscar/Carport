@@ -27,7 +27,7 @@
         <h2>udfyld formularen</h2>
         <h1>PERSONLIGE OPLYSNINGER</h1>
 
-            <form class="login-form" method="get" action="/orderConfirmation">
+            <form class="login-form" method="post" th:action="@{/createuserorder}">
                 <label for="navn">Fulde navn:</label>
                 <input type="text" id="navn" name="navn" placeholder="Indtast dit fulde navn" class="input-field" />
 
@@ -41,7 +41,7 @@
                 <input type="text" id="by" name="by" placeholder="Indtast by" class="input-field" />
 
                 <label for="telefon">Tlf-nummer:</label>
-                <input type="text" id="telefon" name="telefon-nummer" placeholder="Indtast telefonnummer" class="input-field" />
+                <input type="text" id="telefon" name="telefon" placeholder="Indtast telefonnummer" class="input-field" />
 
                 <label for="email">Email:</label>
                 <input type="email" id="email" name="email" placeholder="Indtast email" class="input-field" />
@@ -52,10 +52,31 @@
                 <label for="password2">Bekræft Password:</label>
                 <input type="password" id="password2" name="password2" placeholder="Gentag password" class="input-field" />
 
-
                 <button type="submit">Fortsæt</button>
         </form>
+
     </main>
 </div>
+<script>
+
+    document.getElementById("postnummer").addEventListener("blur", function () {
+        const postcode = this.value;
+        if (postcode.length === 4) {
+            fetch(`/getcity?postcode=${postcode}`)
+                .then(response => response.text().then(text => {
+                    if (!response.ok) throw new Error(text);
+                    return text;
+                }))
+                .then(city => {
+                    document.getElementById("by").value = city;
+                })
+                .catch(error => {
+                    document.getElementById("by").value = error.message;
+                    console.error(error);
+                });
+        }
+    });
+
+</script>
 </body>
 </html>

@@ -10,7 +10,7 @@ import java.util.List;
 
 public class OrderMapper {
 
-
+/*
     public static Order createOrder(User user, ConnectionPool connectionPool) throws DatabaseException, SQLException {
         if (user == null) {
             throw new IllegalArgumentException("User cannot be null");
@@ -36,6 +36,43 @@ public class OrderMapper {
                 if (keys.next()) {
                     int orderId = keys.getInt(1);
                     return new Order(orderId, currentDate.toLocalDate(), 0, "Pending", user.getId(), 0, 0);
+                } else {
+                    throw new DatabaseException("No ID returned when creating order");
+                }
+            } else {
+                throw new DatabaseException("Order creation failed, no rows affected");
+            }
+        }
+    }
+*/
+
+
+    public static Order createOrder(User user, int carportId, ConnectionPool connectionPool) throws DatabaseException, SQLException {
+        if (user == null) {
+            throw new IllegalArgumentException("User cannot be null");
+        }
+
+        String sql = "INSERT INTO orders (order_date, total_price, customer_id, order_status,carport_id) VALUES (?, ?, ?, ?,?)";
+
+        try (
+                Connection connection = connectionPool.getConnection();
+                PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
+        ) {
+            Date currentDate = new Date(System.currentTimeMillis());
+
+            ps.setDate(1, currentDate); // order_date
+            ps.setDouble(2, 0); // default price
+            ps.setInt(3, user.getId()); // customer_id (ensure this user exists in the users table)
+            ps.setString(4, "Pending");
+            ps.setInt(5,carportId);// order_status
+
+            int rowsAffected = ps.executeUpdate();
+
+            if (rowsAffected == 1) {
+                ResultSet keys = ps.getGeneratedKeys();
+                if (keys.next()) {
+                    int orderId = keys.getInt(1);
+                    return new Order(orderId, currentDate.toLocalDate(), 0, "Pending", user.getId(), 0, carportId);
                 } else {
                     throw new DatabaseException("No ID returned when creating order");
                 }
@@ -206,4 +243,18 @@ public class OrderMapper {
             throw new DatabaseException("Fejl i DB connection", e.getMessage());
         }
     }
+
+    public static void updateTotalPrice(int orderId, double totalPrice, ConnectionPool connectionPool) throws DatabaseException {
+        String sql = "UPDATE orders SET total_price = ? WHERE order_id = ?";
+
+        try (Connection connection = connectionPool.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setDouble(1, totalPrice);
+            ps.setInt(2, orderId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new DatabaseException("Fejl ved opdatering af totalpris", e.getMessage());
+        }
+    }
+
 }
