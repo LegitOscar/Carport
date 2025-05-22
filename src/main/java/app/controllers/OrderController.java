@@ -1,17 +1,24 @@
 package app.controllers;
 
-import app.entities.Order;
-import app.entities.User;
-import app.exceptions.DatabaseException;
-import app.persistence.ConnectionPool;
-import app.persistence.OrderMapper;
+
+
+
 import io.javalin.Javalin;
 import io.javalin.http.Context;
+
 
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+
+    import app.entities.*;
+    import app.exceptions.DatabaseException;
+    import app.persistence.*;
+   // import app.services.Calculator;
+    import app.services.Calculator;
+    
+
 
 public class OrderController {
 
@@ -37,6 +44,7 @@ public class OrderController {
                 OrderMapper.updateOrder(order, connectionPool);
             }
 
+
             ctx.redirect("/sellerdashboard");
         });
 
@@ -49,6 +57,57 @@ public class OrderController {
                 ctx.redirect("/login");
                 return;
             }
+
+
+        private static void createOrder(Context ctx, ConnectionPool connectionPool) throws DatabaseException, SQLException {
+            User user = ctx.sessionAttribute("currentUser");
+            if (user == null) {
+                ctx.status(401).result("Du er ikke logget ind.");
+                return;
+            }
+
+            int carportId = Integer.parseInt(ctx.formParam("carportId"));
+            Order order = OrderMapper.createOrder(user, carportId, connectionPool);
+
+            Carport carport = CarportMapper.getCarportById(carportId, connectionPool);
+
+            List<WoodVariant> woodVariants = WoodVariantMapper.getAllWoodVariants(connectionPool);
+            Calculator calculator = new Calculator(woodVariants);
+
+            List<OrderItem> itemList = calculator.generateBillOfMaterials(carport);
+
+            for (OrderItem item : itemList) {
+                item.setOrder(order);
+                OrderItemMapper.insertOrderItem(item, connectionPool);
+            }
+
+            ctx.status(201).result("Ordre og stykliste oprettet. Ordre ID: " + order.getOrderId());
+        }
+
+
+        private static void updateOrder(Context ctx, ConnectionPool connectionPool) {
+            try {
+
+                User currentUser = ctx.sessionAttribute("currentUser");
+
+                if (currentUser == null) {
+                    ctx.status(401).result("Ingen bruger er logget ind.");
+                    return;
+                }
+
+                int customerId = currentUser.getId();
+
+
+                int orderId = Integer.parseInt(ctx.formParam("orderId"));
+                LocalDate orderDate = LocalDate.parse(ctx.formParam("orderDate"));
+                double totalPrice = Double.parseDouble(ctx.formParam("totalPrice"));
+                String orderStatus = ctx.formParam("orderStatus");
+
+
+                int workerId = 0;
+                int carportId = Integer.parseInt(ctx.formParam("carportId")); // Adjust based on your form
+
+
 
             List<Order> orders = OrderMapper.getAllOrdersPerWorker(currentWorkerId, connectionPool);
             List<Order> otherOrders = OrderMapper.getOrdersNotAssignedToWorker(currentWorkerId, connectionPool);

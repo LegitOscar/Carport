@@ -11,6 +11,7 @@ public class Order {
     private int workerId;
 
 
+
     public Order (int orderId, LocalDate orderDate, double totalPrice, String orderStatus, int customerId, int workerId){
        this.orderId = orderId;
        this.orderDate = orderDate;
@@ -18,6 +19,7 @@ public class Order {
        this.orderStatus = orderStatus;
        this.customerId = customerId;
        this.workerId = workerId;
+
 
     }
 
