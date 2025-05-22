@@ -43,10 +43,11 @@ public class Main {
 
 
         // Routing
-        app.get("/", ctx ->  ctx.render("index.html"));
+
+       app.get("/", ctx ->  ctx.render("index.html"));
         UserController.addRoutes(app,connectionPool);
         OrderController.addRoutes(app, connectionPool);
-
+        //app.get("/", ctx ->OrderController.showOrder(ctx));
         }
     }
 

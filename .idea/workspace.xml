@@ -6,19 +6,12 @@
   <component name="ChangeListManager">
     <list default="true" id="24c281b8-f515-42aa-aabd-1ff073604b67" name="Changes" comment="Updated functionality to createuser.html&#10;&#10;works with db now">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-
       <change beforePath="$PROJECT_DIR$/src/main/java/app/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/app/controllers/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/controllers/UserController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/orderConfirmation.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/orderConfirmation.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/orderSite.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/orderSite.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/orderSite2.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/orderSite2.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/orderSite3.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/orderSite3.html" afterDir="false" />
-
-
-      <change beforePath="$PROJECT_DIR$/src/main/java/app/controllers/CustomerProfileController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/controllers/CustomerProfileController.java" afterDir="false" />
-
-
+      <change beforePath="$PROJECT_DIR$/src/main/java/app/controllers/OrderController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/controllers/OrderController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/app/services/CarportSvg.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/services/CarportSvg.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/app/services/Svg.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/services/Svg.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/public/css/showOrderStyles.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/public/css/showOrderStyles.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/showOrder.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/showOrder.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -38,15 +31,10 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-
         <entry key="$PROJECT_DIR$" value="main" />
-
-        <entry key="$PROJECT_DIR$" value="Ayman-push" />
-
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-    <option name="UPDATE_TYPE" value="REBASE" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
   &quot;lastFilter&quot;: {
@@ -54,12 +42,12 @@
     &quot;assignee&quot;: &quot;KhuongNDang&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/LegitOscar/Carport.git",
-    "accountId": "39abae34-0acc-48b6-b124-8dbe646aefd4"
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/LegitOscar/Carport.git&quot;,
+    &quot;accountId&quot;: &quot;bd76a3fa-2dd7-49b3-87ba-a7f563b0c22b&quot;
   }
-}]]></component>
+}</component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 5
 }</component>
@@ -68,44 +56,6 @@
   <component name="ProjectViewState">
     <option name="showLibraryContents" value="true" />
   </component>
-
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.Main.executor&quot;: &quot;Run&quot;,
-    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
-    &quot;JUnit.OrderMapperTest.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.OrderMapperTest.getAllOrders.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.OrderTest.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.OrderTest.testCreateOrder.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.OrderTest.testDeleteOrder.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.OrderTest.testDeleteOrder2.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.UserMapperTest.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.UserMapperTest.testCreateUser.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.UserMapperTest.testCreateUserWithZipCode.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.UserTest.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.UserTest.testCreateUser.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.UserTest.testDuplicateUsername.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.UserTest.testLogin.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.UserTest.testPasswordMatch.executor&quot;: &quot;Run&quot;,
-    &quot;Maven.Carport [package].executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary&quot;: &quot;JUnit5&quot;,
-    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5&quot;: &quot;&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;Oscar-CustomerProfile-showOrder&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Artifacts&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
-
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Application.Main.executor": "Run",
@@ -129,7 +79,7 @@
     "RunOnceActivity.git.unshallow": "true",
     "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary": "JUnit5",
     "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5": "",
-    "git-widget-placeholder": "controller-routes-ayman",
+    "git-widget-placeholder": "svg-ayman",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/drunk/IdeaProjects/Carport/src/main/resources/public/css",
@@ -142,16 +92,11 @@
     "project.structure.last.edited": "Artifacts",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "preferences.lookFeel",
     "vue.rearranger.settings.migration": "true"
-
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\Users\drunk\IdeaProjects\Carport\src\main\java\app\services" />
-      <recent name="C:\Users\drunk\IdeaProjects\Carport\src\main\resources\public\css" />
-      <recent name="C:\Users\drunk\IdeaProjects\Carport\src\main\resources\templates" />
-    </key>
     <key name="CreateTestDialog.Recents.Supers">
       <recent name="" />
     </key>
@@ -339,8 +284,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-125ca727e0f0-intellij.indexing.shared.core-IU-243.23654.189" />
-        <option value="bundled-js-predefined-d6986cc7102b-822845ee3bb5-JavaScript-IU-243.23654.189" />
+        <option value="bundled-jdk-9823dce3aa75-a94e463ab2e7-intellij.indexing.shared.core-IU-243.26053.27" />
+        <option value="bundled-js-predefined-d6986cc7102b-1632447f56bf-JavaScript-IU-243.26053.27" />
       </set>
     </attachedChunks>
   </component>
@@ -371,7 +316,6 @@
       <workItem from="1747774132560" duration="1021000" />
       <workItem from="1747814759146" duration="915000" />
       <workItem from="1747816375880" duration="2234000" />
-      <workItem from="1747824848106" duration="4227000" />
     </task>
     <task id="LOCAL-00001" summary="push">
       <option name="closed" value="true" />
@@ -418,6 +362,7 @@
     <MESSAGE value="push" />
     <MESSAGE value="Second push - UserController and User" />
     <MESSAGE value="customerprofile" />
-    <option name="LAST_COMMIT_MESSAGE" value="customerprofile" />
+    <MESSAGE value="create user og flow i design stepsne" />
+    <option name="LAST_COMMIT_MESSAGE" value="create user og flow i design stepsne" />
   </component>
 </project>

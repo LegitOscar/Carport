@@ -6,6 +6,8 @@
     import app.exceptions.DatabaseException;
     import app.persistence.ConnectionPool;
     import app.persistence.OrderMapper;
+    import app.services.CarportSvg;
+    import app.services.Svg;
     import io.javalin.Javalin;
     import io.javalin.http.Context;
 
@@ -14,6 +16,7 @@
     import java.time.LocalDate;
     import java.util.ArrayList;
     import java.util.List;
+    import java.util.Locale;
 
     public class OrderController {
 
@@ -32,6 +35,12 @@
 
         }
 
+        public static void showOrder(Context ctx) {
+            Locale.setDefault(new Locale( "US"));
+            CarportSvg svg = new CarportSvg(600,780);
+            ctx.attribute("svg", svg.toString());
+            ctx.render("showOrder.html");
+        }
 
         private static void deleteOrder(Context ctx, ConnectionPool connectionPool) {
             try {

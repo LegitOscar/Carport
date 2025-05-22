@@ -16,11 +16,11 @@ public class Svg
             "        </marker>\n" +
             "    </defs>";
 
-    private static final String SVG_RECT_TEMPLATE = "<rect x=\"%d\" y=\"%d\" height=\"%f\" width=\"%f\" style=\"%s\" />";
+    private static final String SVG_RECT_TEMPLATE = "<rect x=\"%.2f\" y=\"%.2f\" height=\"%f\" width=\"%f\" style=\"%s\" />";
 
     private StringBuilder svg = new StringBuilder();
 
-    public Svg(int x, int y, String viewBox, String width, String height)
+    public Svg(int x, int y, String viewBox, String width)
     {
 
         svg.append(String.format(SVG_TEMPLATE, x, y, viewBox, width));
