@@ -4,14 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="24c281b8-f515-42aa-aabd-1ff073604b67" name="Changes" comment="Updated functionality to createuser.html&#10;&#10;works with db now">
+    <list default="true" id="24c281b8-f515-42aa-aabd-1ff073604b67" name="Changes" comment="svg virker med tegning men ikke med kundens ordre endu">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/app/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/app/controllers/OrderController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/controllers/OrderController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/app/services/CarportSvg.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/services/CarportSvg.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/app/services/Svg.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/services/Svg.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/public/css/showOrderStyles.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/public/css/showOrderStyles.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/showOrder.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/showOrder.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/customerprofile.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/customerprofile.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/orderSite.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/orderSite.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/orderSite2.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/orderSite2.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/orderSite3.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/orderSite3.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,7 +30,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="main" />
+        <entry key="$PROJECT_DIR$" value="svg-ayman" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -79,7 +78,7 @@
     "RunOnceActivity.git.unshallow": "true",
     "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary": "JUnit5",
     "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5": "",
-    "git-widget-placeholder": "svg-ayman",
+    "git-widget-placeholder": "bestillingsfif-ayman",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/drunk/IdeaProjects/Carport/src/main/resources/public/css",
@@ -341,7 +340,15 @@
       <option name="project" value="LOCAL" />
       <updated>1747824281839</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="svg virker med tegning men ikke med kundens ordre endu">
+      <option name="closed" value="true" />
+      <created>1747876141589</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1747876141589</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -363,6 +370,7 @@
     <MESSAGE value="Second push - UserController and User" />
     <MESSAGE value="customerprofile" />
     <MESSAGE value="create user og flow i design stepsne" />
-    <option name="LAST_COMMIT_MESSAGE" value="create user og flow i design stepsne" />
+    <MESSAGE value="svg virker med tegning men ikke med kundens ordre endu" />
+    <option name="LAST_COMMIT_MESSAGE" value="svg virker med tegning men ikke med kundens ordre endu" />
   </component>
 </project>

@@ -33,6 +33,37 @@
             app.get("getorders", ctx -> getOrdersForUser(ctx, connectionPool));
             app.get("sellerdashboard", ctx -> getAllOrdersPerWorker(ctx, connectionPool));
 
+            app.post("/orderSite2", ctx -> {
+                String bredde = ctx.formParam("bredde");
+                String længde = ctx.formParam("længde");
+                String tag = ctx.formParam("tag");
+                String bemærkning = ctx.formParam("bemærkning");
+
+                //gemmer det i sidebar
+                ctx.sessionAttribute("bredde", bredde);
+                ctx.sessionAttribute("længde", længde);
+                ctx.sessionAttribute("tag", tag);
+                ctx.sessionAttribute("bemærkning", bemærkning);
+
+             // gemmer i session
+                User user = ctx.sessionAttribute("currentUser");
+
+                ctx.redirect("/orderSite2"); // or wherever your next step is
+            });
+            app.post("/orderSite3", ctx -> {
+                String redskabsrumBredde = ctx.formParam("redskabsrumBredde");
+                String redskabsrumLængde = ctx.formParam("redskabsrumLængde");;
+
+
+                //gemmer det i sidebar
+                ctx.sessionAttribute("redskabsrumBredde", redskabsrumBredde);
+                ctx.sessionAttribute("redskabsrumLængde", redskabsrumLængde);
+
+                // gemmer i session
+                User user = ctx.sessionAttribute("currentUser");
+
+                ctx.redirect("/orderSite3"); // or wherever your next step is
+            });
         }
 
         public static void showOrder(Context ctx) {
