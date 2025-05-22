@@ -5,21 +5,17 @@ import app.entities.User;
 import app.exceptions.DatabaseException;
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class OrderMapper {
-
-
-
 
     public static Order createOrder(User user, int carportId, ConnectionPool connectionPool) throws DatabaseException, SQLException {
         if (user == null) {
             throw new IllegalArgumentException("User cannot be null");
         }
 
-        String sql = "INSERT INTO orders (order_date, total_price, customer_id, order_status,carport_id) VALUES (?, ?, ?, ?,?)";
+        String sql = "INSERT INTO orders (order_date, total_price, customer_id, order_status, carport_id) VALUES (?, ?, ?, ?, ?)";
 
         try (
                 Connection connection = connectionPool.getConnection();
@@ -29,9 +25,9 @@ public class OrderMapper {
 
             ps.setDate(1, currentDate); // order_date
             ps.setDouble(2, 0); // default price
-            ps.setInt(3, user.getId()); // customer_id (ensure this user exists in the users table)
+            ps.setInt(3, user.getId()); // customer_id
             ps.setString(4, "Pending");
-            ps.setInt(5,carportId);// order_status
+            ps.setInt(5, carportId);
 
             int rowsAffected = ps.executeUpdate();
 
@@ -39,7 +35,7 @@ public class OrderMapper {
                 ResultSet keys = ps.getGeneratedKeys();
                 if (keys.next()) {
                     int orderId = keys.getInt(1);
-                    return new Order(orderId, currentDate.toLocalDate(), 0, "Pending", user.getId(), 0, carportId);
+                    return new Order(orderId, currentDate.toLocalDate(), 0, "Pending", user.getId(), 0);
                 } else {
                     throw new DatabaseException("No ID returned when creating order");
                 }
@@ -73,6 +69,21 @@ public class OrderMapper {
             throw new DatabaseException("Error retrieving orders for customer " + customerId, e.getMessage());
         }
         return orderList;
+    }
+
+    public boolean assignWorkerToOrder(Long orderId, Long workerId, ConnectionPool connectionPool) throws DatabaseException, SQLException {
+        String sql = "UPDATE orders SET worker_id = ? WHERE order_id = ?";
+        try (Connection connection = connectionPool.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+
+            ps.setLong(1, workerId);
+            ps.setLong(2, orderId);
+            int affectedRows = ps.executeUpdate();
+            return affectedRows > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public static List<Order> getAllOrdersPerWorker(int workerId, ConnectionPool connectionPool) throws DatabaseException {
@@ -172,6 +183,21 @@ public class OrderMapper {
         }
     }
 
+    public static void updateTotalPrice(int orderId, double totalPrice, ConnectionPool connectionPool) throws DatabaseException {
+        String sql = "UPDATE orders SET total_price = ? WHERE order_id = ?";
+
+        try (
+                Connection connection = connectionPool.getConnection();
+                PreparedStatement ps = connection.prepareStatement(sql)
+        ) {
+            ps.setDouble(1, totalPrice);
+            ps.setInt(2, orderId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new DatabaseException("Fejl ved opdatering af totalpris", e.getMessage());
+        }
+    }
+
     public static void deleteOrder(int orderId, ConnectionPool connectionPool) throws DatabaseException {
         String sql = "DELETE FROM orders WHERE order_id = ?";
 
@@ -200,22 +226,4 @@ public class OrderMapper {
             throw new DatabaseException("Error assigning worker to order", e.getMessage());
         }
     }
-
 }
-
-
-    public static void updateTotalPrice(int orderId, double totalPrice, ConnectionPool connectionPool) throws DatabaseException {
-        String sql = "UPDATE orders SET total_price = ? WHERE order_id = ?";
-
-        try (Connection connection = connectionPool.getConnection();
-             PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setDouble(1, totalPrice);
-            ps.setInt(2, orderId);
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            throw new DatabaseException("Fejl ved opdatering af totalpris", e.getMessage());
-        }
-    }
-
-}
-

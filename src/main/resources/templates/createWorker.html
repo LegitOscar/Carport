@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="da" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Opret Medarbejder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+        }
+        form label {
+            display: block;
+            margin-bottom: 10px;
+        }
+        input {
+            padding: 5px;
+            width: 300px;
+        }
+        button {
+            margin-top: 15px;
+            padding: 8px 16px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        p.message {
+            color: green;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Opret ny medarbejder</h1>
+
+<form th:action="@{/admin/create-worker}" method="post">
+    <label>Navn:
+        <input type="text" name="name" required />
+    </label>
+    <label>Telefon:
+        <input type="number" name="phone" required />
+    </label>
+    <label>Email:
+        <input type="email" name="email" required />
+    </label>
+    <label>Password:
+        <input type="password" name="password1" required />
+    </label>
+    <label>Gentag Password:
+        <input type="password" name="password2" required />
+    </label>
+
+    <button type="submit">Opret Medarbejder</button>
+</form>
+
+<p class="message" th:text="${message}"></p>
+<a href="/admin">Tilbage til admin panel</a>
+
+</body>
+</html>
