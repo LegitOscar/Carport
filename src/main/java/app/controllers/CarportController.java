@@ -52,10 +52,14 @@ public class CarportController {
             order.setTotalPrice(totalPrice);
             OrderMapper.updateTotalPrice(order.getOrderId(), totalPrice, connectionPool);
 
+            ctx.sessionAttribute("bredde", widthCm);
+            ctx.sessionAttribute("længde", lengthCm);
+            // ctx.sessionAttribute("tag", tag);
+            //ctx.sessionAttribute("bemærkning", bemærkning);
             ctx.attribute("order", order);
             ctx.attribute("carport", carport);
             ctx.attribute("orderItems", orderItems);
-            ctx.render("receipt.html");
+            ctx.redirect("/orderSite2");
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -65,11 +69,11 @@ public class CarportController {
 
     public static void previewCarport(Context ctx, ConnectionPool connectionPool) {
         try {
-            int length = Integer.parseInt(ctx.formParam("length"));
-            int width = Integer.parseInt(ctx.formParam("width"));
+            int lengthCm = Integer.parseInt(ctx.formParam("length"));
+            int widthCm = Integer.parseInt(ctx.formParam("width"));
 
 
-            Carport carport = new Carport(length, width);
+            Carport carport = new Carport(lengthCm, widthCm);
 
             List<WoodVariant> woodVariants = WoodVariantMapper.getAllWoodVariants(connectionPool);
 
@@ -79,7 +83,10 @@ public class CarportController {
 
             ctx.attribute("carport", carport);
             ctx.attribute("totalPrice", totalPrice);
-            ctx.render("preview.html");
+            ctx.sessionAttribute("bredde", widthCm);
+            ctx.sessionAttribute("længde", lengthCm);
+            ctx.redirect("/orderSite2");
+
 
         } catch (NumberFormatException e) {
             ctx.status(400).result("Ugyldigt input");
