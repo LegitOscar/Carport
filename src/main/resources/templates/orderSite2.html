@@ -17,10 +17,10 @@
       <div class="step icon">🚘</div>
     </div>
     <ul class="info-text">
-      <li><strong>Bredde:</strong> </li>
-      <li><strong>Længde:</strong></li>
-      <li><strong>Højde:</strong> </li>
-      <li><strong>Trapeztag:</strong> </li>
+      <li><strong>Bredde:</strong> <span th:text="${session.bredde}"></span></li>
+      <li><strong>Længde:</strong> <span th:text="${session.længde}"></span></li>
+      <li><strong>Trapeztag:</strong> <span th:text="${session.tag}"></span></li>
+
     </ul>
   </aside>
 
@@ -28,7 +28,7 @@
     <h2>udfyld formularen</h2>
     <h1>REDSKABSRUM</h1>
 
-    <form method ="get" action = "/orderSite3">
+    <form method ="post" action = "/skipStep3">
       <div class="toggle-group">
         <label>Tilføj redskabsrum?:</label>
         <div class="toggle">
@@ -40,12 +40,12 @@
         </div>
       </div>
 
-      <label for="bredde">Redskabsrum Bredde:</label>
-        <input type="text" id="bredde" name="navn" placeholder="Indtast bredde" class="input-field" />
+      <label for="redskabsrumBredde">Redskabsrum Bredde:</label>
+        <input type="number" id="redskabsrumBredde" name="redskabsrumBredde" placeholder="Indtast bredde" class="input-field" />
 
 
-      <label for="Længde">Redskabsrum Længde:</label>
-      <input type="text" id="Længde" name="navn" placeholder="Indtast Længde" class="input-field" />
+      <label for="redskabsrumLængde">Redskabsrum Længde:</label>
+      <input type="number" id="redskabsrumLængde" name="redskabsrumLængde" placeholder="Indtast Længde" class="input-field" />
 
 
 
