@@ -4,10 +4,26 @@ h1 {
     font-size: 3rem;
 }
 
-/* SVG */
+body {
+    font-family: Arial, sans-serif;
+}
+
 
 .carport-svg-topview
 {
     max-width: 600px;
     max-height:600px ;
+}
+
+.profile-btn {
+    background-color: #4cf086;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 30px;
+    font-weight: bold;
+    color: white;
+    font-size: 16px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+    cursor: pointer;
+    margin-top: 10px;
 }
