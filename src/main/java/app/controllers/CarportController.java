@@ -26,21 +26,20 @@ public class CarportController {
         int widthCm = Integer.parseInt(ctx.formParam("width"));
         User user = ctx.sessionAttribute("currentUser");
 
-        if (user == null) {
-            ctx.status(401).result("Bruger ikke logget ind");
-            return;
-        }
-
         try {
-
             Carport carport = new Carport(lengthCm, widthCm);
             CarportMapper.createCarport(carport, connectionPool);
 
+            if (user == null) {
+                ctx.sessionAttribute("pendingCarport", carport);
+                ctx.sessionAttribute("width", widthCm);
+                ctx.sessionAttribute("length", lengthCm);
+                UserController.createUserOrder(ctx,connectionPool);
+                return;
+            }
 
             Order order = OrderMapper.createOrder(user, carport.getCarportId(), connectionPool);
-
             List<WoodVariant> woodVariants = WoodVariantMapper.getAllWoodVariants(connectionPool);
-
             Calculator calculator = new Calculator(woodVariants);
             List<OrderItem> orderItems = calculator.calculateMaterials(carport, order);
 
@@ -52,20 +51,20 @@ public class CarportController {
             order.setTotalPrice(totalPrice);
             OrderMapper.updateTotalPrice(order.getOrderId(), totalPrice, connectionPool);
 
-            ctx.sessionAttribute("bredde", widthCm);
-            ctx.sessionAttribute("længde", lengthCm);
-            // ctx.sessionAttribute("tag", tag);
-            //ctx.sessionAttribute("bemærkning", bemærkning);
+            ctx.sessionAttribute("width", widthCm);
+            ctx.sessionAttribute("length", lengthCm);
+            ctx.sessionAttribute("totalPrice", totalPrice);
             ctx.attribute("order", order);
             ctx.attribute("carport", carport);
             ctx.attribute("orderItems", orderItems);
-            ctx.redirect("/orderSite2");
+            ctx.redirect("/orderConfirmation");
 
         } catch (Exception e) {
             e.printStackTrace();
             ctx.status(500).result("Fejl under ordreoprettelse: " + e.getMessage());
         }
     }
+
 
     public static void previewCarport(Context ctx, ConnectionPool connectionPool) {
         try {
@@ -83,8 +82,10 @@ public class CarportController {
 
             ctx.attribute("carport", carport);
             ctx.attribute("totalPrice", totalPrice);
-            ctx.sessionAttribute("bredde", widthCm);
-            ctx.sessionAttribute("længde", lengthCm);
+            ctx.sessionAttribute("carport",carport);
+            ctx.sessionAttribute("totalPrice",totalPrice);
+            ctx.sessionAttribute("width", widthCm);
+            ctx.sessionAttribute("length", lengthCm);
             ctx.redirect("/orderSite2");
 
 

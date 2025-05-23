@@ -79,7 +79,6 @@ public class UserController {
             ctx.attribute("message", "Fejl under oprettelse af bruger: " + e.getMessage());
         }
 
-        ctx.render("login.html");
     }
 
 
