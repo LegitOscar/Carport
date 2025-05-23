@@ -39,8 +39,6 @@ public class UserController {
         app.get("/login", ctx -> ctx.render("login.html"));
         app.get("createuser", ctx -> ctx.render("createuser.html"));
         app.get("/orderSite", ctx -> ctx.render("orderSite.html"));
-        app.get("/orderSite2", ctx -> ctx.render("orderSite2.html"));
-        app.get("/orderSite3", ctx -> ctx.render("orderSite3.html"));
         app.get("/orderConfirmation", ctx -> ctx.render("orderConfirmation.html"));
         app.get("/customerprofile", ctx -> CustomerProfileController.showProfile(ctx, connectionPool));
         app.post("/createuser", ctx -> UserController.createUser(ctx, connectionPool));
