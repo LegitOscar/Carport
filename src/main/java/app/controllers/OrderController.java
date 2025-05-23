@@ -1,16 +1,20 @@
 package app.controllers;
 
+import app.services.CarportSvg;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import app.entities.*;
 import app.exceptions.DatabaseException;
 import app.persistence.*;
 import app.services.Calculator;
+
+
 
 public class OrderController {
 
@@ -20,19 +24,88 @@ public class OrderController {
         this.connectionPool = connectionPool;
     }
 
-
     public static void addRoutes(Javalin app, ConnectionPool connectionPool) {
 
-        // Delete order
         app.post("/deleteorder", ctx -> deleteOrder(ctx, connectionPool));
 
-        // Update order
-        app.post("/updateorder", ctx -> {
+        app.post("/updateorder", ctx -> updateOrder(ctx, connectionPool));
+
+        app.get("/getorders", ctx -> getOrdersForUser(ctx, connectionPool));
+
+        app.get("/sellerdashboard", ctx -> showSellerDashboard(ctx, connectionPool));
+
+        app.post("/selectorder", ctx -> assignOrderToWorker(ctx, connectionPool));
+
+        app.get("/orderSite2", ctx -> ctx.render("orderSite2.html"));
+
+        app.post("/orderSite2", ctx -> {
+            int bredde = Integer.parseInt(ctx.formParam("bredde"));
+            int længde = Integer.parseInt(ctx.formParam("længde"));
+            String tag = ctx.formParam("tag");
+            String bemærkning = ctx.formParam("bemærkning");
+
+            ctx.sessionAttribute("bredde", bredde);
+            ctx.sessionAttribute("længde", længde);
+            ctx.sessionAttribute("tag", tag);
+            ctx.sessionAttribute("bemærkning", bemærkning);
+
+            ctx.redirect("/orderSite2");
+        });
+
+        app.get("/orderSite3", ctx -> ctx.render("orderSite3.html"));
+
+
+        app.post("/skipStep3", ctx -> {
+            User user = ctx.sessionAttribute("currentUser");
+
+            int redskabsrumBredde = Integer.parseInt(ctx.formParam("redskabsrumBredde"));
+            int redskabsrumLængde = Integer.parseInt(ctx.formParam("redskabsrumLængde"));
+
+            ctx.sessionAttribute("redskabsrumBredde", redskabsrumBredde);
+            ctx.sessionAttribute("redskabsrumLængde", redskabsrumLængde);
+
+            if (user != null) {
+                ctx.render("orderConfirmation.html");
+            } else {
+                ctx.redirect("/orderSite3");
+            }
+        });
+
+        app.post("/generateCarport", ctx -> {
+            Locale.setDefault(Locale.US);
+
+            String breddeStr = ctx.formParam("bredde");
+            String længdeStr = ctx.formParam("længde");
+            String shedBreddeStr = ctx.formParam("redskabsrumBredde");
+            String shedLængdeStr = ctx.formParam("redskabsrumLængde");
+
+            if (breddeStr == null || længdeStr == null || shedBreddeStr == null || shedLængdeStr == null) {
+                ctx.status(400).result("En eller flere parametre mangler!");
+                return;
+            }
+
+            int width = Integer.parseInt(breddeStr);
+            int length = Integer.parseInt(længdeStr);
+            int shedWidth = Integer.parseInt(shedBreddeStr);
+            int shedLength = Integer.parseInt(shedLængdeStr);
+
+            CarportSvg carportSvg = new CarportSvg(width, length, shedWidth, shedLength);
+            String svg = carportSvg.toString();
+
+            ctx.attribute("svg", svg);
+            ctx.render("showOrder.html");
+        });
+
+    }
+
+    private static void updateOrder(Context ctx, ConnectionPool connectionPool) {
+        try {
             int orderId = Integer.parseInt(ctx.formParam("orderId"));
             double totalPrice = Double.parseDouble(ctx.formParam("totalPrice"));
             String orderStatus = ctx.formParam("orderStatus");
 
             Order order = OrderMapper.getOrderById(orderId, connectionPool);
+
             if (order != null) {
                 order.setTotalPrice(totalPrice);
                 order.setOrderStatus(orderStatus);
@@ -40,109 +113,48 @@ public class OrderController {
             }
 
             ctx.redirect("/sellerdashboard");
-        });
 
-        // Get orders for user (if needed elsewhere)
-        app.get("/getorders", ctx -> getOrdersForUser(ctx, connectionPool));
-
-        // Seller dashboard (main route)
-        app.get("/sellerdashboard", ctx -> {
-            Integer currentWorkerId = ctx.sessionAttribute("workerId");
-
-            if (currentWorkerId == null) {
-                ctx.redirect("/login");
-                return;
-            }
-
-            try {
-                List<Order> orders = OrderMapper.getAllOrdersPerWorker(currentWorkerId, connectionPool);
-                List<Order> otherOrders = OrderMapper.getOrdersNotAssignedToWorker(currentWorkerId, connectionPool);
-
-                ctx.attribute("orders", orders);
-                ctx.attribute("otherOrders", otherOrders);
-                ctx.render("sellerdashboard.html");
-
-            } catch (DatabaseException e) {
-                ctx.status(500).result("Database error: " + e.getMessage());
-            }
-        });
-
-        // Assign order to seller
-        app.post("/selectorder", ctx -> {
-            int orderId = Integer.parseInt(ctx.formParam("orderId"));
-            Integer currentWorkerId = ctx.sessionAttribute("workerId");
-
-            if (currentWorkerId == null) {
-                ctx.status(401).result("Not logged in.");
-                return;
-            }
-
-            OrderMapper.assignOrderToWorker(orderId, currentWorkerId, connectionPool);
-            ctx.redirect("/sellerdashboard");
-        });
+        } catch (DatabaseException | NumberFormatException e) {
+            ctx.status(400).result("Fejl ved opdatering af ordre: " + e.getMessage());
+        }
     }
 
+    private static void showSellerDashboard(Context ctx, ConnectionPool connectionPool) {
+        Integer currentWorkerId = ctx.sessionAttribute("workerId");
 
-
-    private static void createOrder(Context ctx, ConnectionPool connectionPool) throws DatabaseException, SQLException {
-        User user = ctx.sessionAttribute("currentUser");
-        if (user == null) {
-            ctx.status(401).result("Du er ikke logget ind.");
+        if (currentWorkerId == null) {
+            ctx.redirect("/login");
             return;
         }
 
-        int carportId = Integer.parseInt(ctx.formParam("carportId"));
-        Order order = OrderMapper.createOrder(user, carportId, connectionPool);
-
-        Carport carport = CarportMapper.getCarportById(carportId, connectionPool);
-
-        List<WoodVariant> woodVariants = WoodVariantMapper.getAllWoodVariants(connectionPool);
-        Calculator calculator = new Calculator(woodVariants);
-
-        List<OrderItem> itemList = calculator.generateBillOfMaterials(carport);
-
-        for (OrderItem item : itemList) {
-            item.setOrder(order);
-            OrderItemMapper.insertOrderItem(item, connectionPool);
-        }
-
-        ctx.status(201).result("Ordre og stykliste oprettet. Ordre ID: " + order.getOrderId());
-    }
-
-    private static void updateOrder(Context ctx, ConnectionPool connectionPool) {
         try {
-            User currentUser = ctx.sessionAttribute("currentUser");
-
-            if (currentUser == null) {
-                ctx.status(401).result("Ingen bruger er logget ind.");
-                return;
-            }
-
-            int customerId = currentUser.getId();
-
-            int orderId = Integer.parseInt(ctx.formParam("orderId"));
-            LocalDate orderDate = LocalDate.parse(ctx.formParam("orderDate"));
-            double totalPrice = Double.parseDouble(ctx.formParam("totalPrice"));
-            String orderStatus = ctx.formParam("orderStatus");
-
-            int workerId = currentUser.getId();
-
-            int carportId = Integer.parseInt(ctx.formParam("carportId")); // Adjust based on your form
-
-            List<Order> orders = OrderMapper.getAllOrdersPerWorker(workerId, connectionPool);
-            List<Order> otherOrders = OrderMapper.getOrdersNotAssignedToWorker(workerId, connectionPool);
-
-            String editOrderIdStr = ctx.queryParam("editOrderId");
-            if (editOrderIdStr != null) {
-                ctx.attribute("editOrderId", Integer.parseInt(editOrderIdStr));
-            }
+            List<Order> orders = OrderMapper.getAllOrdersPerWorker(currentWorkerId, connectionPool);
+            List<Order> otherOrders = OrderMapper.getOrdersNotAssignedToWorker(currentWorkerId, connectionPool);
 
             ctx.attribute("orders", orders);
             ctx.attribute("otherOrders", otherOrders);
             ctx.render("sellerdashboard.html");
 
         } catch (DatabaseException e) {
-            throw new RuntimeException(e);
+            ctx.status(500).result("Databasefejl: " + e.getMessage());
+        }
+    }
+
+    private static void assignOrderToWorker(Context ctx, ConnectionPool connectionPool) {
+        try {
+            int orderId = Integer.parseInt(ctx.formParam("orderId"));
+            Integer currentWorkerId = ctx.sessionAttribute("workerId");
+
+            if (currentWorkerId == null) {
+                ctx.status(401).result("Ikke logget ind.");
+                return;
+            }
+
+            OrderMapper.assignOrderToWorker(orderId, currentWorkerId, connectionPool);
+            ctx.redirect("/sellerdashboard");
+
+        } catch (DatabaseException | NumberFormatException e) {
+            ctx.status(400).result("Fejl ved tildeling af ordre: " + e.getMessage());
         }
     }
 
@@ -150,17 +162,17 @@ public class OrderController {
         try {
             int orderId = Integer.parseInt(ctx.formParam("orderId"));
             OrderMapper.deleteOrder(orderId, connectionPool);
-            ctx.status(200).result("Ordre slettet med ID: " + orderId);
+            ctx.redirect("/sellerdashboard");
         } catch (NumberFormatException e) {
             ctx.status(400).result("Ugyldigt order ID");
         } catch (DatabaseException e) {
             ctx.status(500).result("Fejl ved sletning af ordre: " + e.getMessage());
         }
-        ctx.redirect("/sellerdashboard");
     }
 
     private static void getOrdersForUser(Context ctx, ConnectionPool connectionPool) {
         User user = ctx.sessionAttribute("currentUser");
+
         if (user == null) {
             ctx.status(401).result("Du er ikke logget ind.");
             return;
@@ -202,4 +214,6 @@ public class OrderController {
 
         return orderList;
     }
+
 }
+

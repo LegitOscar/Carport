@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="da">
 <head>
@@ -17,30 +16,51 @@
       <div class="step">3</div>
       <div class="step icon active">🚘</div>
     </div>
+    <ul class="info-text">
+      <li><strong>Bredde:</strong> <span th:text="${session.bredde}"></span></li>
+      <li><strong>Længde:</strong> <span th:text="${session.længde}"></span></li>
+      <li><strong>Trapeztag:</strong> <span th:text="${session.tag}"></span></li>
+      <li><strong>Redskabsrum bredde:</strong> <span th:text="${session.redskabsrumBredde}"></span></li>
+      <li><strong>Redskabsrum Længde:</strong> <span th:text="${session.redskabsrumLængde}"></span></li>
+    </ul>
   </aside>
 
   <main class="main-content">
     <h1>ORDRE BEKRÆFTELSE</h1>
-<form method="get" action = "/customerprofile">
-    <div class="confirmation-box">
-      <p class="thank-you"><strong>Tak for din bestilling:</strong></p>
-      <p>
-        Tak for din bestilling af carport.<br>
-        Du vil blive kontaktet af en Fog medarbejder inden for
-        <span class="highlight">1-3 arbejdsdage.</span>
-      </p>
-      <p>
-        Skulle du have eventuelle spørgsmål til din bestilling kan du kontakte vores kundeservice på:<br>
-        • Tlf: +45 47160800<br>
-        • Email: fogkundeservice@fog.dk
-      </p>
-    </div>
 
-    <h3>Følg din ordrestatus på “Min profil”</h3>
-    <button class="profile-btn">Min profil</button>
-</form>
+    <!-- Profile form -->
+    <form method="get" action="/customerprofile">
+      <div class="confirmation-box">
+        <p class="thank-you"><strong>Tak for din bestilling:</strong></p>
+        <p>
+          Tak for din bestilling af carport.<br>
+          Du vil blive kontaktet af en Fog medarbejder inden for
+          <span class="highlight">1-3 arbejdsdage.</span>
+        </p>
+        <p>
+          Skulle du have eventuelle spørgsmål til din bestilling kan du kontakte vores kundeservice på:<br>
+          • Tlf: +45 47160800<br>
+          • Email: fogkundeservice@fog.dk
+        </p>
+      </div>
+
+      <h3>Følg din ordrestatus på “Min profil”</h3>
+      <button class="profile-btn" type="submit">Min profil</button>
+    </form>
+
+    <!-- Carport generation form -->
+    <h4>Design af carport</h4>
+    <form method="post" action="/generateCarport">
+      <!-- Hidden fields to pass session values -->
+      <input type="hidden" name="bredde" th:value="${session.bredde}">
+      <input type="hidden" name="længde" th:value="${session.længde}">
+      <input type="hidden" name="tag" th:value="${session.tag}">
+      <input type="hidden" name="redskabsrumBredde" th:value="${session.redskabsrumBredde}">
+      <input type="hidden" name="redskabsrumLængde" th:value="${session.redskabsrumLængde}">
+
+      <button class="carport-btn" type="submit">Se carport</button>
+    </form>
   </main>
 </div>
 </body>
 </html>
-

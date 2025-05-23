@@ -27,9 +27,9 @@
     <h2>udfyld formularen</h2>
     <h1>CARPORT MÅL</h1>
 
-    <form method ="get" action="/orderSite2">
+    <form method ="post" action="/orderSite2">
       <label for="bredde">Carport Bredde:</label>
-      <select id="bredde">
+      <select id="bredde" name ="bredde" required>
         <option disabled selected>Vælg bredde</option>
         <option value="210">210 cm</option>
         <option value="240">240 cm</option>
@@ -47,8 +47,8 @@
         <option value="600">600 cm</option>
       </select>
 
-      <label for="laengde">Carport Længde:</label>
-      <select id="laengde">
+      <label for="længde">Carport Længde:</label>
+      <select id="længde" name="længde" required>
         <option disabled selected>Vælg længde</option>
         <option value="210">210 cm</option>
         <option value="240">240 cm</option>
@@ -73,14 +73,14 @@
       </select>
 
       <label for="tag">Carport trapeztag:</label>
-      <select id="tag">
+      <select id="tag" name="tag" required>
         <option disabled selected>Vælg trapeztag</option>
         <option>ja</option>
         <option>nej</option>
       </select>
 
       <label for="bemærkning">Evt. bemærkninger/ særlige ønsker:</label>
-      <textarea id="bemærkning" rows="3"></textarea>
+      <textarea id="bemærkning" name="bemærkning" rows="3"></textarea>
 
       <button class="btn">fortsæt</button>
 

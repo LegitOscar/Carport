@@ -17,9 +17,11 @@
             <div class="step icon">🚘</div>
         </div>
         <ul class="info-text">
-            <li><strong>Bredde:</strong> </li>
-            <li><strong>Længde:</strong></li>
-            <li><strong>Trapeztag:</strong> </li>
+            <li><strong>Bredde:</strong> <span th:text="${session.bredde}"></span></li>
+            <li><strong>Længde:</strong> <span th:text="${session.længde}"></span></li>
+            <li><strong>Trapeztag:</strong> <span th:text="${session.tag}"></span></li>
+            <li><strong>Redskabsrum bredde:</strong> <span th:text="${session.redskabsrumBredde}"></span></li>
+            <li><strong>Redskabsrum Længde:</strong> <span th:text="${session.redskabsrumLængde}"></span></li>
         </ul>
     </aside>
 
@@ -27,38 +29,37 @@
         <h2>udfyld formularen</h2>
         <h1>PERSONLIGE OPLYSNINGER</h1>
 
-            <form class="login-form" method="post" th:action="@{/createuserorder}">
-                <label for="navn">Fulde navn:</label>
-                <input type="text" id="navn" name="navn" placeholder="Indtast dit fulde navn" class="input-field" />
+        <form class="login-form" method="post" th:action="@{/createuserorder}">
+            <label for="navn">Fulde navn:</label>
+            <input type="text" id="navn" name="navn" placeholder="Indtast dit fulde navn" class="input-field" />
 
-                <label for="adresse">Adresse:</label>
-                <input type="text" id="adresse" name="adresse" placeholder="Indtast adresse" class="input-field" />
+            <label for="adresse">Adresse:</label>
+            <input type="text" id="adresse" name="adresse" placeholder="Indtast adresse" class="input-field" />
 
-                <label for="postnummer">Postnummer:</label>
-                <input type="text" id="postnummer" name="postnummer" placeholder="Indtast postnummer" class="input-field" />
+            <label for="postnummer">Postnummer:</label>
+            <input type="text" id="postnummer" name="postnummer" placeholder="Indtast postnummer" class="input-field" />
 
-                <label for="by">By:</label>
-                <input type="text" id="by" name="by" placeholder="Indtast by" class="input-field" />
+            <label for="by">By:</label>
+            <input type="text" id="by" name="by" placeholder="Indtast by" class="input-field" />
 
-                <label for="telefon">Tlf-nummer:</label>
-                <input type="text" id="telefon" name="telefon" placeholder="Indtast telefonnummer" class="input-field" />
+            <label for="telefon">Tlf-nummer:</label>
+            <input type="text" id="telefon" name="telefon" placeholder="Indtast telefonnummer" class="input-field" />
 
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" placeholder="Indtast email" class="input-field" />
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" placeholder="Indtast email" class="input-field" />
 
-                <label for="password1">Password:</label>
-                <input type="password" id="password1" name="password1" placeholder="Indtast password" class="input-field" />
+            <label for="password1">Password:</label>
+            <input type="password" id="password1" name="password1" placeholder="Indtast password" class="input-field" />
 
-                <label for="password2">Bekræft Password:</label>
-                <input type="password" id="password2" name="password2" placeholder="Gentag password" class="input-field" />
+            <label for="password2">Bekræft Password:</label>
+            <input type="password" id="password2" name="password2" placeholder="Gentag password" class="input-field" />
 
-                <button type="submit">Fortsæt</button>
+            <button type="submit">Fortsæt</button>
         </form>
-
     </main>
 </div>
-<script>
 
+<script>
     document.getElementById("postnummer").addEventListener("blur", function () {
         const postcode = this.value;
         if (postcode.length === 4) {
@@ -76,7 +77,6 @@
                 });
         }
     });
-
 </script>
 </body>
 </html>
