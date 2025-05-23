@@ -131,14 +131,31 @@ public class OrderController {
             List<Order> orders = OrderMapper.getAllOrdersPerWorker(currentWorkerId, connectionPool);
             List<Order> otherOrders = OrderMapper.getOrdersNotAssignedToWorker(currentWorkerId, connectionPool);
 
+            // Read the editOrderId query parameter from URL (e.g., /sellerdashboard?editOrderId=6)
+            String editOrderIdParam = ctx.queryParam("editOrderId");
+            Integer editOrderId = null;
+            if (editOrderIdParam != null) {
+                try {
+                    editOrderId = Integer.parseInt(editOrderIdParam);
+                } catch (NumberFormatException e) {
+                    // Optional: handle invalid editOrderId param gracefully
+                    editOrderId = null;
+                }
+            }
+
             ctx.attribute("orders", orders);
             ctx.attribute("otherOrders", otherOrders);
+
+            // Pass editOrderId to the template so you can show the edit form for that order
+            ctx.attribute("editOrderId", editOrderId);
+
             ctx.render("sellerdashboard.html");
 
         } catch (DatabaseException e) {
             ctx.status(500).result("Databasefejl: " + e.getMessage());
         }
     }
+
 
     private static void assignOrderToWorker(Context ctx, ConnectionPool connectionPool) {
         try {
