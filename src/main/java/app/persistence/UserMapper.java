@@ -380,4 +380,37 @@ public class UserMapper
         }
     }
 
+    public static String getEmailByUserId(int userId, ConnectionPool connectionPool) throws DatabaseException {
+        String sql = "SELECT customer_email FROM customer WHERE customer_id = ?";
+        try (Connection connection = connectionPool.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("customer_email");
+                }
+            }
+        } catch (SQLException e) {
+            throw new DatabaseException("Fejl ved hentning af e-mail", e.getMessage());
+        }
+        return null;
+    }
+
+    public static String getNameByUserId(int userId, ConnectionPool connectionPool) throws DatabaseException {
+        String sql = "SELECT customer_name FROM customer WHERE customer_id = ?";
+        try (Connection connection = connectionPool.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("customer_name");
+                }
+            }
+        } catch (SQLException e) {
+            throw new DatabaseException("Fejl ved hentning af navn", e.getMessage());
+        }
+        return null;
+    }
+
+
 }
