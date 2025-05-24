@@ -14,6 +14,7 @@ import app.exceptions.DatabaseException;
 import app.persistence.*;
 import app.services.Calculator;
 
+import static app.controllers.CustomerProfileController.showUserOrders;
 
 
 public class OrderController {
@@ -32,11 +33,18 @@ public class OrderController {
 
         app.get("/getorders", ctx -> getOrdersForUser(ctx, connectionPool));
 
+        app.get("/profile", ctx -> CustomerProfileController.showProfile(ctx, connectionPool));
+        app.get("/profile/edit", ctx -> CustomerProfileController.editProfile(ctx, connectionPool));
+        app.post("/profile/update", ctx -> CustomerProfileController.updateProfile(ctx, connectionPool));
+
+
         app.get("/sellerdashboard", ctx -> showSellerDashboard(ctx, connectionPool));
 
         app.post("/selectorder", ctx -> assignOrderToWorker(ctx, connectionPool));
 
         app.get("/orderSite2", ctx -> ctx.render("orderSite2.html"));
+
+        app.get("/user/orders", ctx -> showUserOrders(ctx, connectionPool));
 
         app.post("/orderSite2", ctx -> {
             int bredde = Integer.parseInt(ctx.formParam("bredde"));
@@ -96,7 +104,27 @@ public class OrderController {
             ctx.render("showOrder.html");
         });
 
+
+        app.get("/orders", ctx -> {
+            // Your snippet goes here
+            User user = ctx.sessionAttribute("currentUser"); // get user from session
+
+            if (user == null) {
+                ctx.status(401).result("You are not logged in");
+                return;
+            }
+
+            List<Order> orders = OrderMapper.getAllOrdersPerUser(user.getId(), connectionPool);
+
+            ctx.attribute("user", user);
+            ctx.attribute("orders", orders);
+            ctx.render("orders.html");
+        });
+
+
     }
+
+
 
     private static void updateOrder(Context ctx, ConnectionPool connectionPool) {
         try {

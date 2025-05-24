@@ -30,7 +30,7 @@ public class UserMapper
                 if (rs.next()) {
                     int id = rs.getInt("customer_id");
                     String fetchedEmail = rs.getString("customer_email");
-                    return new User(id, fetchedEmail, password, null);
+                    return new User(id, fetchedEmail, password, 1);
                 }
             }
 
