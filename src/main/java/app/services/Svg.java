@@ -15,45 +15,33 @@ public class Svg {
             "        </marker>\n" +
             "    </defs>";
 
-    private static final String SVG_RECT_TEMPLATE = "<rect x=\"%.2f\" y=\"%.2f\" height=\"%f\" width=\"%f\" style=\"%s\" />";
+    private static final String SVG_RECT_TEMPLATE = "<rect x=\"%.2f\" y=\"%.2f\" width=\"%.2f\" height=\"%.2f\" style=\"%s\" />";
 
     private StringBuilder svg = new StringBuilder();
 
-    /**
-     * Constructor for Svg.
-     *
-     * @param viewBox The SVG viewBox attribute (e.g., "0 0 600 400")
-     * @param width The width of the SVG (e.g., "100%" or "600px")
-     * @param height The height of the SVG (e.g., "400px")
-     */
     public Svg(String viewBox, String width, String height) {
         svg.append(String.format(SVG_TEMPLATE, viewBox, width, height));
-        svg.append(SVG_ARROW_DEFS);
+        svg.append(SVG_ARROW_DEFS); // ✅ tilføj pil-defs
     }
 
-    /**
-     * Adds a rectangle to the SVG.
-     *
-     * @param x X position of the rectangle
-     * @param y Y position of the rectangle
-     * @param height Height of the rectangle
-     * @param width Width of the rectangle
-     * @param style CSS style string (e.g., "stroke:#000; fill:#fff;")
-     */
-    public void addRectangle(double x, double y, double height, double width, String style) {
-        svg.append(String.format(SVG_RECT_TEMPLATE, x, y, height, width, style));
+    public void addRectangle(double x, double y, double width, double height, String style) {
+        svg.append(String.format(SVG_RECT_TEMPLATE, x, y, width, height, style));
     }
 
     public void addLine(int x1, int y1, int x2, int y2, String style) {
-        // Implement if needed
+        // Ikke brugt endnu
     }
 
     public void addArrow(int x1, int y1, int x2, int y2, String style) {
-        // Implement if needed
+        svg.append(String.format(
+                "<line x1=\"%d\" y1=\"%d\" x2=\"%d\" y2=\"%d\" style=\"%s\" marker-start=\"url(#beginArrow)\" marker-end=\"url(#endArrow)\" />",
+                x1, y1, x2, y2, style));
     }
 
     public void addText(int x, int y, int rotation, String text) {
-        // Implement if needed
+        svg.append(String.format(
+                "<text x=\"%d\" y=\"%d\" transform=\"rotate(%d %d,%d)\" style=\"text-anchor: middle; font-size: 14px;\">%s</text>",
+                x, y, rotation, x, y, text));
     }
 
     public void addSvg(Svg innerSvg) {
@@ -62,6 +50,10 @@ public class Svg {
 
     @Override
     public String toString() {
-        return svg.append("</svg>").toString();
+        // ✅ sikrer kun én afslutning
+        if (!svg.toString().endsWith("</svg>")) {
+            svg.append("</svg>");
+        }
+        return svg.toString();
     }
 }
