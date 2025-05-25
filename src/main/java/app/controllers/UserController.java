@@ -42,8 +42,7 @@ public class UserController {
         app.get("/orderConfirmation", ctx -> ctx.render("orderConfirmation.html"));
         app.get("/customerprofile", ctx -> CustomerProfileController.showProfile(ctx, connectionPool));
         app.post("/createuser", ctx -> UserController.createUser(ctx, connectionPool));
-        app.post("/profile/edit", ctx -> CustomerProfileController.editProfile(ctx, connectionPool));
-        app.post("/profile/update", ctx -> CustomerProfileController.updateProfile(ctx, connectionPool));
+        app.post("/profile/edit", ctx -> CustomerProfileController.editProfile(ctx, connectionPool));;
         app.get("/getcity", ctx -> UserController.getCityByPostcode(ctx, connectionPool));
         app.get("/admin", ctx -> UserController.showAdminPage(ctx, connectionPool));
         app.post("/admin/update-role", ctx -> UserController.updateUserRole(ctx, connectionPool));
