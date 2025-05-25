@@ -29,7 +29,7 @@ public class WoodVariantMapper {
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 return new WoodVariant(
-                        rs.getInt("wood_variant_id"),
+                        rs.getInt("wood_id"),
                         rs.getString("material_name"),
                         rs.getInt("material-id"),
                         rs.getInt("length_cm"),

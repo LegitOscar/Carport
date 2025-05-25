@@ -16,16 +16,16 @@ import java.util.List;
 
 public class OrderItemMapper {
 
-    public static void insertOrderItem(OrderItem item, ConnectionPool connectionPool) throws DatabaseException {
-        String sql = "INSERT INTO billofmaterials (order_id, wood_variant_id, quantity, unit_price) VALUES (?, ?, ?, ?)";
+    public static void insertOrderItem(OrderItem orderItem, ConnectionPool connectionPool) throws DatabaseException {
+        String sql = "INSERT INTO billofmaterials (order_id, wood_id, quantity, description_text) VALUES (?, ?, ?, ?)";
 
         try (Connection connection = connectionPool.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
 
-            ps.setInt(1, item.getOrder().getOrderId());
-            ps.setInt(2, item.getWoodVariant().getWoodVariantId());
-            ps.setInt(3, item.getQuantity());
-            ps.setDouble(4, item.getUnitPrice());
+            ps.setInt(1, orderItem.getOrder().getOrderId());
+            ps.setInt(2, orderItem.getWoodVariant().getWoodVariantId());
+            ps.setInt(3, orderItem.getQuantity());
+            ps.setString(4, orderItem.getDescription());
 
             ps.executeUpdate();
 
@@ -34,14 +34,15 @@ public class OrderItemMapper {
         }
     }
 
+
     public static List<OrderItem> getOrderItemsByOrderId(int orderId, ConnectionPool connectionPool) throws DatabaseException {
         List<OrderItem> items = new ArrayList<>();
 
         String sql = "SELECT b.quantity, b.unit_price,\n" +
-                "w.wood_variant_id, w.material_id, w.length_cm, w.size, w.price,\n" +
+                "w.wood_id, w.material_id, w.length, w.size, w.price,\n" +
                 "o.order_id, o.order_date, o.total_price, o.order_status, o.customer_id, o.worker_id\n" +
                 "FROM billofmaterials b\n" +
-                "JOIN wood_variant w ON b.wood_variant_id = w.wood_variant_id\n" +
+                "JOIN wood_variant w ON b.wood_id = w.wood_id\n" +
                 "JOIN material m ON w.material_id = m.material_id" +
                 "JOIN orders o ON b.order_id = o.order_id\n" +
                 "WHERE b.order_id = ?";
@@ -54,7 +55,7 @@ public class OrderItemMapper {
 
             while (rs.next()) {
                 WoodVariant variant = new WoodVariant(
-                        rs.getInt("wood_variant_id"),
+                        rs.getInt("wood_id"),
                         rs.getString("material_name"),
                         rs.getInt("material_id"),
                         rs.getInt("length_cm"),
@@ -74,7 +75,8 @@ public class OrderItemMapper {
                         order,
                         variant,
                         rs.getInt("quantity"),
-                        rs.getDouble("unit_price")
+                        rs.getDouble("unit_price"),
+                        rs.getString("description")
                 );
 
                 items.add(item);
