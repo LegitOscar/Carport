@@ -172,23 +172,37 @@ public class OrderController {
             List<Order> orders = OrderMapper.getAllOrdersPerWorker(currentWorkerId, connectionPool);
             List<Order> otherOrders = OrderMapper.getOrdersNotAssignedToWorker(currentWorkerId, connectionPool);
 
-            // Read the editOrderId query parameter from URL (e.g., /sellerdashboard?editOrderId=6)
             String editOrderIdParam = ctx.queryParam("editOrderId");
             Integer editOrderId = null;
             if (editOrderIdParam != null) {
                 try {
                     editOrderId = Integer.parseInt(editOrderIdParam);
                 } catch (NumberFormatException e) {
-                    // Optional: handle invalid editOrderId param gracefully
                     editOrderId = null;
+                }
+            }
+
+            // New: Read the detailsOrderId query param
+            String detailsOrderIdParam = ctx.queryParam("detailsOrderId");
+            Integer detailsOrderId = null;
+            if (detailsOrderIdParam != null) {
+                try {
+                    detailsOrderId = Integer.parseInt(detailsOrderIdParam);
+                } catch (NumberFormatException e) {
+                    detailsOrderId = null;
                 }
             }
 
             ctx.attribute("orders", orders);
             ctx.attribute("otherOrders", otherOrders);
-
-            // Pass editOrderId to the template so you can show the edit form for that order
             ctx.attribute("editOrderId", editOrderId);
+
+            // If detailsOrderId is present, fetch the full order details and pass to template
+            if (detailsOrderId != null) {
+                OrderDetails orderDetails = OrderMapper.getOrderDetailsById(detailsOrderId, connectionPool);
+                ctx.attribute("orderDetails", orderDetails);
+                ctx.attribute("detailsOrderId", detailsOrderId);
+            }
 
             ctx.render("sellerdashboard.html");
 
@@ -196,6 +210,7 @@ public class OrderController {
             ctx.status(500).result("Databasefejl: " + e.getMessage());
         }
     }
+
 
 
     private static void assignOrderToWorker(Context ctx, ConnectionPool connectionPool) {

@@ -15,16 +15,23 @@
         .btn-delete { background-color: #f44336; color: white; }
         .btn-save { background-color: #008CBA; color: white; }
         .btn-cancel { background-color: #bbb; color: white; text-decoration: none; padding: 6px 12px; }
-         td.notes-cell {
-            max-width: 200px;        /* limit width */
-            max-height: 4.5em;       /* about 3 lines tall */
-            white-space: normal;     /* allow text wrap */
-            overflow-y: auto;        /* vertical scrollbar if needed */
-            word-wrap: break-word;   /* break long words */
+        td.notes-cell {
+            max-width: 200px;
+            max-height: 4.5em;
+            white-space: normal;
+            overflow-y: auto;
+            word-wrap: break-word;
         }
         textarea {
-            width: 100%;             /* full width in edit mode */
+            width: 100%;
             box-sizing: border-box;
+        }
+        /* Styling for details row */
+        tr.details-row td {
+            background: #f9f9f9;
+            padding: 10px;
+            font-size: 0.9em;
+            border-top: none;
         }
     </style>
 </head>
@@ -47,9 +54,12 @@
     </thead>
     <tbody>
     <th:block th:each="order : ${orders}">
-        <!-- Display row normally if not editing this order -->
-        <tr th:if="${editOrderId} != ${order.orderId}">
-            <td th:text="${order.orderId}"></td>
+        <!-- Normal order row -->
+        <tr>
+            <td>
+                <a th:href="@{/sellerdashboard(detailsOrderId=${order.orderId})}"
+                   th:text="${order.orderId}"></a>
+            </td>
             <td th:text="${order.orderDate}"></td>
             <td th:text="${order.totalPrice}"></td>
             <td th:text="${order.orderStatus}"></td>
@@ -70,7 +80,25 @@
             </td>
         </tr>
 
-        <!-- Edit Form Row -->
+        <!-- Expanded details row, only shown if this order is selected -->
+        <tr th:if="${detailsOrderId} == ${order.orderId}" class="details-row">
+            <td colspan="7">
+                <strong>Ordredetaljer:</strong><br/>
+                Dato: <span th:text="${orderDetails.order.orderDate}"></span><br/>
+                Pris: <span th:text="${orderDetails.order.totalPrice}"></span><br/>
+                Status: <span th:text="${orderDetails.order.orderStatus}"></span><br/>
+                Interne Noter: <span th:text="${orderDetails.order.internalNotes}"></span><br/>
+                <hr/>
+                <strong>Kundedetaljer:</strong><br/>
+                Navn: <span th:text="${orderDetails.customer.name}"></span><br/>
+                Email: <span th:text="${orderDetails.customer.email}"></span><br/>
+                Telefon: <span th:text="${orderDetails.customer.phone}"></span><br/>
+                Adresse: <span th:text="${orderDetails.customer.address}"></span><br/>
+                Postnummer: <span th:text="${orderDetails.customer.postcode}"></span><br/>
+            </td>
+        </tr>
+
+        <!-- Edit form row -->
         <tr th:if="${editOrderId} == ${order.orderId}" class="edit-row">
             <td>
                 <span th:text="${order.orderId}"></span>
@@ -91,7 +119,6 @@
             </td>
             <td th:text="${order.customerId}"></td>
             <td>
-                <!-- Textarea inside the same cell for neatness -->
                 <textarea name="internalNotes" form="editForm"
                           rows="4" placeholder="Skriv interne noter her...">[[${order.internalNotes}]]</textarea>
             </td>
@@ -102,8 +129,6 @@
                 </form>
             </td>
         </tr>
-
-
     </th:block>
     </tbody>
 </table>
@@ -118,7 +143,7 @@
         <th>Status</th>
         <th>Kunde ID</th>
         <th>Worker ID</th>
-        <th>Handlinger</th> <!-- New column added -->
+        <th>Handlinger</th>
     </tr>
     </thead>
     <tbody>
@@ -130,7 +155,6 @@
         <td th:text="${order.customerId}"></td>
         <td th:text="${order.workerId}"></td>
         <td>
-            <!-- Button "Vælg" -->
             <form method="post" th:action="@{/selectorder}" class="inline-form">
                 <input type="hidden" name="orderId" th:value="${order.orderId}" />
                 <button class="btn btn-edit" type="submit">Vælg</button>
