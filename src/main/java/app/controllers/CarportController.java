@@ -34,7 +34,7 @@ public class CarportController {
                 ctx.sessionAttribute("pendingCarport", carport);
                 ctx.sessionAttribute("width", widthCm);
                 ctx.sessionAttribute("length", lengthCm);
-                UserController.createUserOrder(ctx,connectionPool);
+                ctx.render("orderSite3.html"); // en side hvor brugeren udfylder navn, adresse, etc.
                 return;
             }
 

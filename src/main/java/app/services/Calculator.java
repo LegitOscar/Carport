@@ -54,7 +54,8 @@ public class Calculator {
 
         WoodVariant variant = findVariantByLength(MATERIALID_STOLPE, 300);
         if (variant != null) {
-            items.add(new OrderItem(order, variant, needed, variant.getPrice()));
+            String description = "Stolper til hjørner (300 cm)";
+            items.add(new OrderItem(order, variant, needed, variant.getPrice(), description));
         }
 
         return items;
@@ -68,7 +69,8 @@ public class Calculator {
 
         WoodVariant variant = findVariantByLength(MATERIALID_SPÆR, carport.getWidthCm());
         if (variant != null) {
-            items.add(new OrderItem(order, variant, needed, variant.getPrice()));
+            String description = "BESKRIVELSE RAFTERS";
+            items.add(new OrderItem(order, variant, needed, variant.getPrice(),description));
         }
 
         return items;
@@ -84,7 +86,8 @@ public class Calculator {
             List<WoodVariant> selected = findVariantSet(MATERIALID_REM, neededLength);
 
             for (WoodVariant variant : selected) {
-                items.add(new OrderItem(order, variant, 1, variant.getPrice()));
+                String description = "BESKRIVELSE BEAMS";
+                items.add(new OrderItem(order, variant, 1, variant.getPrice(),description));
             }
         }
 
@@ -96,7 +99,8 @@ public class Calculator {
         int quantity = 4;
         WoodVariant variant = findVariantByLength(MATERIALID_LØSHOLTER, carport.getLengthCm());
         if (variant != null) {
-            items.add(new OrderItem(order, variant, quantity, variant.getPrice()));
+            String description = "BESKRIVELSE BRACES";
+            items.add(new OrderItem(order, variant, quantity, variant.getPrice(),description));
         }
         return items;
     }
@@ -107,13 +111,15 @@ public class Calculator {
         // Forside og bagside stern
         WoodVariant fb = findVariantByLength(MATERIALID_STERN, carport.getWidthCm());
         if (fb != null) {
-            items.add(new OrderItem(order, fb, 2, fb.getPrice()));
+            String description = "BESKRIVELSE STERN";
+            items.add(new OrderItem(order, fb, 2, fb.getPrice(),description));
         }
 
         // Side stern
         WoodVariant sides = findVariantByLength(MATERIALID_STERN, carport.getLengthCm());
         if (sides != null) {
-            items.add(new OrderItem(order, sides, 2, sides.getPrice()));
+            String description = "BESKRIVELSE STERN 2";
+            items.add(new OrderItem(order, sides, 2, sides.getPrice(),description));
         }
 
         return items;
