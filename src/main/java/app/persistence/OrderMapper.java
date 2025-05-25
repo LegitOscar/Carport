@@ -61,8 +61,9 @@ public class OrderMapper {
                     double price = rs.getDouble("total_price");
                     String status = rs.getString("order_status");
                     int workerId = rs.getInt("worker_id");
+                    String notes = rs.getString("internal_notes");
 
-                    orderList.add(new Order(id, date.toLocalDate(), price, status, customerId, workerId));
+                    orderList.add(new Order(id, date.toLocalDate(), price, status, customerId, workerId, notes));
                 }
             }
         } catch (SQLException e) {
@@ -102,8 +103,9 @@ public class OrderMapper {
                     double totalPrice = rs.getDouble("total_price");
                     String orderStatus = rs.getString("order_status");
                     int customerId = rs.getInt("customer_id");
+                    String notes = rs.getString("internal_notes");
 
-                    orders.add(new Order(orderId, orderDate.toLocalDate(), totalPrice, orderStatus, customerId, workerId));
+                    orders.add(new Order(orderId, orderDate.toLocalDate(), totalPrice, orderStatus, customerId, workerId, notes));
                 }
             }
         } catch (SQLException e) {
@@ -156,8 +158,9 @@ public class OrderMapper {
                     String orderStatus = rs.getString("order_status");
                     int customerId = rs.getInt("customer_id");
                     int workerId = rs.getInt("worker_id");
+                    String notes = rs.getString("internal_notes");
 
-                    return new Order(orderId, date.toLocalDate(), totalPrice, orderStatus, customerId, workerId);
+                    return new Order(orderId, date.toLocalDate(), totalPrice, orderStatus, customerId, workerId, notes);
                 }
             }
         } catch (SQLException e) {
@@ -167,7 +170,7 @@ public class OrderMapper {
     }
 
     public static void updateOrder(Order order, ConnectionPool connectionPool) throws DatabaseException {
-        String sql = "UPDATE orders SET total_price = ?, order_status = ? WHERE order_id = ?";
+        String sql = "UPDATE orders SET total_price = ?, order_status = ?, internal_notes = ? WHERE order_id = ?";
 
         try (
                 Connection connection = connectionPool.getConnection();
@@ -175,7 +178,8 @@ public class OrderMapper {
         ) {
             ps.setDouble(1, order.getTotalPrice());
             ps.setString(2, order.getOrderStatus());
-            ps.setInt(3, order.getOrderId());
+            ps.setString(3, order.getInternalNotes());
+            ps.setInt(4, order.getOrderId());
 
             ps.executeUpdate();
         } catch (SQLException e) {

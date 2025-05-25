@@ -15,6 +15,17 @@
         .btn-delete { background-color: #f44336; color: white; }
         .btn-save { background-color: #008CBA; color: white; }
         .btn-cancel { background-color: #bbb; color: white; text-decoration: none; padding: 6px 12px; }
+         td.notes-cell {
+            max-width: 200px;        /* limit width */
+            max-height: 4.5em;       /* about 3 lines tall */
+            white-space: normal;     /* allow text wrap */
+            overflow-y: auto;        /* vertical scrollbar if needed */
+            word-wrap: break-word;   /* break long words */
+        }
+        textarea {
+            width: 100%;             /* full width in edit mode */
+            box-sizing: border-box;
+        }
     </style>
 </head>
 <body>
@@ -30,6 +41,7 @@
         <th>Pris</th>
         <th>Status</th>
         <th>Kunde ID</th>
+        <th>Interne Noter</th>
         <th>Handlinger</th>
     </tr>
     </thead>
@@ -42,6 +54,7 @@
             <td th:text="${order.totalPrice}"></td>
             <td th:text="${order.orderStatus}"></td>
             <td th:text="${order.customerId}"></td>
+            <td class="notes-cell" th:text="${order.internalNotes}"></td>
             <td>
                 <!-- Edit button -->
                 <form method="get" th:action="@{/sellerdashboard}" class="inline-form">
@@ -78,12 +91,19 @@
             </td>
             <td th:text="${order.customerId}"></td>
             <td>
+                <!-- Textarea inside the same cell for neatness -->
+                <textarea name="internalNotes" form="editForm"
+                          rows="4" placeholder="Skriv interne noter her...">[[${order.internalNotes}]]</textarea>
+            </td>
+            <td>
                 <form id="editForm" method="post" th:action="@{/updateorder}">
                     <button class="btn btn-save" type="submit">Gem</button>
                     <a th:href="@{/sellerdashboard}" class="btn btn-cancel">Annuller</a>
                 </form>
             </td>
         </tr>
+
+
     </th:block>
     </tbody>
 </table>
