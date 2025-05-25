@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${title}">Ordrebekræftelse</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f6f6f6;
+            color: #333;
+            padding: 20px;
+        }
+        h1 {
+            color: #2a7ae2;
+        }
+        .email-container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 600px;
+            margin: auto;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+<div class="email-container">
+    <h1 th:text="${title}">Ordrebekræftelse</h1>
+    <p>Hej <span th:text="${name}">kunde</span>,</p>
+    <p th:text="${message}">Din ordre er blevet bekræftet.</p>
+</div>
+</body>
+</html>
+
+

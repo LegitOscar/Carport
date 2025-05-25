@@ -100,11 +100,13 @@
             </tr>
             </thead>
             <tbody>
+
             <tr th:each="orders : ${orders}">
                 <td th:text="${orders.orderId}">123</td>
                 <td th:text="${orders.orderDate}">2024-05-21</td>
                 <td th:text="${orders.orderStatus}">Afventer</td>
                 <td th:text="${orders.totalPrice} + ' kr.'">1000 kr.</td>
+
             </tr>
             </tbody>
         </table>

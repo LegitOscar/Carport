@@ -12,30 +12,36 @@ import java.util.List;
 
 public class CustomerProfileController {
 
-    public static void showProfile(Context ctx, ConnectionPool connectionPool) {
-        User user = ctx.sessionAttribute("currentUser");
+public static void showProfile(Context ctx, ConnectionPool connectionPool) {
 
-        if (user == null) {
-            ctx.redirect("/");
-            return;
-        }
-
-        try {
-            User profile = UserMapper.getCustomerProfileById(user.getId(), connectionPool);
-            ctx.attribute("profile", profile);
-
-            List<Order> orders = OrderMapper.getAllOrdersPerUser(user.getId(), connectionPool);
-            ctx.attribute("orders", orders);
+    User user = ctx.sessionAttribute("currentUser");
 
 
-            ctx.render("customerprofile.html");
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            ctx.status(500).result("Server error ved hentning af kundeprofil: " + e.getMessage());
-        }
+    if (user == null) {
+        System.out.println("[DEBUG] No user in session — redirecting to home.");
+        ctx.redirect("/");
+        return;
     }
+
+    try {
+
+        User profile = UserMapper.getCustomerProfileById(user.getId(), connectionPool);
+        ctx.attribute("profile", profile);
+
+        List<Order> orders = OrderMapper.getAllOrdersPerUser(user.getId(), connectionPool);
+        ctx.attribute("orders", orders);
+
+        System.out.println("[DEBUG] Loaded profile for user ID: " + user.getId());
+        System.out.println("[DEBUG] Number of orders: " + orders.size());
+
+        ctx.render("customerprofile.html");
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        ctx.status(500).result("Serverfejl ved hentning af kundeprofil: " + e.getMessage());
+    }
+}
+
 
     public static void editProfile(Context ctx, ConnectionPool connectionPool) throws DatabaseException {
         User user = ctx.sessionAttribute("currentUser");

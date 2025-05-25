@@ -8,13 +8,19 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import app.entities.*;
 import app.exceptions.DatabaseException;
 import app.persistence.*;
 import app.services.Calculator;
 
+
 import static app.controllers.CustomerProfileController.showUserOrders;
+
+import jakarta.mail.MessagingException;
+import util.GmailEmailSenderHTML;
+
 
 
 public class OrderController {
@@ -135,9 +141,14 @@ public class OrderController {
             Order order = OrderMapper.getOrderById(orderId, connectionPool);
 
             if (order != null) {
+                String oldstatus = order.getOrderStatus();
                 order.setTotalPrice(totalPrice);
                 order.setOrderStatus(orderStatus);
                 OrderMapper.updateOrder(order, connectionPool);
+
+                if("Pending".equalsIgnoreCase(oldstatus) && "Confirmed".equalsIgnoreCase(orderStatus)){
+                    sendOrderStatusUpdateEmail(order);
+                }
             }
 
             ctx.redirect("/sellerdashboard");
@@ -259,6 +270,31 @@ public class OrderController {
 
         return orderList;
     }
+
+    private static void sendOrderStatusUpdateEmail(Order order) throws DatabaseException {
+        GmailEmailSenderHTML sender = new GmailEmailSenderHTML();
+
+        ConnectionPool connectionPool = new ConnectionPool();
+
+        // You might want to fetch actual customer info from DB; this is just for illustration
+        String customerEmail = UserMapper.getEmailByUserId(order.getCustomerId(), connectionPool); // You need to implement this method
+        String customerName = UserMapper.getNameByUserId(order.getCustomerId(), connectionPool);   // Optional, for personalization
+
+        Map<String, Object> variables = Map.of(
+                "title", "Din ordre er blevet bekræftet!",
+                "name", customerName != null ? customerName : "kunde",
+                "message", "Ordre #" + order.getOrderId() + " er nu blevet bekræftet og er under behandling."
+        );
+
+        String html = sender.renderTemplate("email.html", variables);
+
+        try {
+            sender.sendHtmlEmail(customerEmail, "Ordrebekræftelse – Din ordre er bekræftet", html);
+        } catch (MessagingException e) {
+            System.err.println("Kunne ikke sende e-mail: " + e.getMessage());
+        }
+    }
+
 
 }
 

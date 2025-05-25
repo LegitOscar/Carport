@@ -58,7 +58,7 @@ public class UserMapper
     }
 
 
-    public void createUser(User user) {
+    public void createUser(User user) throws DatabaseException {
         String checkPostcodeSql = "SELECT 1 FROM postcode WHERE postcode = ?";
         String insertCustomerSql = """
         INSERT INTO customer 
@@ -153,6 +153,39 @@ public class UserMapper
             }
         } catch (SQLException e) {
             throw new DatabaseException("Fejl under hentning af profil", e.getMessage());
+        }
+    }
+
+    public static User getCustomerByEmail(String email, ConnectionPool connectionPool) throws DatabaseException {
+        String sql = "SELECT c.customer_id, c.customer_name, c.customer_email, c.customer_phone, c.customer_password, " +
+                "c.customer_address AS address, cz.postcode, cz.city " +
+                "FROM customer c " +
+                "JOIN postcode cz ON c.postcode = cz.postcode " +
+                "WHERE c.customer_email = ?";
+
+        try (Connection connection = connectionPool.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, email);
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                int customerId = rs.getInt("customer_id");
+                String name = rs.getString("customer_name");
+                String address = rs.getString("address");
+                int postcode = rs.getInt("postcode");
+                String city = rs.getString("city");
+                int phone = rs.getInt("customer_phone");
+                String password = rs.getString("customer_password");
+
+                User user = new User(name, address, postcode, city, phone, email, password);
+                user.setId(customerId);
+                return user;
+
+            } else {
+                throw new DatabaseException("Bruger med denne email findes ikke.");
+            }
+        } catch (SQLException e) {
+            throw new DatabaseException("Fejl under hentning af bruger via email", e.getMessage());
         }
     }
 
@@ -346,5 +379,38 @@ public class UserMapper
             ps.executeUpdate();
         }
     }
+
+    public static String getEmailByUserId(int userId, ConnectionPool connectionPool) throws DatabaseException {
+        String sql = "SELECT customer_email FROM customer WHERE customer_id = ?";
+        try (Connection connection = connectionPool.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("customer_email");
+                }
+            }
+        } catch (SQLException e) {
+            throw new DatabaseException("Fejl ved hentning af e-mail", e.getMessage());
+        }
+        return null;
+    }
+
+    public static String getNameByUserId(int userId, ConnectionPool connectionPool) throws DatabaseException {
+        String sql = "SELECT customer_name FROM customer WHERE customer_id = ?";
+        try (Connection connection = connectionPool.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("customer_name");
+                }
+            }
+        } catch (SQLException e) {
+            throw new DatabaseException("Fejl ved hentning af navn", e.getMessage());
+        }
+        return null;
+    }
+
 
 }
