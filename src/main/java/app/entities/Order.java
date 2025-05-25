@@ -9,18 +9,38 @@ public class Order {
     private String orderStatus;
     private int customerId;
     private int workerId;
+    private String internalNotes;
 
 
 
-    public Order (int orderId, LocalDate orderDate, double totalPrice, String orderStatus, int customerId, int workerId){
+    public Order (int orderId, LocalDate orderDate, double totalPrice, String orderStatus, int customerId, int workerId, String internalNotes){
        this.orderId = orderId;
        this.orderDate = orderDate;
        this.totalPrice = totalPrice;
        this.orderStatus = orderStatus;
        this.customerId = customerId;
        this.workerId = workerId;
+       this.internalNotes = internalNotes;
+
+    }
+
+    public Order (int orderId, LocalDate orderDate, double totalPrice, String orderStatus, int customerId, int workerId){
+        this.orderId = orderId;
+        this.orderDate = orderDate;
+        this.totalPrice = totalPrice;
+        this.orderStatus = orderStatus;
+        this.customerId = customerId;
+        this.workerId = workerId;
 
 
+    }
+
+    public String getInternalNotes(){
+        return internalNotes;
+    }
+
+    public void setInternalNotes(String internalNotes){
+        this.internalNotes = internalNotes;
     }
 
     public int getOrderId(){

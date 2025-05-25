@@ -144,6 +144,8 @@ public class OrderController {
                 String oldstatus = order.getOrderStatus();
                 order.setTotalPrice(totalPrice);
                 order.setOrderStatus(orderStatus);
+                String notes = ctx.formParam("internalNotes");
+                order.setInternalNotes(notes);
                 OrderMapper.updateOrder(order, connectionPool);
 
                 if("Pending".equalsIgnoreCase(oldstatus) && "Confirmed".equalsIgnoreCase(orderStatus)){
