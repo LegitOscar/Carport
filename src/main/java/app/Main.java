@@ -7,6 +7,7 @@ import app.controllers.OrderController;
 import app.controllers.UserController;
 import app.entities.Order;
 import app.exceptions.DatabaseException;
+import app.persistence.CarportMapper;
 import app.persistence.ConnectionPool;
 import app.persistence.OrderMapper;
 import io.javalin.Javalin;
@@ -47,7 +48,9 @@ public class Main {
         app.get("/", ctx ->  ctx.render("index.html"));
         UserController.addRoutes(app,connectionPool);
         OrderController.addRoutes(app, connectionPool);
-        CarportController.addRoutes(app, connectionPool);
+
+        CarportController carportController = new CarportController(new CarportMapper(connectionPool), connectionPool);
+        carportController.addRoutes(app, connectionPool);
 
         }
     }

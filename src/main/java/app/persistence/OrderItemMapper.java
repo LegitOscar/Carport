@@ -1,17 +1,17 @@
 package app.persistence;
 
-import app.entities.OrderItem;
-import app.entities.Order;
-import app.entities.Product;
-import app.entities.WoodVariant;
+import app.entities.*;
 import app.exceptions.DatabaseException;
 
+import javax.naming.Context;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+
 
 
 public class OrderItemMapper {
@@ -33,6 +33,9 @@ public class OrderItemMapper {
             throw new DatabaseException("Kunne ikke indsætte orderItem", e.getMessage());
         }
     }
+
+
+
 
     public static List<OrderItem> getOrderItemsByOrderId(int orderId, ConnectionPool connectionPool) throws DatabaseException {
         List<OrderItem> items = new ArrayList<>();
@@ -86,5 +89,69 @@ public class OrderItemMapper {
 
         return items;
     }
+
+
+    public static Material getMaterialByName(String materialName, ConnectionPool connectionPool) throws DatabaseException {
+        String sql = "SELECT material_id, material_name, unit FROM material WHERE material_name = ?";
+        try (Connection connection = connectionPool.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+
+            ps.setString(1, materialName);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return new Material(
+                        rs.getInt("material_id"),
+                        rs.getString("material_name"),
+                        rs.getString("unit")
+                );
+            } else {
+                return null;
+            }
+
+        } catch (SQLException e) {
+            throw new DatabaseException("Could not get material by name", e.getMessage());
+        }
+    }
+
+    public static int insertMaterial(String materialName, String unit, ConnectionPool connectionPool) throws DatabaseException {
+        String sql = "INSERT INTO material (material_name, unit) VALUES (?, ?) RETURNING material_id";
+        try (Connection connection = connectionPool.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+
+            ps.setString(1, materialName);
+            ps.setString(2, unit);
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("material_id");
+            } else {
+                throw new DatabaseException("Failed to insert material", "");
+            }
+
+        } catch (SQLException e) {
+            throw new DatabaseException("Could not insert material", e.getMessage());
+        }
+    }
+
+    public static void addFitting(int materialId, String size, int quantity, double price, ConnectionPool connectionPool) throws DatabaseException {
+        String sql = "INSERT INTO fittings_and_screws (material_id, size, quantity_per_package, price) VALUES (?, ?, ?, ?)";
+
+        try (Connection connection = connectionPool.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+
+            ps.setInt(1, materialId);
+            ps.setString(2, size);
+            ps.setInt(3, quantity);
+            ps.setDouble(4, price);
+
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new DatabaseException("Could not insert fitting", e.getMessage());
+        }
+    }
+
+
 }
 
