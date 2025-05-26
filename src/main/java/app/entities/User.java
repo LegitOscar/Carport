@@ -30,6 +30,16 @@ public class User {
         this.password = password;
     }
 
+    //FOR GETTING ALL ORDER AND CUSTOMER INFO
+    public User(int id, String name, String email, int phone, String address, int postcode) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+        this.address = address;
+        this.postcode = postcode;
+    }
+
     public User(String name, String email, String password, int phone, int roleId) {
         this.name = name;
         this.email = email;

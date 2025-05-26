@@ -1,6 +1,7 @@
 package app.persistence;
 
 import app.entities.Order;
+import app.entities.OrderDetails;
 import app.entities.User;
 import app.exceptions.DatabaseException;
 
@@ -64,8 +65,9 @@ public class OrderMapper {
                     double price = rs.getDouble("total_price");
                     String status = rs.getString("order_status");
                     int workerId = rs.getInt("worker_id");
+                    String notes = rs.getString("internal_notes");
 
-                    orderList.add(new Order(id, date.toLocalDate(), price, status, customerId, workerId));
+                    orderList.add(new Order(id, date.toLocalDate(), price, status, customerId, workerId, notes));
                 }
             }
         } catch (SQLException e) {
@@ -103,8 +105,9 @@ public class OrderMapper {
                     double totalPrice = rs.getDouble("total_price");
                     String orderStatus = rs.getString("order_status");
                     int customerId = rs.getInt("customer_id");
+                    String notes = rs.getString("internal_notes");
 
-                    orders.add(new Order(orderId, orderDate.toLocalDate(), totalPrice, orderStatus, customerId, workerId));
+                    orders.add(new Order(orderId, orderDate.toLocalDate(), totalPrice, orderStatus, customerId, workerId, notes));
                 }
             }
         } catch (SQLException e) {
@@ -157,8 +160,9 @@ public class OrderMapper {
                     String orderStatus = rs.getString("order_status");
                     int customerId = rs.getInt("customer_id");
                     int workerId = rs.getInt("worker_id");
+                    String notes = rs.getString("internal_notes");
 
-                    return new Order(orderId, date.toLocalDate(), totalPrice, orderStatus, customerId, workerId);
+                    return new Order(orderId, date.toLocalDate(), totalPrice, orderStatus, customerId, workerId, notes);
                 }
             }
         } catch (SQLException e) {
@@ -168,7 +172,7 @@ public class OrderMapper {
     }
 
     public static void updateOrder(Order order, ConnectionPool connectionPool) throws DatabaseException {
-        String sql = "UPDATE orders SET total_price = ?, order_status = ? WHERE order_id = ?";
+        String sql = "UPDATE orders SET total_price = ?, order_status = ?, internal_notes = ? WHERE order_id = ?";
 
         try (
                 Connection connection = connectionPool.getConnection();
@@ -176,7 +180,8 @@ public class OrderMapper {
         ) {
             ps.setDouble(1, order.getTotalPrice());
             ps.setString(2, order.getOrderStatus());
-            ps.setInt(3, order.getOrderId());
+            ps.setString(3, order.getInternalNotes());
+            ps.setInt(4, order.getOrderId());
 
             ps.executeUpdate();
         } catch (SQLException e) {
@@ -227,4 +232,52 @@ public class OrderMapper {
             throw new DatabaseException("Error assigning worker to order", e.getMessage());
         }
     }
+
+    public static OrderDetails getOrderDetailsById(int orderId, ConnectionPool connectionPool) throws DatabaseException {
+        String sql = """
+        SELECT o.order_id, o.order_date, o.total_price, o.order_status, o.customer_id, o.worker_id, o.internal_notes,
+               c.customer_name, c.customer_email, c.customer_phone, c.customer_address, c.postcode
+        FROM orders o
+        JOIN customer c ON o.customer_id = c.customer_id
+        WHERE o.order_id = ?
+    """;
+
+        try (Connection connection = connectionPool.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+
+            ps.setInt(1, orderId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    // Build Order object
+                    Order order = new Order(
+                            rs.getInt("order_id"),
+                            rs.getDate("order_date").toLocalDate(),
+                            rs.getDouble("total_price"),
+                            rs.getString("order_status"),
+                            rs.getInt("customer_id"),
+                            rs.getInt("worker_id"),
+                            rs.getString("internal_notes")
+                    );
+
+                    // Build User object (customer)
+                    User customer = new User(
+                            rs.getInt("customer_id"),
+                            rs.getString("customer_name"),
+                            rs.getString("customer_email"),
+                            rs.getInt("customer_phone"),
+                            rs.getString("customer_address"),
+                            rs.getInt("postcode")
+                    );
+
+                    return new OrderDetails(order, customer);
+                }
+            }
+        } catch (SQLException e) {
+            throw new DatabaseException("Error getting order details", e.getMessage());
+        }
+
+        return null;  // or throw exception if order not found
+    }
+
+
 }

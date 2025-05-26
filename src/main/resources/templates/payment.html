@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Betaling</title>
+  <link rel="stylesheet" th:href="@{/css/payment.css}" />
+</head>
+<body>
+<h1>Betal Ordre</h1>
+
+<form th:action="@{'/pay/' + ${orderId}}" method="post">
+  <div>
+    <label>Kortnummer:</label>
+    <input type="text" name="cardNumber" required maxlength="16" placeholder="1234 5678 9012 3456"/>
+  </div>
+  <div>
+    <label>Udløbsdato:</label>
+    <input type="text" name="expiry" required placeholder="MM/ÅÅ"/>
+  </div>
+  <div>
+    <label>CVV:</label>
+    <input type="text" name="cvv" required maxlength="3" placeholder="123"/>
+  </div>
+
+  <button type="submit">Betal</button>
+</form>
+
+<a href="/profile">← Tilbage til profil</a>
+</body>
+</html>

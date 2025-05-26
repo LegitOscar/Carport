@@ -8,11 +8,18 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import app.entities.*;
 import app.exceptions.DatabaseException;
 import app.persistence.*;
 import app.services.Calculator;
+
+
+import static app.controllers.CustomerProfileController.showUserOrders;
+
+import jakarta.mail.MessagingException;
+import util.GmailEmailSenderHTML;
 
 
 
@@ -32,11 +39,18 @@ public class OrderController {
 
         app.get("/getorders", ctx -> getOrdersForUser(ctx, connectionPool));
 
+        app.get("/profile", ctx -> CustomerProfileController.showProfile(ctx, connectionPool));
+        app.get("/profile/edit", ctx -> CustomerProfileController.editProfile(ctx, connectionPool));
+        app.post("/profile/update", ctx -> CustomerProfileController.updateProfile(ctx, connectionPool));
+
+
         app.get("/sellerdashboard", ctx -> showSellerDashboard(ctx, connectionPool));
 
         app.post("/selectorder", ctx -> assignOrderToWorker(ctx, connectionPool));
 
         app.get("/orderSite2", ctx -> ctx.render("orderSite2.html"));
+
+        app.get("/user/orders", ctx -> showUserOrders(ctx, connectionPool));
 
         app.post("/orderSite2", ctx -> {
             int bredde = Integer.parseInt(ctx.formParam("bredde"));
@@ -96,7 +110,27 @@ public class OrderController {
             ctx.render("showOrder.html");
         });
 
+
+        app.get("/orders", ctx -> {
+            // Your snippet goes here
+            User user = ctx.sessionAttribute("currentUser"); // get user from session
+
+            if (user == null) {
+                ctx.status(401).result("You are not logged in");
+                return;
+            }
+
+            List<Order> orders = OrderMapper.getAllOrdersPerUser(user.getId(), connectionPool);
+
+            ctx.attribute("user", user);
+            ctx.attribute("orders", orders);
+            ctx.render("orders.html");
+        });
+
+
     }
+
+
 
     private static void updateOrder(Context ctx, ConnectionPool connectionPool) {
         try {
@@ -107,9 +141,16 @@ public class OrderController {
             Order order = OrderMapper.getOrderById(orderId, connectionPool);
 
             if (order != null) {
+                String oldstatus = order.getOrderStatus();
                 order.setTotalPrice(totalPrice);
                 order.setOrderStatus(orderStatus);
+                String notes = ctx.formParam("internalNotes");
+                order.setInternalNotes(notes);
                 OrderMapper.updateOrder(order, connectionPool);
+
+                if("Pending".equalsIgnoreCase(oldstatus) && "Confirmed".equalsIgnoreCase(orderStatus)){
+                    sendOrderStatusUpdateEmail(order);
+                }
             }
 
             ctx.redirect("/sellerdashboard");
@@ -131,14 +172,46 @@ public class OrderController {
             List<Order> orders = OrderMapper.getAllOrdersPerWorker(currentWorkerId, connectionPool);
             List<Order> otherOrders = OrderMapper.getOrdersNotAssignedToWorker(currentWorkerId, connectionPool);
 
+            String editOrderIdParam = ctx.queryParam("editOrderId");
+            Integer editOrderId = null;
+            if (editOrderIdParam != null) {
+                try {
+                    editOrderId = Integer.parseInt(editOrderIdParam);
+                } catch (NumberFormatException e) {
+                    editOrderId = null;
+                }
+            }
+
+            // New: Read the detailsOrderId query param
+            String detailsOrderIdParam = ctx.queryParam("detailsOrderId");
+            Integer detailsOrderId = null;
+            if (detailsOrderIdParam != null) {
+                try {
+                    detailsOrderId = Integer.parseInt(detailsOrderIdParam);
+                } catch (NumberFormatException e) {
+                    detailsOrderId = null;
+                }
+            }
+
             ctx.attribute("orders", orders);
             ctx.attribute("otherOrders", otherOrders);
+            ctx.attribute("editOrderId", editOrderId);
+
+            // If detailsOrderId is present, fetch the full order details and pass to template
+            if (detailsOrderId != null) {
+                OrderDetails orderDetails = OrderMapper.getOrderDetailsById(detailsOrderId, connectionPool);
+                ctx.attribute("orderDetails", orderDetails);
+                ctx.attribute("detailsOrderId", detailsOrderId);
+            }
+
             ctx.render("sellerdashboard.html");
 
         } catch (DatabaseException e) {
             ctx.status(500).result("Databasefejl: " + e.getMessage());
         }
     }
+
+
 
     private static void assignOrderToWorker(Context ctx, ConnectionPool connectionPool) {
         try {
@@ -214,6 +287,31 @@ public class OrderController {
 
         return orderList;
     }
+
+    private static void sendOrderStatusUpdateEmail(Order order) throws DatabaseException {
+        GmailEmailSenderHTML sender = new GmailEmailSenderHTML();
+
+        ConnectionPool connectionPool = new ConnectionPool();
+
+        // You might want to fetch actual customer info from DB; this is just for illustration
+        String customerEmail = UserMapper.getEmailByUserId(order.getCustomerId(), connectionPool); // You need to implement this method
+        String customerName = UserMapper.getNameByUserId(order.getCustomerId(), connectionPool);   // Optional, for personalization
+
+        Map<String, Object> variables = Map.of(
+                "title", "Din ordre er blevet bekræftet!",
+                "name", customerName != null ? customerName : "kunde",
+                "message", "Ordre #" + order.getOrderId() + " er nu blevet bekræftet og er under behandling."
+        );
+
+        String html = sender.renderTemplate("email.html", variables);
+
+        try {
+            sender.sendHtmlEmail(customerEmail, "Ordrebekræftelse – Din ordre er bekræftet", html);
+        } catch (MessagingException e) {
+            System.err.println("Kunne ikke sende e-mail: " + e.getMessage());
+        }
+    }
+
 
 }
 
