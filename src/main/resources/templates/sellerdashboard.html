@@ -83,8 +83,8 @@
             <td>
                 <select name="orderStatus" form="editForm">
                     <option value="Pending" th:selected="${order.orderStatus == 'Pending'}">Pending</option>
-                    <option value="Confirmed" th:selected="${order.orderStatus == 'Confirmed'}">Confirmed</option>
-                    <option value="Shipped" th:selected="${order.orderStatus == 'Shipped'}">Shipped</option>
+                    <option value="in progress" th:selected="${order.orderStatus == 'in progress'}">in progress</option>
+                    <option value="payment" th:selected="${order.orderStatus == 'payment'}">payment</option>
                     <option value="Completed" th:selected="${order.orderStatus == 'Completed'}">Completed</option>
                     <option value="Cancelled" th:selected="${order.orderStatus == 'Cancelled'}">Cancelled</option>
                 </select>
