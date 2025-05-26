@@ -5,13 +5,14 @@ public class OrderItem {
     private WoodVariant woodVariant;
     private int quantity;
     private double unitPrice;
+    private String description;
 
-    // (uden ID endnu)
-    public OrderItem(Order order, WoodVariant woodVariant, int quantity, double unitPrice) {
+    public OrderItem(Order order, WoodVariant woodVariant, int quantity, double unitPrice, String description) {
         this.order = order;
         this.woodVariant = woodVariant;
         this.quantity = quantity;
         this.unitPrice = unitPrice;
+        this.description = description;
     }
 
     public Order getOrder() {
@@ -36,6 +37,13 @@ public class OrderItem {
 
     public void setOrder(Order order) {
         this.order = order;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     @Override

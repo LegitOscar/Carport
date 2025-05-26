@@ -1,13 +1,10 @@
 package app.controllers;
 
 
-import app.entities.CustomerProfile;
-import app.entities.Order;
-import app.entities.User;
+import app.entities.*;
 import app.exceptions.DatabaseException;
-import app.persistence.ConnectionPool;
-import app.persistence.OrderMapper;
-import app.persistence.UserMapper;
+import app.persistence.*;
+import app.services.Calculator;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import jakarta.servlet.http.HttpSession;
@@ -78,10 +75,9 @@ public class UserController {
             ctx.attribute("message", "Fejl under oprettelse af bruger: " + e.getMessage());
         }
 
-        ctx.render("login.html");
     }
 
-
+/*
     public static void createUserOrder(Context ctx, ConnectionPool connectionPool) {
         try {
             String navn = ctx.formParam("navn");
@@ -118,13 +114,82 @@ public class UserController {
             ctx.status(500).result("Fejl ved oprettelse af bruger: " + e.getMessage());
         }
     }
+    */
+
+    public static void createUserOrder(Context ctx, ConnectionPool connectionPool) {
+            // Opret bruger
+            String navn = ctx.formParam("navn");
+            String adresse = ctx.formParam("adresse");
+            int postnummer = Integer.parseInt(ctx.formParam("postnummer"));
+            String by = ctx.formParam("by");
+            int telefon = Integer.parseInt(ctx.formParam("telefon"));
+            String email = ctx.formParam("email");
+            String password1 = ctx.formParam("password1");
+            String password2 = ctx.formParam("password2");
+
+            if (!password1.equals(password2)) {
+                ctx.attribute("message", "Passwords do not match.");
+                ctx.render("orderSite3.html"); // vis samme formular igen
+                return;
+            }
+
+            User user = new User(navn, adresse, postnummer, by, telefon, email, password1);
+            UserMapper userMapper = new UserMapper(connectionPool);
+
+            try {
+                userMapper.createUser(user);
+                ctx.attribute("message", "Bruger oprettet!");
+            } catch (Exception e) {
+                ctx.attribute("message", "Fejl under oprettelse af bruger: " + e.getMessage());
+                ctx.render("orderSite3.html");
+                return;
+            }
+
+            // Log brugeren ind og gem i session
+            try {
+                User loggedInUser = UserMapper.login(email, password1, connectionPool);
+                ctx.sessionAttribute("currentUser", loggedInUser);
+
+                // Hent carport fra session
+                Carport carport = ctx.sessionAttribute("pendingCarport");
+                if (carport == null) {
+                    ctx.status(400).result("Ingen carport fundet i session");
+                    return;
+                }
 
 
+                // Fortsæt med ordreoprettelse
+                CarportMapper.createCarport(carport, connectionPool);
+                Order order = OrderMapper.createOrder(loggedInUser, carport.getCarportId(), connectionPool);
+                List<WoodVariant> woodVariants = WoodVariantMapper.getAllWoodVariants(connectionPool);
+                Calculator calculator = new Calculator(woodVariants);
+                List<OrderItem> orderItems = calculator.calculateMaterials(carport, order);
 
-    private static void logout(Context ctx) {
+                for (OrderItem item : orderItems) {
+                    OrderItemMapper.insertOrderItem(item, connectionPool);
+                }
+
+                double totalPrice = calculator.calculateTotalPrice(orderItems);
+                order.setTotalPrice(totalPrice);
+                OrderMapper.updateTotalPrice(order.getOrderId(), totalPrice, connectionPool);
+
+                ctx.sessionAttribute("totalPrice", totalPrice);
+                ctx.attribute("order", order);
+                ctx.attribute("carport", carport);
+                ctx.attribute("orderItems", orderItems);
+                ctx.redirect("/orderConfirmation");
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                ctx.status(500).result("Fejl under ordreoprettelse: " + e.getMessage());
+            }
+        }
+
+
+        private static void logout(Context ctx) {
+
         ctx.req().getSession().invalidate();
         ctx.redirect("/");
-
     }
 
     public static void login(Context ctx, ConnectionPool connectionPool) {

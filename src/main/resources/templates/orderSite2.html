@@ -27,7 +27,9 @@
     <h2>udfyld formularen</h2>
     <h1>REDSKABSRUM</h1>
 
+
     <form method="post" action="/skipStep3">
+
       <div class="toggle-group">
         <label>Tilføj redskabsrum?:</label>
         <div class="toggle">
@@ -45,8 +47,17 @@
       <label for="redskabsrumLængde">Redskabsrum Længde:</label>
       <input type="number" id="redskabsrumLængde" name="redskabsrumLængde" placeholder="Indtast Længde" class="input-field" />
 
+
+      <div class="totalprice">
+        <p><strong>Total pris:</strong> <span th:text="${session.totalPrice} + ' kr'"></span></p>
+      </div>
+    <form method="post" action="/ordercarport">
+      <input type="hidden" name="length" th:value="${session.length}" />
+      <input type="hidden" name="width" th:value="${session.width}" />
+
       <button class="btn">fortsæt</button>
     </form>
+
   </main>
 </div>
 </body>

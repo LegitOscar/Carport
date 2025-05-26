@@ -16,7 +16,7 @@ public class OrderMapper {
             throw new IllegalArgumentException("User cannot be null");
         }
 
-        String sql = "INSERT INTO orders (order_date, total_price, customer_id, order_status, carport_id) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO orders (order_date, total_price, customer_id, order_status, worker_id, carport_id) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (
                 Connection connection = connectionPool.getConnection();
@@ -24,11 +24,14 @@ public class OrderMapper {
         ) {
             Date currentDate = new Date(System.currentTimeMillis());
 
+            int workerId = getAvailableWorkerId(connectionPool);
+
             ps.setDate(1, currentDate); // order_date
             ps.setDouble(2, 0); // default price
             ps.setInt(3, user.getId()); // customer_id
             ps.setString(4, "Pending");
-            ps.setInt(5, carportId);
+            ps.setInt(5, workerId);
+            ps.setInt(6, carportId);
 
             int rowsAffected = ps.executeUpdate();
 
@@ -36,7 +39,7 @@ public class OrderMapper {
                 ResultSet keys = ps.getGeneratedKeys();
                 if (keys.next()) {
                     int orderId = keys.getInt(1);
-                    return new Order(orderId, currentDate.toLocalDate(), 0, "Pending", user.getId(), 0);
+                    return new Order(orderId, currentDate.toLocalDate(), 0, "Pending", user.getId(), workerId);
                 } else {
                     throw new DatabaseException("No ID returned when creating order");
                 }
@@ -73,20 +76,18 @@ public class OrderMapper {
         return orderList;
     }
 
-    public boolean assignWorkerToOrder(Long orderId, Long workerId, ConnectionPool connectionPool) throws DatabaseException, SQLException {
-        String sql = "UPDATE orders SET worker_id = ? WHERE order_id = ?";
-        try (Connection connection = connectionPool.getConnection();
-             PreparedStatement ps = connection.prepareStatement(sql)) {
-
-            ps.setLong(1, workerId);
-            ps.setLong(2, orderId);
-            int affectedRows = ps.executeUpdate();
-            return affectedRows > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+    public static int getAvailableWorkerId(ConnectionPool connectionPool) throws SQLException {
+        String sql = "SELECT worker_id FROM workers LIMIT 1";
+        try (Connection conn = connectionPool.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("worker_id");
+            } else {
+                throw new SQLException("No workers available");
+            }
         }
     }
+
 
     public static List<Order> getAllOrdersPerWorker(int workerId, ConnectionPool connectionPool) throws DatabaseException {
         List<Order> orders = new ArrayList<>();
