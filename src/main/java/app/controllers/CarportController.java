@@ -1,11 +1,7 @@
 package app.controllers;
 
+import app.entities.*;
 import app.persistence.ConnectionPool;
-import app.entities.Carport;
-import app.entities.OrderItem;
-import app.entities.Order;
-import app.entities.User;
-import app.entities.WoodVariant;
 import app.persistence.*;
 import app.services.Calculator;
 import io.javalin.Javalin;
@@ -47,7 +43,9 @@ public class CarportController {
             Order order = OrderMapper.createOrder(user, carport.getCarportId(), connectionPool);
             List<WoodVariant> woodVariants = WoodVariantMapper.getAllWoodVariants(connectionPool);
             Calculator calculator = new Calculator(woodVariants);
-            List<OrderItem> orderItems = calculator.calculateMaterials(carport, order);
+
+            List<FittingsAndScrews> fittingsList = new FittingsAndScrewsMapper().getAllFittingsAndScrews(connectionPool);
+            List<OrderItem> orderItems = calculator.calculateMaterials(carport, order, fittingsList);
 
             for (OrderItem item : orderItems) {
                 OrderItemMapper.insertOrderItem(item, connectionPool);

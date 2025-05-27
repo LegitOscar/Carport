@@ -19,7 +19,7 @@ public class Carport {
         this.lengthCm = lengthCm;
     }
 
-    public int getCarportId() {
+    public static int getCarportId() {
         return carportId;
     }
 
