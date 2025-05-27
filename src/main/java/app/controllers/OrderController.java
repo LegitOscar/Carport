@@ -368,7 +368,7 @@ public class OrderController {
             System.err.println("Kunne ikke sende e-mail: " + e.getMessage());
         }
     }
-
+/*
     private static void addItem(Context ctx, ConnectionPool connectionPool) {
         try {
             int materialId = Integer.parseInt(ctx.formParam("material_id"));
@@ -383,7 +383,7 @@ public class OrderController {
             ctx.status(400).result("Failed to add item: " + e.getMessage());
         }
     }
-
+*/
     public static void updateItem(Context ctx, ConnectionPool connectionPool) {
         try {
             int materialId = Integer.parseInt(ctx.formParam("materialId"));
