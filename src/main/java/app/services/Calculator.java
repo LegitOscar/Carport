@@ -42,7 +42,7 @@ public class Calculator {
         for (OrderItem item : orderItems) {
             total += item.getQuantity() * item.getUnitPrice();
         }
-        return total;
+        return Math.round(total * 100.0) / 100.0;
     }
 
     private List<OrderItem> calculatePoles(Carport carport, Order order) {

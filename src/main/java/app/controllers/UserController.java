@@ -49,7 +49,7 @@ public class UserController {
         app.post("/admin/delete-worker", ctx -> UserController.deleteWorkerFromAdmin(ctx, connectionPool));
     }
 
-    public static void createUser(Context ctx, ConnectionPool connectionPool) {
+    public static void createUser(Context ctx, ConnectionPool connectionPool) throws DatabaseException {
         String navn = ctx.formParam("navn");
         String adresse = ctx.formParam("adresse");
         int postnummer = Integer.parseInt(ctx.formParam("postnummer"));
@@ -74,6 +74,9 @@ public class UserController {
         } catch (Exception e) {
             ctx.attribute("message", "Fejl under oprettelse af bruger: " + e.getMessage());
         }
+        User loggedInUser = UserMapper.login(email, password1, connectionPool);
+        ctx.sessionAttribute("currentUser", loggedInUser);
+        ctx.redirect("/customerprofile");
 
     }
 
@@ -162,8 +165,9 @@ public class UserController {
                 CarportMapper.createCarport(carport, connectionPool);
                 Order order = OrderMapper.createOrder(loggedInUser, carport.getCarportId(), connectionPool);
                 List<WoodVariant> woodVariants = WoodVariantMapper.getAllWoodVariants(connectionPool);
+                List<FittingsAndScrews> fittingsAndScrews = FittingsAndScrewsMapper.getAllFittingsAndScrews(connectionPool);
                 Calculator calculator = new Calculator(woodVariants);
-                List<OrderItem> orderItems = calculator.calculateMaterials(carport, order);
+                List<OrderItem> orderItems = calculator.calculateMaterials(carport, order, fittingsAndScrews);
 
                 for (OrderItem item : orderItems) {
                     OrderItemMapper.insertOrderItem(item, connectionPool);
