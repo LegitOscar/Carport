@@ -17,8 +17,8 @@
       <div class="step icon">🚘</div>
     </div>
     <ul class="info-text">
-      <li><strong>Bredde:</strong> <span th:text="${session.bredde}"></span></li>
-      <li><strong>Længde:</strong> <span th:text="${session.længde}"></span></li>
+      <li><strong>Bredde:</strong> <span th:text="${session.width}"></span></li>
+      <li><strong>Længde:</strong> <span th:text="${session.length}"></span></li>
       <li><strong>Trapeztag:</strong> <span th:text="${session.tag}"></span></li>
     </ul>
   </aside>
@@ -27,9 +27,7 @@
     <h2>udfyld formularen</h2>
     <h1>REDSKABSRUM</h1>
 
-
-    <form method="post" action="/skipStep3">
-
+    <form method="post" action="/ordercarport">
       <div class="toggle-group">
         <label>Tilføj redskabsrum?:</label>
         <div class="toggle">
@@ -42,7 +40,7 @@
       </div>
 
       <label for="redskabsrumBredde">Redskabsrum Bredde:</label>
-      <input type="number" id="redskabsrumBredde" name="redskabsrumBredde" placeholder="Indtast bredde" class="input-field" />
+      <input type="number" id="redskabsrumBredde" name="redskabsrumBredde" placeholder="Indtast bredde" class="input-field" /><br>
 
       <label for="redskabsrumLængde">Redskabsrum Længde:</label>
       <input type="number" id="redskabsrumLængde" name="redskabsrumLængde" placeholder="Indtast Længde" class="input-field" />
@@ -51,10 +49,11 @@
       <div class="totalprice">
         <p><strong>Total pris:</strong> <span th:text="${session.totalPrice} + ' kr'"></span></p>
       </div>
-    <form method="post" action="/ordercarport">
+
       <input type="hidden" name="length" th:value="${session.length}" />
       <input type="hidden" name="width" th:value="${session.width}" />
-
+      <input type="hidden" name="redskabsrumLængde" th:value="${session.redskabsrumLængde}" />
+      <input type="hidden" name="redskabsrumBredde" th:value="${session.redskabsrumBredde}" />
       <button class="btn">fortsæt</button>
     </form>
 
