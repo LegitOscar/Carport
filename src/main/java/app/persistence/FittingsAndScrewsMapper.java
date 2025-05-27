@@ -7,7 +7,7 @@ import java.util.List;
 
 public class FittingsAndScrewsMapper {
 
-    public List<FittingsAndScrews> getAllFittingsAndScrews(ConnectionPool connectionPool) throws SQLException {
+    public static List<FittingsAndScrews> getAllFittingsAndScrews(ConnectionPool connectionPool) throws SQLException {
         List<FittingsAndScrews> list = new ArrayList<>();
         String sql = "SELECT * FROM fittings_and_screws";
 
