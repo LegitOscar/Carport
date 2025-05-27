@@ -1,0 +1,412 @@
+@startuml
+class app.entities.FittingsAndScrews {
+- int FittingsAndScrewsId
+- int MaterialId
+- String sizeFS
+- int QuantityPerPackage
+- double priceFS
++ int getFittingsAndScrewsId()
++ void setFittingsAndScrewsId(int)
++ int getMaterialId()
++ void setMaterialId(int)
++ String getSizeFS()
++ void setSizeFS(String)
++ int getQuantityPerPackage()
++ void setQuantityPerPackage(int)
++ double getPriceFS()
++ void setPriceFS(double)
+}
+
+
+class app.persistence.UserMapper {
+- ConnectionPool connectionPool
++ {static} User login(String,String,ConnectionPool)
++ void createUser(User)
++ {static} User getCustomerProfileById(int,ConnectionPool)
++ {static} User getCustomerByEmail(String,ConnectionPool)
++ {static} void updateUser(User,ConnectionPool)
++ {static} String getCityByPostcode(int,ConnectionPool)
++ {static} List<User> getAllCustomers(ConnectionPool)
++ {static} List<User> getAllWorkers(ConnectionPool)
++ {static} List<User> getUsersByRoleId(int,ConnectionPool)
++ {static} void updateWorkerRole(int,int,ConnectionPool)
++ void createWorker(User)
++ void deleteWorker(int)
++ {static} String getEmailByUserId(int,ConnectionPool)
++ {static} String getNameByUserId(int,ConnectionPool)
+}
+
+
+class app.controllers.UserController {
+- ConnectionPool connectionPool
++ {static} void addRoutes(Javalin,ConnectionPool)
++ {static} void createUser(Context,ConnectionPool)
++ {static} void createUserOrder(Context,ConnectionPool)
+- {static} void logout(Context)
++ {static} void login(Context,ConnectionPool)
++ {static} void getCityByPostcode(Context,ConnectionPool)
++ {static} void showAdminPage(Context,ConnectionPool)
++ {static} void updateUserRole(Context,ConnectionPool)
++ {static} void createWorkerFromAdmin(Context,ConnectionPool)
++ {static} void deleteWorkerFromAdmin(Context,ConnectionPool)
+}
+
+
+class app.persistence.OrderMapper {
++ {static} Order createOrder(User,int,ConnectionPool)
++ {static} List<Order> getAllOrdersPerUser(int,ConnectionPool)
++ {static} int getAvailableWorkerId(ConnectionPool)
++ {static} List<Order> getAllOrdersPerWorker(int,ConnectionPool)
++ {static} List<Order> getOrdersNotAssignedToWorker(int,ConnectionPool)
++ {static} Order getOrderById(int,ConnectionPool)
++ {static} void updateOrder(Order,ConnectionPool)
++ {static} void updateTotalPrice(int,double,ConnectionPool)
++ {static} void deleteOrder(int,ConnectionPool)
++ {static} void assignOrderToWorker(int,int,ConnectionPool)
++ {static} OrderDetails getOrderDetailsById(int,ConnectionPool)
+}
+
+class app.controllers.OrderController {
+- ConnectionPool connectionPool
++ {static} void addRoutes(Javalin,ConnectionPool)
+- {static} void updateOrder(Context,ConnectionPool)
+- {static} void showSellerDashboard(Context,ConnectionPool)
+- {static} void assignOrderToWorker(Context,ConnectionPool)
+- {static} void deleteOrder(Context,ConnectionPool)
+- {static} void getOrdersForUser(Context,ConnectionPool)
++ {static} List<Order> getAllOrders(ConnectionPool)
+- {static} void sendOrderStatusUpdateEmail(Order)
+}
+
+
+class app.services.Calculator {
+- List<WoodVariant> woodVariants
+- {static} int MATERIALID_STOLPE
+- {static} int MATERIALID_SPÆR
+- {static} int MATERIALID_REM
+- {static} int MATERIALID_LØSHOLTER
+- {static} int MATERIALID_STERN
++ List<OrderItem> calculateMaterials(Carport,Order)
++ double calculateTotalPrice(List<OrderItem>)
+- List<OrderItem> calculatePoles(Carport,Order)
+- List<OrderItem> calculateRafters(Carport,Order)
+- List<OrderItem> calculateBeams(Carport,Order)
+- List<OrderItem> calculateWallBraces(Carport,Order)
+- List<OrderItem> calculateStern(Carport,Order)
+- WoodVariant findVariantByLength(int,int)
+- List<WoodVariant> findVariantSet(int,int)
++ List<OrderItem> generateBillOfMaterials(Carport)
+}
+
+
+class app.entities.WoodVariant {
+- int woodVariantId
+- String MaterialName
+- int materialId
+- int lengthCm
+- String size
+- double price
++ int getWoodVariantId()
++ int getMaterialId()
++ String getMaterialName()
++ int getLengthCm()
++ String size()
++ double getPrice()
++ String toString()
+}
+
+
+class app.persistence.CarportMapper {
++ {static} Carport getCarportById(int,ConnectionPool)
++ {static} Carport createCarport(Carport,ConnectionPool)
+}
+
+class app.entities.User {
+- int id
+- String name
+- String address
+- int postcode
+- String city
+- int phone
+- String email
+- String password
+- Integer roleId
++ int getId()
++ void setId(int)
++ String getName()
++ String getAddress()
++ int getPostcode()
++ void setPostcode(int)
++ String getCity()
++ void setCity(String)
++ int getPhone()
++ void setName(String)
++ void setPhone(int)
++ String getEmail()
++ String getPassword()
++ Integer getRoleId()
++ void setRoleId(Integer)
+}
+
+
+class app.persistence.ProductMapper {
++ {static} List<Product> getAllProducts(ConnectionPool)
++ {static} List<ProductVariant> getVariantsByProductId(int,ConnectionPool)
++ {static} ProductVariant getCheapestVariantByMinLength(int,int,ConnectionPool)
+}
+
+class app.persistence.ConnectionPool {
+- {static} ConnectionPool instance
+- {static} HikariDataSource ds
++ {static} ConnectionPool getInstance()
++ {static} ConnectionPool getInstance(String,String,String,String)
++ Connection getConnection()
++ void close()
+- {static} HikariDataSource createHikariConnectionPool(String,String,String,String)
+}
+
+
+class app.controllers.CarportController {
++ {static} void addRoutes(Javalin,ConnectionPool)
++ {static} void handleOrder(Context,ConnectionPool)
++ {static} void previewCarport(Context,ConnectionPool)
+}
+
+class app.entities.Material {
+- int materialId
+- String name
+- String unit
++ int getMaterialId()
++ String getName()
++ String getUnit()
+}
+
+
+class app.entities.CustomerProfile {
+- int customerId
+- String name
+- String email
+- int phone
+- String address
+- int postcode
+- String city
+- String password
+- String role
++ int getCustomerId()
++ void setCustomerId(int)
++ String getName()
++ void setName(String)
++ String getEmail()
++ void setEmail(String)
++ int getPhone()
++ void setPhone(int)
++ String getAddress()
++ void setAddress(String)
++ int getPostcode()
++ void setPostcode(int)
++ String getCity()
++ void setCity(String)
++ String getPassword()
++ void setRole(String)
++ String getRole()
++ void setPassword(String)
+}
+
+
+class app.entities.Order {
+- int orderId
+- LocalDate orderDate
+- double totalPrice
+- String orderStatus
+- int customerId
+- int workerId
+- String internalNotes
++ String getInternalNotes()
++ void setInternalNotes(String)
++ int getOrderId()
++ void setOrderId(int)
++ LocalDate getOrderDate()
++ void setOrderDate(LocalDate)
++ double getTotalPrice()
++ void setTotalPrice(double)
++ String getOrderStatus()
++ void setOrderStatus(String)
++ int getCustomerId()
++ void setCustomerId(int)
++ int getWorkerId()
++ void setWorkerId(int)
++ String toString()
+}
+
+
+class app.config.SessionConfig {
++ {static} SessionHandler sessionConfig()
+}
+
+class util.GmailEmailSenderHTML {
+- String username
+- String password
+- TemplateEngine templateEngine
++ String renderTemplate(String,Map<String,Object>)
++ void sendHtmlEmail(String,String,String)
++ {static} void main(String[])
+}
+
+
+class app.entities.Carport {
+- int carportId
+- int widthCm
+- int lengthCm
+- int BOMId
+- int orderId
++ int getCarportId()
++ void setCarportId(int)
++ int getWidthCm()
++ void setWidthCm(int)
++ int getLengthCm()
++ void setLengthCm(int)
++ int getBOMId()
++ void setBOMId(int)
++ int getOrderId()
++ void setOrderId(int)
+}
+
+
+class app.persistence.WoodVariantMapper {
+- {static} ConnectionPool connectionPool
++ WoodVariant findByMaterialIdAndLength(int,int)
++ {static} List<WoodVariant> getAllWoodVariants(ConnectionPool)
+}
+
+
+class app.entities.OrderDetails {
+- Order order
+- User customer
++ Order getOrder()
++ User getCustomer()
+}
+
+
+class app.entities.ProductVariant {
+- int productVariantId
+- Product product
+- int length
+- int woodTypeId
++ int getProductVariantId()
++ Product getProduct()
++ int getLength()
++ int getWoodTypeId()
++ double getPrice()
+}
+
+
+class app.Main {
+- {static} String USER
+- {static} String PASSWORD
+- {static} String URL
+- {static} String DB
+- {static} ConnectionPool connectionPool
++ {static} void main(String[])
+}
+
+
+class app.config.ThymeleafConfig {
++ {static} TemplateEngine templateEngine()
+}
+
+class app.controllers.CustomerProfileController {
++ {static} void showProfile(Context,ConnectionPool)
++ {static} void editProfile(Context,ConnectionPool)
++ {static} void updateProfile(Context,ConnectionPool)
++ {static} void showUserOrders(Context,ConnectionPool)
++ {static} void showPaymentPage(Context,ConnectionPool)
++ {static} void processPayment(Context,ConnectionPool)
+}
+
+class app.exceptions.DatabaseException {
+}
+class app.persistence.OrderItemMapper {
++ {static} void insertOrderItem(OrderItem,ConnectionPool)
++ {static} List<OrderItem> getOrderItemsByOrderId(int,ConnectionPool)
+}
+
+class app.services.Svg {
+- {static} String SVG_TEMPLATE
+- {static} String SVG_ARROW_DEFS
+- {static} String SVG_RECT_TEMPLATE
+- StringBuilder svg
++ void addRectangle(double,double,double,double,String)
++ void addLine(int,int,int,int,String)
++ void addArrow(int,int,int,int,String)
++ void addText(int,int,int,String)
++ void addSvg(Svg)
++ String toString()
+}
+
+
+class app.entities.Product {
+- int productId
+- String name
+- String unit
+- double price
++ int getProductId()
++ String getName()
++ String getUnit()
++ double getPrice()
+}
+
+
+class app.services.CarportSvg {
+- int width
+- int length
+- Svg carportSvg
+- void addBeams()
+- void addRafters()
+- void addShed(int,int)
+- void addDimensions(int,int)
++ String toString()
+}
+
+
+class app.entities.OrderItem {
+- Order order
+- WoodVariant woodVariant
+- int quantity
+- double unitPrice
+- String description
++ Order getOrder()
++ WoodVariant getWoodVariant()
++ int getQuantity()
++ double getUnitPrice()
++ double getTotalPrice()
++ void setOrder(Order)
++ String getDescription()
++ void setDescription(String)
++ String toString()
+}
+
+
+
+app.entities.Order "1" *-- "1" app.entities.Carport : indeholder
+app.entities.Order "1" *-- "0..*" app.entities.OrderItem : består af
+app.entities.OrderItem "1" *-- "1" app.entities.WoodVariant : bruger
+app.entities.WoodVariant "1" *-- "1" app.entities.Material : består af
+app.entities.ProductVariant "1" *-- "1" app.entities.Product : er variant af
+app.entities.ProductVariant "1" *-- "1" app.entities.WoodVariant : bruger
+app.entities.Order "1" *-- "1" app.entities.User : tilhører
+app.entities.OrderDetails "1" *-- "1" app.entities.Order : detaljer for
+app.entities.OrderDetails "1" *-- "1" app.entities.User : kunde
+app.persistence.UserMapper --> app.entities.User : håndterer
+app.persistence.OrderMapper --> app.entities.Order : håndterer
+app.persistence.OrderItemMapper --> app.entities.OrderItem : håndterer
+app.persistence.CarportMapper --> app.entities.Carport : håndterer
+app.services.Calculator --> app.entities.OrderItem : beregner
+app.services.Calculator --> app.entities.Carport : beregner
+app.services.Calculator --> app.entities.Order : beregner
+app.services.Calculator --> app.entities.WoodVariant : bruger
+app.services.CarportSvg --> app.services.Svg : bruger
+
+
+
+app.exceptions.Exception <|-- app.exceptions.DatabaseException
+@enduml
