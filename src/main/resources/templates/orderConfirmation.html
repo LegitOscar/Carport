@@ -17,9 +17,9 @@
       <div class="step icon active">🚘</div>
     </div>
     <ul class="info-text">
-      <li><strong>Bredde:</strong> <span th:text="${session.bredde}"></span></li>
-      <li><strong>Længde:</strong> <span th:text="${session.længde}"></span></li>
-      <li><strong>Trapeztag:</strong> <span th:text="${session.tag}"></span></li>
+      <li><strong>Bredde:</strong> <span th:text="${session.width}"></span></li>
+      <li><strong>Længde:</strong> <span th:text="${session.length}"></span></li>
+
       <li><strong>Redskabsrum bredde:</strong> <span th:text="${session.redskabsrumBredde}"></span></li>
       <li><strong>Redskabsrum Længde:</strong> <span th:text="${session.redskabsrumLængde}"></span></li>
     </ul>
@@ -57,9 +57,9 @@
     <h4>Design af carport</h4>
     <form method="post" action="/generateCarport">
       <!-- Hidden fields to pass session values -->
-      <input type="hidden" name="bredde" th:value="${session.bredde}">
-      <input type="hidden" name="længde" th:value="${session.længde}">
-      <input type="hidden" name="tag" th:value="${session.tag}">
+      <input type="hidden" name="width" th:value="${session.width}">
+      <input type="hidden" name="length" th:value="${session.length}">
+
       <input type="hidden" name="redskabsrumBredde" th:value="${session.redskabsrumBredde}">
       <input type="hidden" name="redskabsrumLængde" th:value="${session.redskabsrumLængde}">
 

@@ -38,15 +38,16 @@ public class WoodVariantMapper {
                 );
             }
         } catch (SQLException e) {
-            e.printStackTrace(); // todo ændre til exception
+            e.printStackTrace(); // todo Ã¦ndre til exception
         }
         return null;
     }
 
     public static List<WoodVariant> getAllWoodVariants(ConnectionPool connectionPool) throws DatabaseException {
         List<WoodVariant> woodVariants = new ArrayList<>();
-        String sql = "SELECT wv.wood_variant_id, m.name AS material_name, wv.material_id, wv.length_cm, wv.size, wv.price " +
-                "FROM wood_variant wv JOIN material m ON wv.material_id = m.material_id";
+        String sql = "SELECT w.wood_id, m.material_name AS material_name, w.material_id, w.length, w.size, w.price " +
+                "FROM wood_variant w " +
+                "JOIN material m ON w.material_id = m.material_id";
 
         try (Connection conn = connectionPool.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
