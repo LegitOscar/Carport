@@ -198,7 +198,7 @@ public class OrderController {
             Order order = OrderMapper.getOrderById(orderId, connectionPool);
 
             if (order != null) {
-                int carportId = Carport.getCarportId();
+                int carportId = OrderMapper.getCarportIdByOrderId(orderId, connectionPool); // skal laves i mapperen
                 Carport carport = CarportMapper.getCarportById(carportId, connectionPool);
 
                 String oldstatus = order.getOrderStatus();
@@ -400,22 +400,7 @@ public class OrderController {
         }
     }
 
-    /*
-    private static void addItem(Context ctx, ConnectionPool connectionPool) {
-        try {
-            int materialId = Integer.parseInt(ctx.formParam("material_id"));
-            String size = ctx.formParam("size");
-            int quantity = Integer.parseInt(ctx.formParam("quantity_per_package"));
-            double price = Double.parseDouble(ctx.formParam("price"));
 
-            OrderMapper.addItem(materialId, size, quantity, price, connectionPool);
-
-            ctx.redirect("/sellerdashboard");
-        } catch (Exception e) {
-            ctx.status(400).result("Failed to add item: " + e.getMessage());
-        }
-    }
-*/
     public static void updateItem(Context ctx, ConnectionPool connectionPool) {
         try {
             int materialId = Integer.parseInt(ctx.formParam("materialId"));
@@ -449,7 +434,7 @@ public class OrderController {
 
     public static void deleteItem(Context ctx, ConnectionPool connectionPool) {
         try {
-            // Get materialId from form param
+
             int materialId = Integer.parseInt(ctx.formParam("materialId"));
 
             String sql = "DELETE FROM material WHERE material_id = ?";

@@ -56,7 +56,7 @@
     <tr th:each="item : ${billOfMaterials}">
       <td th:text="${item.description}">Beskrivelse</td>
       <td th:text="${item.quantity}">1</td>
-      <td th:text="${item.length}">2400</td>
+      <td th:text="${item.woodVariant != null ? item.woodVariant.lengthCm : 'N/A'}">2400</td>
       <td th:text="${#numbers.formatDecimal(item.unitPrice, 1, 'POINT', 2, 'POINT')} + ' kr'">45.00 kr</td>
       <td th:text="${#numbers.formatDecimal(item.totalPrice, 1, 'POINT', 2, 'POINT')} + ' kr'">90.00 kr</td>
     </tr>
