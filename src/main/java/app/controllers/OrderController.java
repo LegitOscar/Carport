@@ -68,7 +68,7 @@ public class OrderController {
 
         app.get("/orderSite3", ctx -> ctx.render("orderSite3.html"));
 
-
+/*
         app.post("/skipStep3", ctx -> {
             User user = ctx.sessionAttribute("currentUser");
 
@@ -84,14 +84,21 @@ public class OrderController {
                 ctx.redirect("/orderSite3");
             }
         });
-
+*/
         app.post("/generateCarport", ctx -> {
             Locale.setDefault(Locale.US);
 
-            String breddeStr = ctx.formParam("bredde");
-            String længdeStr = ctx.formParam("længde");
+            String breddeStr = ctx.formParam("width");
+            String længdeStr = ctx.formParam("length");
             String shedBreddeStr = ctx.formParam("redskabsrumBredde");
             String shedLængdeStr = ctx.formParam("redskabsrumLængde");
+
+            //DEBUGING
+            System.out.println("width = " + breddeStr);
+            System.out.println("length = " + længdeStr);
+            System.out.println("shed width = " + shedBreddeStr);
+            System.out.println("shed length = " + shedLængdeStr);
+
 
             if (breddeStr == null || længdeStr == null || shedBreddeStr == null || shedLængdeStr == null) {
                 ctx.status(400).result("En eller flere parametre mangler!");

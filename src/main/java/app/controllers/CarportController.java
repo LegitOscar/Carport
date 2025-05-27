@@ -26,6 +26,12 @@ public class CarportController {
         int widthCm = Integer.parseInt(ctx.formParam("width"));
         User user = ctx.sessionAttribute("currentUser");
 
+        int redskabsrumBredde = Integer.parseInt(ctx.formParam("redskabsrumBredde"));
+        int redskabsrumLængde = Integer.parseInt(ctx.formParam("redskabsrumLængde"));
+
+        ctx.sessionAttribute("redskabsrumBredde", redskabsrumBredde);
+        ctx.sessionAttribute("redskabsrumLængde", redskabsrumLængde);
+
         try {
             Carport carport = new Carport(lengthCm, widthCm);
             CarportMapper.createCarport(carport, connectionPool);
@@ -57,6 +63,8 @@ public class CarportController {
             ctx.attribute("order", order);
             ctx.attribute("carport", carport);
             ctx.attribute("orderItems", orderItems);
+            ctx.attribute("totalPrice", totalPrice);
+            System.out.println("Total price sat i session: " + totalPrice);
             ctx.redirect("/orderConfirmation");
 
         } catch (Exception e) {
@@ -73,10 +81,12 @@ public class CarportController {
 
 
             Carport carport = new Carport(lengthCm, widthCm);
+            ctx.sessionAttribute("pendingCarport", carport);
 
             List<WoodVariant> woodVariants = WoodVariantMapper.getAllWoodVariants(connectionPool);
 
             Calculator calculator = new Calculator(woodVariants);
+
             List<OrderItem> orderItems = calculator.generateBillOfMaterials(carport);
             double totalPrice = calculator.calculateTotalPrice(orderItems);
 
