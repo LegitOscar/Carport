@@ -7,7 +7,6 @@ import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class UserMapperTest {
-
     private static ConnectionPool connectionPool;
     private Context ctx;
     private static final String USER = "postgres";

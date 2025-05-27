@@ -22,7 +22,6 @@ public class OrderMapperTest {
     private static final String PASSWORD = "postgres";
     private static final String URL = "jdbc:postgresql://164.90.223.15:5432/%s?currentSchema=test";
     private static final String TEST_DB = "carport"; // Use a dedicated test DB if possible
-
     @BeforeAll
     void setup() {
         // Initialize the connection pool with test DB credentials

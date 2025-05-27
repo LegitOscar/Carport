@@ -70,7 +70,6 @@ public class UserControllerIntegrationTest {
             UserController.createUser(ctx, connectionPool);
         });
     }
-
     @AfterEach
     public void cleanup() {
         try (Connection conn = connectionPool.getConnection();
