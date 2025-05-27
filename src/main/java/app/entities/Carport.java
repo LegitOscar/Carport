@@ -1,7 +1,7 @@
 package app.entities;
 
 public class Carport {
-    private static int carportId;
+    private int carportId;
     private int widthCm;
     private int lengthCm;
     private int BOMId;
