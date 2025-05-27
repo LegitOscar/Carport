@@ -26,27 +26,33 @@ public class CarportMapper {
         }
     }
 
-        public static Carport createCarport(Carport carport, ConnectionPool connectionPool) {
-            String sql = "INSERT INTO carport (length_cm, width_cm) VALUES (?, ?) RETURNING carport_id";
+    public static Carport createCarport(Carport carport, ConnectionPool connectionPool) {
+        String sql = "INSERT INTO carport (carport_length, carport_width) VALUES (?, ?)";
 
-            try (Connection connection = connectionPool.getConnection();
-                 PreparedStatement ps = connection.prepareStatement(sql)) {
+        try (Connection connection = connectionPool.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-                ps.setInt(1, carport.getLengthCm());
-                ps.setInt(2, carport.getWidthCm());
+            ps.setInt(1, carport.getLengthCm());
+            ps.setInt(2, carport.getWidthCm());
 
-                ResultSet rs = ps.executeQuery();
-                if (rs.next()) {
-                    int id = rs.getInt("carport_id");
-                    carport.setCarportId(id);
-                    return carport;
-                } else {
-                    throw new RuntimeException("Fejl ved oprettelse af carport – intet ID returneret");
+            int rowsAffected = ps.executeUpdate();
+
+            if (rowsAffected == 1) {
+                try (ResultSet rs = ps.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        int id = rs.getInt(1);
+                        carport.setCarportId(id);
+                        return carport;
+                    } else {
+                        throw new RuntimeException("Fejl ved oprettelse af carport – intet ID returneret");
+                    }
                 }
-
-            } catch (SQLException e) {
-                throw new RuntimeException("Fejl ved oprettelse af carport", e);
+            } else {
+                throw new RuntimeException("Fejl ved oprettelse af carport – ingen rækker oprettet");
             }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Fejl ved oprettelse af carport", e);
         }
     }
-
+}
