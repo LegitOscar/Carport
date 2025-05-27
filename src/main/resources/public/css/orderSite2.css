@@ -15,7 +15,7 @@ body {
 }
 
 .sidebar {
-    width: 250px;
+    width: 20%;
     background-color: #0f3e7e;
     color: white;
     padding: 2rem 1rem;
@@ -79,8 +79,7 @@ body {
 }
 
 .form-section {
-
-    flex:1;
+    width: 80%;
     padding: 4rem;
     background-color: white;
     justify-content: center;

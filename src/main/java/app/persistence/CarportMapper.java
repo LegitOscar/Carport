@@ -4,10 +4,7 @@ import app.entities.Carport;
 import app.exceptions.DatabaseException;
 import app.persistence.ConnectionPool;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class CarportMapper {
     public static Carport getCarportById(int id, ConnectionPool pool) throws DatabaseException {

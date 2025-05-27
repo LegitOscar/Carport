@@ -107,6 +107,13 @@
                 <td th:text="${orders.orderStatus}">Afventer</td>
                 <td th:text="${orders.totalPrice} + ' kr.'">1000 kr.</td>
 
+                <td>
+                    <form th:if="${orders.orderStatus.equalsIgnoreCase('Payment')}"
+                          th:action="@{'/pay/' + ${orders.orderId}}"
+                          method="get">
+                        <button type="submit">Betal</button>
+                    </form>
+                </td>
             </tr>
             </tbody>
         </table>

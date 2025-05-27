@@ -15,6 +15,24 @@
         .btn-delete { background-color: #f44336; color: white; }
         .btn-save { background-color: #008CBA; color: white; }
         .btn-cancel { background-color: #bbb; color: white; text-decoration: none; padding: 6px 12px; }
+        td.notes-cell {
+            max-width: 200px;
+            max-height: 4.5em;
+            white-space: normal;
+            overflow-y: auto;
+            word-wrap: break-word;
+        }
+        textarea {
+            width: 100%;
+            box-sizing: border-box;
+        }
+        /* Styling for details row */
+        tr.details-row td {
+            background: #f9f9f9;
+            padding: 10px;
+            font-size: 0.9em;
+            border-top: none;
+        }
     </style>
 </head>
 <body>
@@ -30,18 +48,23 @@
         <th>Pris</th>
         <th>Status</th>
         <th>Kunde ID</th>
+        <th>Interne Noter</th>
         <th>Handlinger</th>
     </tr>
     </thead>
     <tbody>
     <th:block th:each="order : ${orders}">
-        <!-- Display row normally if not editing this order -->
-        <tr th:if="${editOrderId} != ${order.orderId}">
-            <td th:text="${order.orderId}"></td>
+        <!-- Normal order row -->
+        <tr>
+            <td>
+                <a th:href="@{/sellerdashboard(detailsOrderId=${order.orderId})}"
+                   th:text="${order.orderId}"></a>
+            </td>
             <td th:text="${order.orderDate}"></td>
             <td th:text="${order.totalPrice}"></td>
             <td th:text="${order.orderStatus}"></td>
             <td th:text="${order.customerId}"></td>
+            <td class="notes-cell" th:text="${order.internalNotes}"></td>
             <td>
                 <!-- Edit button -->
                 <form method="get" th:action="@{/sellerdashboard}" class="inline-form">
@@ -57,7 +80,25 @@
             </td>
         </tr>
 
-        <!-- Edit Form Row -->
+        <!-- Expanded details row, only shown if this order is selected -->
+        <tr th:if="${detailsOrderId} == ${order.orderId}" class="details-row">
+            <td colspan="7">
+                <strong>Ordredetaljer:</strong><br/>
+                Dato: <span th:text="${orderDetails.order.orderDate}"></span><br/>
+                Pris: <span th:text="${orderDetails.order.totalPrice}"></span><br/>
+                Status: <span th:text="${orderDetails.order.orderStatus}"></span><br/>
+                Interne Noter: <span th:text="${orderDetails.order.internalNotes}"></span><br/>
+                <hr/>
+                <strong>Kundedetaljer:</strong><br/>
+                Navn: <span th:text="${orderDetails.customer.name}"></span><br/>
+                Email: <span th:text="${orderDetails.customer.email}"></span><br/>
+                Telefon: <span th:text="${orderDetails.customer.phone}"></span><br/>
+                Adresse: <span th:text="${orderDetails.customer.address}"></span><br/>
+                Postnummer: <span th:text="${orderDetails.customer.postcode}"></span><br/>
+            </td>
+        </tr>
+
+        <!-- Edit form row -->
         <tr th:if="${editOrderId} == ${order.orderId}" class="edit-row">
             <td>
                 <span th:text="${order.orderId}"></span>
@@ -70,13 +111,17 @@
             <td>
                 <select name="orderStatus" form="editForm">
                     <option value="Pending" th:selected="${order.orderStatus == 'Pending'}">Pending</option>
-                    <option value="Confirmed" th:selected="${order.orderStatus == 'Confirmed'}">Confirmed</option>
-                    <option value="Shipped" th:selected="${order.orderStatus == 'Shipped'}">Shipped</option>
+                    <option value="in progress" th:selected="${order.orderStatus == 'in progress'}">in progress</option>
+                    <option value="payment" th:selected="${order.orderStatus == 'payment'}">payment</option>
                     <option value="Completed" th:selected="${order.orderStatus == 'Completed'}">Completed</option>
                     <option value="Cancelled" th:selected="${order.orderStatus == 'Cancelled'}">Cancelled</option>
                 </select>
             </td>
             <td th:text="${order.customerId}"></td>
+            <td>
+                <textarea name="internalNotes" form="editForm"
+                          rows="4" placeholder="Skriv interne noter her...">[[${order.internalNotes}]]</textarea>
+            </td>
             <td>
                 <form id="editForm" method="post" th:action="@{/updateorder}">
                     <button class="btn btn-save" type="submit">Gem</button>
@@ -98,7 +143,7 @@
         <th>Status</th>
         <th>Kunde ID</th>
         <th>Worker ID</th>
-        <th>Handlinger</th> <!-- New column added -->
+        <th>Handlinger</th>
     </tr>
     </thead>
     <tbody>
@@ -110,7 +155,6 @@
         <td th:text="${order.customerId}"></td>
         <td th:text="${order.workerId}"></td>
         <td>
-            <!-- Button "Vælg" -->
             <form method="post" th:action="@{/selectorder}" class="inline-form">
                 <input type="hidden" name="orderId" th:value="${order.orderId}" />
                 <button class="btn btn-edit" type="submit">Vælg</button>

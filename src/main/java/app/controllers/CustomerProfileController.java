@@ -118,5 +118,27 @@ public static void showProfile(Context ctx, ConnectionPool connectionPool) {
             ctx.status(500).result("Fejl ved hentning af ordrer: " + e.getMessage());
         }
     }
+    public static void showPaymentPage(Context ctx, ConnectionPool connectionPool) {
+        int orderId = Integer.parseInt(ctx.pathParam("orderId"));
+        ctx.attribute("orderId", orderId);
+        ctx.render("payment.html");
+    }
 
+    public static void processPayment(Context ctx, ConnectionPool connectionPool) {
+        int orderId = Integer.parseInt(ctx.pathParam("orderId"));
+
+        try {
+            Order order = OrderMapper.getOrderById(orderId, connectionPool);
+
+            if (order != null && "pending".equalsIgnoreCase(order.getOrderStatus())) {
+                order.setOrderStatus("completed");
+                OrderMapper.updateOrder(order, connectionPool);
+            }
+
+            ctx.redirect("customerprofile.html");
+
+        } catch (DatabaseException e) {
+            ctx.status(500).result("Betalingsfejl: " + e.getMessage());
+        }
+    }
 }

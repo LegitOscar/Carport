@@ -3,6 +3,7 @@ package app;
 import app.config.SessionConfig;
 import app.config.ThymeleafConfig;
 import app.controllers.CarportController;
+import app.controllers.CustomerProfileController;
 import app.controllers.OrderController;
 import app.controllers.UserController;
 import app.entities.Order;
@@ -49,8 +50,13 @@ public class Main {
         UserController.addRoutes(app,connectionPool);
         OrderController.addRoutes(app, connectionPool);
 
-        CarportController carportController = new CarportController(new CarportMapper(connectionPool), connectionPool);
-        carportController.addRoutes(app, connectionPool);
+
+       
+
+
+        CarportController.addRoutes(app, connectionPool);
+        app.get("/pay/{orderId}", ctx -> CustomerProfileController.showPaymentPage(ctx, connectionPool));
+        app.post("/pay/{orderId}", ctx -> CustomerProfileController.processPayment(ctx, connectionPool));
 
         }
     }
