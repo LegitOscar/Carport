@@ -198,6 +198,9 @@ public class OrderController {
             Order order = OrderMapper.getOrderById(orderId, connectionPool);
 
             if (order != null) {
+                int carportId = Carport.getCarportId();
+                Carport carport = CarportMapper.getCarportById(carportId, connectionPool);
+
                 String oldstatus = order.getOrderStatus();
                 order.setTotalPrice(totalPrice);
                 order.setOrderStatus(orderStatus);
@@ -208,6 +211,8 @@ public class OrderController {
                 if("Pending".equalsIgnoreCase(oldstatus) && "Confirmed".equalsIgnoreCase(orderStatus)){
                     sendOrderStatusUpdateEmail(order);
                 }
+                if("payment".equalsIgnoreCase(oldstatus) && "Completed".equalsIgnoreCase(orderStatus)){
+                    sendBillOfMaterialsEmail(order,carport);}
             }
 
             ctx.redirect("/sellerdashboard");
@@ -368,7 +373,34 @@ public class OrderController {
             System.err.println("Kunne ikke sende e-mail: " + e.getMessage());
         }
     }
-/*
+
+    private static void sendBillOfMaterialsEmail(Order order, Carport carport) throws DatabaseException {
+        GmailEmailSenderHTML sender = new GmailEmailSenderHTML();
+        ConnectionPool connectionPool = new ConnectionPool();
+
+        String customerEmail = UserMapper.getEmailByUserId(order.getCustomerId(), connectionPool);
+        String customerName = UserMapper.getNameByUserId(order.getCustomerId(), connectionPool);
+
+        List<WoodVariant> woodVariants = WoodVariantMapper.getAllWoodVariants(connectionPool);
+        Calculator calculator = new Calculator(woodVariants);
+        List<OrderItem> items = calculator.generateBillOfMaterials(carport);
+        Map<String, Object> variables = Map.of(
+                "title", "Din ordre er betalt!",
+                "name", customerName != null ? customerName : "kunde",
+                "message", "Ordre #" + order.getOrderId() + " er blevet betalt - derfor modtager du nu din stykliste",
+                "billOfMaterials", items // Vigtigt: hele listen sendes ind
+        );
+
+        String html = sender.renderTemplate("BillOfMaterials.html", variables);
+
+        try {
+            sender.sendHtmlEmail(customerEmail, "Carport fra FOG - Stykliste", html);
+        } catch (MessagingException e) {
+            System.err.println("Kunne ikke sende e-mail: " + e.getMessage());
+        }
+    }
+
+    /*
     private static void addItem(Context ctx, ConnectionPool connectionPool) {
         try {
             int materialId = Integer.parseInt(ctx.formParam("material_id"));
