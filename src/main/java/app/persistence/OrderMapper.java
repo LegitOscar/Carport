@@ -279,5 +279,29 @@ public class OrderMapper {
         return null;  // or throw exception if order not found
     }
 
+    public static int getCarportIdByOrderId(int orderId, ConnectionPool connectionPool) throws DatabaseException {
+        int carportId = -1;
+        String sql = "SELECT carport_id FROM orders WHERE order_id = ?";
+
+        try (Connection connection = connectionPool.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+
+            ps.setInt(1, orderId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    carportId = rs.getInt("carport_id");
+                } else {
+                    throw new DatabaseException("Order with id " + orderId + " not found.");
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new DatabaseException("Error fetching carportId for orderId " + orderId);
+        }
+
+        return carportId;
+    }
+
 
 }

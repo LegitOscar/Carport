@@ -14,9 +14,9 @@ public class CarportMapper {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                int width = rs.getInt("width");
-                int length = rs.getInt("length");
-                boolean hasShed = rs.getBoolean("shed");
+                int width = rs.getInt("carport_width");
+                int length = rs.getInt("carport_length");
+
                 return new Carport(id, width, length);
             } else {
                 throw new DatabaseException("Carport ikke fundet med ID: " + id);

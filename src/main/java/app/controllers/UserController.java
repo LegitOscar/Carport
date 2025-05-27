@@ -80,44 +80,6 @@ public class UserController {
 
     }
 
-/*
-    public static void createUserOrder(Context ctx, ConnectionPool connectionPool) {
-        try {
-            String navn = ctx.formParam("navn");
-            String adresse = ctx.formParam("adresse");
-            String postnummer = ctx.formParam("postnummer");
-            String by = ctx.formParam("by");
-            String telefon = ctx.formParam("telefon");
-            String email = ctx.formParam("email");
-            String password1 = ctx.formParam("password1");
-            String password2 = ctx.formParam("password2");
-
-            if (!password1.equals(password2)) {
-                ctx.result("Passwords do not match");
-                return;
-            }
-
-            int parsedPostnummer = Integer.parseInt(postnummer);
-            int parsedTelefon = Integer.parseInt(telefon);
-
-
-            User user = new User(navn, adresse, parsedPostnummer, by, parsedTelefon, email, password1);
-            UserMapper userMapper = new UserMapper(connectionPool);
-            userMapper.createUser(user);
-
-
-            User createdUser = UserMapper.getCustomerByEmail(email, connectionPool);
-
-            ctx.sessionAttribute("currentUser", createdUser);
-
-            ctx.redirect("/orderConfirmation");
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            ctx.status(500).result("Fejl ved oprettelse af bruger: " + e.getMessage());
-        }
-    }
-    */
 
     public static void createUserOrder(Context ctx, ConnectionPool connectionPool) {
             // Opret bruger
