@@ -8,8 +8,6 @@ public class CarportSvg {
     public CarportSvg(int width, int length, int shedWidth, int shedLength) {
         this.width = width;
         this.length = length;
-
-        // ÆNDRET: Udvidet viewBox og dimensioner for at give plads til pile og tekst
         int viewBoxWidth = length + 100;
         int viewBoxHeight = width + 100;
 
@@ -43,7 +41,7 @@ public class CarportSvg {
     }
 
     private void addDimensions(int width, int length) {
-        // ÆNDRET: Arrow linjer med stroke-width for tydelighed
+
         carportSvg.addArrow(length + 20, 0, length + 20, width, "stroke:black; stroke-width:2px");
         carportSvg.addArrow(0, width + 20, length, width + 20, "stroke:black; stroke-width:2px");
 

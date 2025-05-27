@@ -9,7 +9,6 @@ public class OrderDetails {
         this.customer = customer;
     }
 
-    // getters and setters
     public Order getOrder() { return order; }
     public User getCustomer() { return customer; }
 }

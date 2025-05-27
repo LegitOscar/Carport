@@ -36,7 +36,7 @@ public class CarportController {
                 ctx.sessionAttribute("pendingCarport", carport);
                 ctx.sessionAttribute("width", widthCm);
                 ctx.sessionAttribute("length", lengthCm);
-                ctx.render("orderSite3.html"); // en side hvor brugeren udfylder navn, adresse, etc.
+                ctx.render("orderSite3.html");
                 return;
             }
 
@@ -71,7 +71,6 @@ public class CarportController {
         }
     }
 
-
     public static void previewCarport(Context ctx, ConnectionPool connectionPool) {
         try {
             int lengthCm = Integer.parseInt(ctx.formParam("length"));
@@ -95,7 +94,6 @@ public class CarportController {
             ctx.sessionAttribute("width", widthCm);
             ctx.sessionAttribute("length", lengthCm);
             ctx.redirect("/orderSite2");
-
 
         } catch (NumberFormatException e) {
             ctx.status(400).result("Ugyldigt input");

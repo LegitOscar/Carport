@@ -17,10 +17,9 @@ public class UserMapper
         this.connectionPool = connectionPool;
     }
 
-
     public static User login(String email, String password, ConnectionPool connectionPool) throws DatabaseException {
         try (Connection connection = connectionPool.getConnection()) {
-            // Check customer
+
             String sqlCustomer = "SELECT * FROM customer WHERE customer_email=? AND customer_password=?";
             try (PreparedStatement ps = connection.prepareStatement(sqlCustomer)) {
                 ps.setString(1, email);
@@ -57,7 +56,6 @@ public class UserMapper
         }
     }
 
-
     public void createUser(User user) throws DatabaseException {
         String checkPostcodeSql = "SELECT 1 FROM postcode WHERE postcode = ?";
         String insertCustomerSql = """
@@ -72,7 +70,6 @@ public class UserMapper
             conn = connectionPool.getConnection();
             conn.setAutoCommit(false);
 
-            // Check if postcode exists
             try (PreparedStatement checkStmt = conn.prepareStatement(checkPostcodeSql)) {
                 checkStmt.setInt(1, user.getPostcode());
                 ResultSet rs = checkStmt.executeQuery();
@@ -81,7 +78,6 @@ public class UserMapper
                 }
             }
 
-            // Insert new customer
             try (PreparedStatement custStmt = conn.prepareStatement(insertCustomerSql)) {
                 custStmt.setString(1, user.getName());
                 custStmt.setString(2, user.getEmail());
@@ -198,19 +194,17 @@ public class UserMapper
 
             try (PreparedStatement customerStmt = connection.prepareStatement(updateCustomerSql)) {
 
-                // Step 1: Check if the new postcode exists in the postcode table
                 String cityInDb = getCityByPostcode(user.getPostcode(), connectionPool);
                 if (cityInDb == null || cityInDb.isEmpty()) {
                     throw new DatabaseException("Den indtastede postkode findes ikke i systemet.");
                 }
 
-                // Step 2: Update customer with new data (including the new valid postcode)
                 customerStmt.setString(1, user.getName());
                 customerStmt.setString(2, user.getEmail());
                 customerStmt.setInt(3, user.getPhone());
                 customerStmt.setString(4, user.getAddress());
-                customerStmt.setInt(5, user.getPostcode());   // <- new postcode
-                customerStmt.setInt(6, user.getId());         // <- where customer_id = ?
+                customerStmt.setInt(5, user.getPostcode());
+                customerStmt.setInt(6, user.getId());
 
                 customerStmt.executeUpdate();
                 connection.commit();
@@ -223,7 +217,6 @@ public class UserMapper
             throw new DatabaseException("Databaseforbindelse fejlede", e.getMessage());
         }
     }
-
 
     public static String getCityByPostcode(int postcode, ConnectionPool connectionPool) throws DatabaseException {
         try (Connection conn = connectionPool.getConnection()) {
@@ -242,7 +235,6 @@ public class UserMapper
         }
     }
 
-
     public static List<User> getAllCustomers(ConnectionPool connectionPool) throws SQLException {
         List<User> customers = new ArrayList<>();
         String sql = "SELECT customer_id, customer_name, customer_email, customer_phone, customer_address, postcode, customer_password FROM customer";
@@ -256,18 +248,17 @@ public class UserMapper
                         rs.getString("customer_name"),
                         rs.getString("customer_address"),
                         rs.getInt("postcode"),
-                        null,  // city not stored in customer, you may join postcode table if needed
+                        null,
                         rs.getInt("customer_phone"),
                         rs.getString("customer_email"),
                         rs.getString("customer_password")
                 );
-                customer.setId(rs.getInt("customer_id"));  // set id separately
+                customer.setId(rs.getInt("customer_id"));
                 customers.add(customer);
             }
         }
         return customers;
     }
-
 
     public static List<User> getAllWorkers(ConnectionPool connectionPool) throws SQLException {
         List<User> workers = new ArrayList<>();
@@ -285,37 +276,30 @@ public class UserMapper
                         rs.getInt("role_id")
                 );
                 // Set additional info (name, phone)
-                worker.setName(rs.getString("worker_name"));  // you'll need to add setName() method in User class
-                worker.setPhone(rs.getInt("worker_phone"));   // add setPhone() method in User class
+                worker.setName(rs.getString("worker_name"));
+                worker.setPhone(rs.getInt("worker_phone"));
                 workers.add(worker);
             }
         }
         return workers;
     }
 
-
-
     public static List<User> getUsersByRoleId(int roleId, ConnectionPool connectionPool) throws SQLException {
         List<User> users = new ArrayList<>();
         String sql;
 
-        // If role is customer
         if (roleId == 1) {
             sql = "SELECT customer_id AS id, customer_name AS name, customer_address AS address, postcode, NULL AS city, customer_phone AS phone, customer_email AS email, customer_password AS password, NULL AS role_id FROM customer";
         } else {
-            // For workers (role 2 or 3)
             sql = "SELECT worker_id AS id, worker_name AS name, NULL AS address, NULL AS postcode, NULL AS city, worker_phone AS phone, worker_email AS email, worker_password AS password, role_id FROM workers WHERE role_id = ?";
         }
-
         try (Connection conn = connectionPool.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             if (roleId != 1) {
                 ps.setInt(1, roleId);
             }
-
             ResultSet rs = ps.executeQuery();
-
             while (rs.next()) {
                 User user = new User(
                         rs.getString("name"),
@@ -328,20 +312,18 @@ public class UserMapper
                 );
                 user.setId(rs.getInt("id"));
 
-                // RoleId can be null for customers, so set carefully
                 int dbRoleId = rs.getInt("role_id");
                 if (!rs.wasNull()) {
                     user.setRoleId(dbRoleId);
                 } else {
-                    user.setRoleId(1);  // customers are role 1
+                    user.setRoleId(1);
                 }
-
                 users.add(user);
             }
         }
-
         return users;
     }
+
     public static void updateWorkerRole(int workerId, int newRoleId, ConnectionPool connectionPool) throws SQLException {
         String sql = "UPDATE workers SET role_id = ? WHERE worker_id = ?";
 
@@ -411,6 +393,4 @@ public class UserMapper
         }
         return null;
     }
-
-
 }

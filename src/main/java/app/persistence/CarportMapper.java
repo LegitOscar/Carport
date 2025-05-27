@@ -31,10 +31,8 @@ public class CarportMapper {
 
         try (Connection connection = connectionPool.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-
             ps.setInt(1, carport.getLengthCm());
             ps.setInt(2, carport.getWidthCm());
-
             int rowsAffected = ps.executeUpdate();
 
             if (rowsAffected == 1) {

@@ -9,9 +9,8 @@ public class User {
     private int phone;
     private String email;
     private String password;
-    private Integer roleId; // nullable
+    private Integer roleId;
 
-    // Constructor for worker login
     public User(int id, String email, String password, Integer roleId) {
         this.id = id;
         this.email = email;
@@ -19,7 +18,6 @@ public class User {
         this.roleId = roleId;
     }
 
-    // Constructor for customer creation
     public User(String name, String address, int postcode, String city, int phone, String email, String password) {
         this.name = name;
         this.address = address;
@@ -30,7 +28,6 @@ public class User {
         this.password = password;
     }
 
-    //FOR GETTING ALL ORDER AND CUSTOMER INFO
     public User(int id, String name, String email, int phone, String address, int postcode) {
         this.id = id;
         this.name = name;
@@ -48,7 +45,6 @@ public class User {
         this.roleId = roleId;
     }
 
-    // Getters
     public int getId() {
         return id;
     }

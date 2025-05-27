@@ -9,6 +9,8 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+
+// BLIVER SLET IKKE BRUGT - Levn fra en tutorial er blev skrottet.
 public class ProductMapper {
 
     public static List<Product> getAllProducts(ConnectionPool connectionPool) throws DatabaseException {

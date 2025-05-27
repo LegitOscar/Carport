@@ -25,10 +25,9 @@ public class OrderMapper {
             Date currentDate = new Date(System.currentTimeMillis());
 
             int workerId = getAvailableWorkerId(connectionPool);
-
-            ps.setDate(1, currentDate); // order_date
-            ps.setDouble(2, 0); // default price
-            ps.setInt(3, user.getId()); // customer_id
+            ps.setDate(1, currentDate);
+            ps.setDouble(2, 0);
+            ps.setInt(3, user.getId());
             ps.setString(4, "Pending");
             ps.setInt(5, workerId);
             ps.setInt(6, carportId);
@@ -87,7 +86,6 @@ public class OrderMapper {
             }
         }
     }
-
 
     public static List<Order> getAllOrdersPerWorker(int workerId, ConnectionPool connectionPool) throws DatabaseException {
         List<Order> orders = new ArrayList<>();
@@ -248,7 +246,6 @@ public class OrderMapper {
             ps.setInt(1, orderId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    // Build Order object
                     Order order = new Order(
                             rs.getInt("order_id"),
                             rs.getDate("order_date").toLocalDate(),
@@ -259,7 +256,6 @@ public class OrderMapper {
                             rs.getString("internal_notes")
                     );
 
-                    // Build User object (customer)
                     User customer = new User(
                             rs.getInt("customer_id"),
                             rs.getString("customer_name"),
@@ -275,8 +271,7 @@ public class OrderMapper {
         } catch (SQLException e) {
             throw new DatabaseException("Error getting order details", e.getMessage());
         }
-
-        return null;  // or throw exception if order not found
+        return null;
     }
 
     public static int getCarportIdByOrderId(int orderId, ConnectionPool connectionPool) throws DatabaseException {
@@ -302,6 +297,4 @@ public class OrderMapper {
 
         return carportId;
     }
-
-
 }

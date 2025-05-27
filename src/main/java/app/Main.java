@@ -32,7 +32,6 @@ public class Main {
 
     public static void main(String[] args) throws DatabaseException {
 
-
         Javalin app = Javalin.create(config -> {
             config.staticFiles.add(staticFiles -> {
                 staticFiles.directory = "/public";
@@ -44,16 +43,10 @@ public class Main {
             config.fileRenderer(new JavalinThymeleaf(ThymeleafConfig.templateEngine()));
         }).start(7070);
 
-
         // Routing
         app.get("/", ctx ->  ctx.render("index.html"));
         UserController.addRoutes(app,connectionPool);
         OrderController.addRoutes(app, connectionPool);
-
-
-       
-
-
         CarportController.addRoutes(app, connectionPool);
         app.get("/pay/{orderId}", ctx -> CustomerProfileController.showPaymentPage(ctx, connectionPool));
         app.post("/pay/{orderId}", ctx -> CustomerProfileController.processPayment(ctx, connectionPool));

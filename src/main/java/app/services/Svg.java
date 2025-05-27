@@ -21,7 +21,7 @@ public class Svg {
 
     public Svg(String viewBox, String width, String height) {
         svg.append(String.format(SVG_TEMPLATE, viewBox, width, height));
-        svg.append(SVG_ARROW_DEFS); // ✅ tilføj pil-defs
+        svg.append(SVG_ARROW_DEFS);
     }
 
     public void addRectangle(double x, double y, double width, double height, String style) {
@@ -29,7 +29,6 @@ public class Svg {
     }
 
     public void addLine(int x1, int y1, int x2, int y2, String style) {
-        // Ikke brugt endnu
     }
 
     public void addArrow(int x1, int y1, int x2, int y2, String style) {
@@ -50,7 +49,7 @@ public class Svg {
 
     @Override
     public String toString() {
-        // ✅ sikrer kun én afslutning
+
         if (!svg.toString().endsWith("</svg>")) {
             svg.append("</svg>");
         }

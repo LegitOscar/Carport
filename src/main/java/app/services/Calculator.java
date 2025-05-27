@@ -31,7 +31,6 @@ public class Calculator {
         result.addAll(calculateWallBraces(carport, order));
         result.addAll(calculateStern(carport, order));
 
-        // Tilføj beslag og skruer
         result.addAll(calculateFittingsAndScrews(order, fittingsList, result));
 
         return result;
@@ -101,7 +100,6 @@ public class Calculator {
                 items.add(new OrderItem(order, variant, 1, variant.getPrice(), description));
             }
         }
-
         return items;
     }
 
@@ -140,7 +138,7 @@ public class Calculator {
 
                 if (fittingSize.contains("beslag")) {
                     if (desc.contains("spær")) {
-                        neededPerPiece = 2;  // eksempel: beslag til hver ende
+                        neededPerPiece = 2;
                         usageDescription = "montering af spær";
                     } else if (desc.contains("rem")) {
                         neededPerPiece = 2;
@@ -181,7 +179,6 @@ public class Calculator {
                 candidates.add(variant);
             }
         }
-
         candidates.sort((a, b) -> b.getLengthCm() - a.getLengthCm());
 
         int total = 0;
@@ -190,7 +187,6 @@ public class Calculator {
             matches.add(variant);
             total += variant.getLengthCm();
         }
-
         return matches;
     }
 
@@ -204,7 +200,6 @@ public class Calculator {
                 matching.add(variant);
             }
         }
-
         matching.sort((a, b) -> b.getLengthCm() - a.getLengthCm());
 
         for (WoodVariant variant : matching) {
@@ -213,7 +208,6 @@ public class Calculator {
                 remaining -= variant.getLengthCm();
             }
         }
-
         for (WoodVariant variant : matching) {
             if (variant.getLengthCm() >= remaining) {
                 result.add(variant);

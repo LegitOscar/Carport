@@ -11,8 +11,6 @@ public class Order {
     private int workerId;
     private String internalNotes;
 
-
-
     public Order (int orderId, LocalDate orderDate, double totalPrice, String orderStatus, int customerId, int workerId, String internalNotes){
        this.orderId = orderId;
        this.orderDate = orderDate;
@@ -34,7 +32,6 @@ public class Order {
 
 
     }
-
     public String getInternalNotes(){
         return internalNotes;
     }
@@ -90,8 +87,6 @@ public class Order {
     public void setWorkerId(int workerId){
         this.workerId = workerId;
     }
-
-
 
     @Override
     public String toString() {

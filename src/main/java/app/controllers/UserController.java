@@ -64,7 +64,6 @@ public class UserController {
             ctx.render("createuser.html");
             return;
         }
-
         User user = new User(navn, adresse, postnummer, by, telefon, email, password1);
         UserMapper userMapper = new UserMapper(connectionPool);
 
@@ -77,12 +76,9 @@ public class UserController {
         User loggedInUser = UserMapper.login(email, password1, connectionPool);
         ctx.sessionAttribute("currentUser", loggedInUser);
         ctx.redirect("/customerprofile");
-
     }
 
-
     public static void createUserOrder(Context ctx, ConnectionPool connectionPool) {
-            // Opret bruger
             String navn = ctx.formParam("navn");
             String adresse = ctx.formParam("adresse");
             int postnummer = Integer.parseInt(ctx.formParam("postnummer"));
@@ -94,13 +90,11 @@ public class UserController {
 
             if (!password1.equals(password2)) {
                 ctx.attribute("message", "Passwords do not match.");
-                ctx.render("orderSite3.html"); // vis samme formular igen
+                ctx.render("orderSite3.html");
                 return;
             }
-
             User user = new User(navn, adresse, postnummer, by, telefon, email, password1);
             UserMapper userMapper = new UserMapper(connectionPool);
-
             try {
                 userMapper.createUser(user);
                 ctx.attribute("message", "Bruger oprettet!");
@@ -110,20 +104,16 @@ public class UserController {
                 return;
             }
 
-            // Log brugeren ind og gem i session
             try {
                 User loggedInUser = UserMapper.login(email, password1, connectionPool);
                 ctx.sessionAttribute("currentUser", loggedInUser);
 
-                // Hent carport fra session
                 Carport carport = ctx.sessionAttribute("pendingCarport");
                 if (carport == null) {
                     ctx.status(400).result("Ingen carport fundet i session");
                     return;
                 }
 
-
-                // Fortsæt med ordreoprettelse
                 CarportMapper.createCarport(carport, connectionPool);
                 Order order = OrderMapper.createOrder(loggedInUser, carport.getCarportId(), connectionPool);
                 List<WoodVariant> woodVariants = WoodVariantMapper.getAllWoodVariants(connectionPool);
@@ -151,7 +141,6 @@ public class UserController {
             }
         }
 
-
         private static void logout(Context ctx) {
 
         ctx.req().getSession().invalidate();
@@ -169,31 +158,23 @@ public class UserController {
                 ctx.render("login.html");
                 return;
             }
-
             ctx.sessionAttribute("currentUser", user);
-            ctx.sessionAttribute("workerId", user.getId());  // Store user ID in session for workers/sellers
-
+            ctx.sessionAttribute("workerId", user.getId());
             Integer roleId = user.getRoleId();
             System.out.println("User logged in with roleId: " + roleId);
-
             if (roleId == null) {
                 ctx.redirect("/customerprofile");
-
             } else {
-
                 switch (roleId){
                     case 1:
                         ctx.redirect("/customerprofile");
                         break;
-
                     case 2:
                         ctx.redirect("/sellerdashboard");
                         break;
-
                     case 3:
                         ctx.redirect("/admin");
                         break;
-
                     default:
                         ctx.redirect("/index");
                         break;
@@ -206,7 +187,6 @@ public class UserController {
         }
     }
 
-
     public static void getCityByPostcode(Context ctx, ConnectionPool connectionPool) {
         String postcodeParam = ctx.queryParam("postcode");
 
@@ -214,7 +194,6 @@ public class UserController {
             ctx.status(400).result("Postnummer mangler.");
             return;
         }
-
         int postcode;
         try {
             postcode = Integer.parseInt(postcodeParam);
@@ -277,7 +256,6 @@ public class UserController {
             return;
         }
 
-        // Get form parameters
         int workerId = Integer.parseInt(ctx.formParam("workerId"));
         int newRoleId = Integer.parseInt(ctx.formParam("newRoleId"));
 
@@ -330,5 +308,4 @@ public class UserController {
             ctx.status(500).result("Fejl ved sletning af medarbejder: " + e.getMessage());
         }
     }
-
 }

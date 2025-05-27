@@ -26,7 +26,6 @@ public class FittingsAndScrewsMapper {
                 list.add(f);
             }
         }
-
         return list;
     }
 }

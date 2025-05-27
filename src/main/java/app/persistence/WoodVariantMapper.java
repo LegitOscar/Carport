@@ -38,7 +38,7 @@ public class WoodVariantMapper {
                 );
             }
         } catch (SQLException e) {
-            e.printStackTrace(); // todo Ã¦ndre til exception
+            e.printStackTrace();
         }
         return null;
     }
@@ -68,8 +68,6 @@ public class WoodVariantMapper {
         } catch (SQLException e) {
             throw new DatabaseException("Fejl ved hentning af wood_variants", e.getMessage());
         }
-
         return woodVariants;
     }
-
 }

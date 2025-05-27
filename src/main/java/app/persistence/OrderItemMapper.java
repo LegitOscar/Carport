@@ -11,9 +11,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-
-
-
 public class OrderItemMapper {
 
     public static void insertOrderItem(OrderItem orderItem, ConnectionPool connectionPool) throws DatabaseException {
@@ -33,9 +30,6 @@ public class OrderItemMapper {
             throw new DatabaseException("Kunne ikke indsætte orderItem", e.getMessage());
         }
     }
-
-
-
     public static List<OrderItem> getOrderItemsByOrderId(int orderId, ConnectionPool connectionPool) throws DatabaseException {
         List<OrderItem> items = new ArrayList<>();
 
@@ -89,7 +83,6 @@ public class OrderItemMapper {
 
         return items;
     }
-
 
     public static Material getMaterialByName(String materialName, ConnectionPool connectionPool) throws DatabaseException {
         String sql = "SELECT material_id, material_name, unit FROM material WHERE material_name = ?";
@@ -151,7 +144,6 @@ public class OrderItemMapper {
             throw new DatabaseException("Could not insert fitting", e.getMessage());
         }
     }
-
 
 }
 

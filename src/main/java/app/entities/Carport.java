@@ -13,7 +13,6 @@ public class Carport {
         this.lengthCm = lengthCm;
     }
 
-
     public Carport (int widthCm, int lengthCm){
         this.widthCm = widthCm;
         this.lengthCm = lengthCm;
