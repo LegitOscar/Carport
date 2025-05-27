@@ -4,11 +4,9 @@ import app.services.CarportSvg;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import java.sql.*;
+import java.sql.Date;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 import app.entities.*;
 import app.exceptions.DatabaseException;
@@ -38,13 +36,81 @@ public class OrderController {
         app.post("/updateorder", ctx -> updateOrder(ctx, connectionPool));
 
         app.get("/getorders", ctx -> getOrdersForUser(ctx, connectionPool));
+        app.post("/updateitem", ctx -> updateItem(ctx, connectionPool));
 
         app.get("/profile", ctx -> CustomerProfileController.showProfile(ctx, connectionPool));
         app.get("/profile/edit", ctx -> CustomerProfileController.editProfile(ctx, connectionPool));
         app.post("/profile/update", ctx -> CustomerProfileController.updateProfile(ctx, connectionPool));
+        app.post("/deletefitting", ctx -> deleteItem(ctx, connectionPool));
 
 
-        app.get("/sellerdashboard", ctx -> showSellerDashboard(ctx, connectionPool));
+        app.get("/addfitting", ctx -> {
+            Map<String, Object> model = new HashMap<>();
+
+            // Show the "Add Fitting" form
+            model.put("showAddForm", true);
+
+            // Also include the orders like in /sellerdashboard
+            int workerId = ctx.sessionAttribute("workerId"); // Or however you store it
+            List<Order> orders = OrderMapper.getAllOrdersPerWorker(workerId, connectionPool);
+            List<Order> otherOrders = OrderMapper.getOrdersNotAssignedToWorker(workerId, connectionPool);
+
+            model.put("orders", orders);
+            model.put("otherOrders", otherOrders);
+
+            ctx.render("/sellerdashboard.html", model);
+        });
+
+
+        app.get("/sellerdashboard", ctx -> {
+            Integer currentWorkerId = ctx.sessionAttribute("workerId");
+            if (currentWorkerId == null) {
+                ctx.redirect("/login");
+                return;
+            }
+
+            List<Order> orders = OrderMapper.getAllOrdersPerWorker(currentWorkerId, connectionPool);
+            List<Order> otherOrders = OrderMapper.getOrdersNotAssignedToWorker(currentWorkerId, connectionPool);
+
+            // Query materials (fittings)
+            List<Map<String, Object>> fittings = new ArrayList<>();
+            String sql = "SELECT m.material_id, m.material_name, m.unit, f.size, f.quantity_per_package, f.price " +
+                    "FROM material m JOIN fittings_and_screws f ON m.material_id = f.material_id";
+
+            try (Connection conn = connectionPool.getConnection();
+                 PreparedStatement ps = conn.prepareStatement(sql);
+                 ResultSet rs = ps.executeQuery()) {
+
+                while (rs.next()) {
+                    Map<String, Object> row = new HashMap<>();
+                    row.put("materialId", rs.getInt("material_id"));          // <--- Add this line
+                    row.put("materialName", rs.getString("material_name"));
+                    row.put("unit", rs.getString("unit"));
+                    row.put("size", rs.getString("size"));
+                    row.put("quantityPerPackage", rs.getInt("quantity_per_package"));
+                    row.put("price", rs.getDouble("price"));
+                    fittings.add(row);
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+
+            Map<String, Object> model = new HashMap<>();
+            model.put("orders", orders);
+            model.put("otherOrders", otherOrders);
+            model.put("fittings", fittings);  // add materials to model
+
+            // Support edit mode if requested
+            String editOrderId = ctx.queryParam("editOrderId");
+            if (editOrderId != null) {
+                model.put("editOrderId", Integer.parseInt(editOrderId));
+            }
+
+            ctx.render("sellerdashboard.html", model);
+        });
+
+
 
         app.post("/selectorder", ctx -> assignOrderToWorker(ctx, connectionPool));
 
@@ -68,23 +134,7 @@ public class OrderController {
 
         app.get("/orderSite3", ctx -> ctx.render("orderSite3.html"));
 
-/*
-        app.post("/skipStep3", ctx -> {
-            User user = ctx.sessionAttribute("currentUser");
 
-            int redskabsrumBredde = Integer.parseInt(ctx.formParam("redskabsrumBredde"));
-            int redskabsrumLængde = Integer.parseInt(ctx.formParam("redskabsrumLængde"));
-
-            ctx.sessionAttribute("redskabsrumBredde", redskabsrumBredde);
-            ctx.sessionAttribute("redskabsrumLængde", redskabsrumLængde);
-
-            if (user != null) {
-                ctx.render("orderConfirmation.html");
-            } else {
-                ctx.redirect("/orderSite3");
-            }
-        });
-*/
         app.post("/generateCarport", ctx -> {
             Locale.setDefault(Locale.US);
 
@@ -318,6 +368,79 @@ public class OrderController {
             System.err.println("Kunne ikke sende e-mail: " + e.getMessage());
         }
     }
+
+    private static void addItem(Context ctx, ConnectionPool connectionPool) {
+        try {
+            int materialId = Integer.parseInt(ctx.formParam("material_id"));
+            String size = ctx.formParam("size");
+            int quantity = Integer.parseInt(ctx.formParam("quantity_per_package"));
+            double price = Double.parseDouble(ctx.formParam("price"));
+
+            OrderMapper.addItem(materialId, size, quantity, price, connectionPool);
+
+            ctx.redirect("/sellerdashboard");
+        } catch (Exception e) {
+            ctx.status(400).result("Failed to add item: " + e.getMessage());
+        }
+    }
+
+    public static void updateItem(Context ctx, ConnectionPool connectionPool) {
+        try {
+            int materialId = Integer.parseInt(ctx.formParam("materialId"));
+            String size = ctx.formParam("size");
+            int quantityPerPackage = Integer.parseInt(ctx.formParam("quantityPerPackage"));
+            double price = Double.parseDouble(ctx.formParam("price"));
+
+            String sql = "UPDATE fittings_and_screws SET quantity_per_package = ?, price = ? WHERE material_id = ? AND size = ?";
+
+            try (Connection conn = connectionPool.getConnection();
+                 PreparedStatement ps = conn.prepareStatement(sql)) {
+
+                ps.setInt(1, quantityPerPackage);
+                ps.setDouble(2, price);
+                ps.setInt(3, materialId);
+                ps.setString(4, size);
+
+                int updated = ps.executeUpdate();
+                if (updated == 0) {
+                    ctx.status(404).result("No item found to update with given material_id and size");
+                    return;
+                }
+                ctx.status(200).result("Item updated successfully");
+            }
+        } catch (NumberFormatException e) {
+            ctx.status(400).result("Invalid number format in parameters");
+        } catch (SQLException e) {
+            ctx.status(500).result("Failed to update item: " + e.getMessage());
+        }
+    }
+
+    public static void deleteItem(Context ctx, ConnectionPool connectionPool) {
+        try {
+            // Get materialId from form param
+            int materialId = Integer.parseInt(ctx.formParam("materialId"));
+
+            String sql = "DELETE FROM material WHERE material_id = ?";
+
+            try (Connection conn = connectionPool.getConnection();
+                 PreparedStatement ps = conn.prepareStatement(sql)) {
+
+                ps.setInt(1, materialId);
+
+                int deleted = ps.executeUpdate();
+                if (deleted == 0) {
+                    ctx.status(404).result("No item found to delete with materialId: " + materialId);
+                    return;
+                }
+                ctx.status(200).result("Item '" + "' deleted successfully.");
+            }
+        } catch (NumberFormatException e) {
+            ctx.status(400).result("Invalid number format in parameters");
+        } catch (SQLException e) {
+            ctx.status(500).result("Failed to delete item: " + e.getMessage());
+        }
+    }
+
 
 
 }
