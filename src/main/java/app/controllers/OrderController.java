@@ -159,7 +159,7 @@ public class OrderController {
 
             if (order != null) {
                 int carportId = OrderMapper.getCarportIdByOrderId(orderId, connectionPool);
-                Carport carport = CarportMapper.getCarportById(carportId, connectionPool);
+                Carport carport = CarportMapper.getCarportById(carportId,connectionPool);
 
                 String oldstatus = order.getOrderStatus();
                 order.setTotalPrice(totalPrice);

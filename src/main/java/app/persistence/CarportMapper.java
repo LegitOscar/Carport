@@ -7,6 +7,7 @@ import app.persistence.ConnectionPool;
 import java.sql.*;
 
 public class CarportMapper {
+
     public static Carport getCarportById(int id, ConnectionPool pool) throws DatabaseException {
         String sql = "SELECT * FROM carport WHERE carport_id = ?";
         try (Connection conn = pool.getConnection();
